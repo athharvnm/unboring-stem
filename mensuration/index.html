@@ -11,37 +11,53 @@
 <meta property="og:description" content="Calculate the area and volume of 2D and 3D geometric shapes quickly and accurately.">
 <meta property="og:image" content="https://unboringstem.pages.dev/mensuration/social.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F766E'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23FFFFFF' stroke-width='2.2'/%3E%3Cpath d='M9 21 A10 10 0 0 1 23 11' fill='none' stroke='%23EA580C' stroke-width='2.8' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='11' r='2.6' fill='%23FDE047'/%3E%3C/svg%3E">
 <style>
 :root{--teal:#0f766e;--org:#ea580c;--amb:#d97706;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f1f5f9}
 *{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
 body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink)}
-.wrap{max-width:1280px;margin:0 auto;padding:16px;display:grid;gap:16px}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
-header{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
-h1{margin:0;font-size:24px}h2{margin:0;font-size:18px}
-p{margin:4px 0;color:var(--mut);font-size:13px;line-height:1.5}
-.grid{display:grid;grid-template-columns:1fr;gap:16px}
-@media(min-width:1024px){.grid{grid-template-columns:2fr 1fr}aside{position:sticky;top:16px;align-self:start}}
-button{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:#fff;color:#334155;border-radius:10px;padding:7px 12px;cursor:pointer}
+.wrap{max-width:1280px;width:100%;min-width:0;margin:0 auto;padding:10px;display:grid;gap:10px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;min-width:0;max-width:100%}
+@media(min-width:640px){.wrap{padding:16px;gap:16px}.card{padding:16px}}
+header{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+header>div{min-width:0;flex:1 1 240px}
+h1{margin:0;font-size:clamp(19px,4.5vw,24px);line-height:1.2}
+h2{margin:0;font-size:clamp(16px,3.8vw,18px);line-height:1.3}
+p{margin:4px 0;color:var(--mut);font-size:13px;line-height:1.5;overflow-wrap:break-word}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0}
+.grid>*{min-width:0}
+@media(min-width:640px){.grid{gap:16px}}
+@media(min-width:1024px){.grid{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}aside{position:sticky;top:16px;align-self:start}}
+button{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:#fff;color:#334155;border-radius:10px;padding:8px 12px;min-height:40px;cursor:pointer;touch-action:manipulation}
 button:hover{border-color:var(--teal)}
 button.on{background:var(--teal);border-color:var(--teal);color:#fff}
 button:focus-visible,input:focus-visible{outline:2px solid var(--org);outline-offset:2px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-#cw{position:relative;height:min(60vw,430px);min-height:250px;background:#f8fafc;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:10px 0}
+#tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+#tabs button{padding:8px 6px;text-align:center;white-space:nowrap}
+@media(min-width:640px){#tabs{display:flex;width:auto;gap:8px}#tabs button{padding:8px 14px}}
+#cw{position:relative;width:100%;aspect-ratio:4/3;max-height:430px;min-height:220px;background:#f8fafc;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:10px 0}
+@media(min-width:640px){#cw{aspect-ratio:16/10}}
 canvas{display:block;width:100%;height:100%;touch-action:none;cursor:ew-resize}
-#cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media(min-width:640px){#cards{grid-template-columns:repeat(4,1fr)}}
-.m{border:1px solid var(--line);border-radius:12px;padding:10px}
-.m b{display:block;font:700 17px ui-monospace,Menlo,monospace}
-.m span{font-size:11px;color:var(--mut)}
-#shapes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#shapes button{text-align:left}
-label{font-size:12px;font-weight:600;display:flex;justify-content:space-between;margin-top:12px}
-input[type=range]{width:100%;accent-color:var(--teal)}
-.fm{font-size:13px;background:#f1f5f9;padding:8px;border-radius:8px;margin-top:8px;word-break:break-word}
-.face{display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #fde68a;margin-top:6px}
+#cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media(min-width:640px){#cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}}
+.m{border:1px solid var(--line);border-radius:12px;padding:9px 10px;min-width:0}
+.m b{display:block;font:700 15px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;overflow-wrap:break-word}
+@media(min-width:640px){.m b{font-size:17px}}
+.m span{display:block;font-size:11px;color:var(--mut)}
+#shapes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#shapes button{text-align:left;min-width:0;min-height:40px;white-space:normal;line-height:1.3;padding:8px 10px;overflow-wrap:break-word}
+label{font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}
+#swv,#nv,#tv{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,monospace}
+input[type=range]{width:100%;height:28px;margin:2px 0;accent-color:var(--teal);touch-action:pan-y;cursor:pointer}
+.fm{font-size:13px;background:#f1f5f9;padding:8px 10px;border-radius:8px;margin-top:8px;min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+#int{min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.face{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;padding:7px 10px;border-radius:8px;border:1px solid #fde68a;margin-top:6px;min-width:0}
+.face span{min-width:0;overflow-wrap:break-word}
+.face b{font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
 .hide{display:none!important}
-.katex-display{margin:.6em 0;overflow-x:auto;overflow-y:hidden}
+.katex-display{margin:.55em 0;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
@@ -51,7 +67,7 @@ input[type=range]{width:100%;accent-color:var(--teal)}
 <header class="card">
   <div><h1>Slice &amp; Sum Geometry Studio</h1>
   <p>Add up tiny pieces and watch the sum converge on the exact answer as you add more pieces.</p></div>
-  <nav class="row" id="tabs"><button data-d="1d">1D Length</button><button data-d="2d">2D Area</button><button data-d="3d">3D Solids</button></nav>
+  <nav id="tabs" aria-label="Geometry dimensions"><button type="button" data-d="1d">1D Length</button><button type="button" data-d="2d">2D Area</button><button type="button" data-d="3d">3D Solids</button></nav>
 </header>
 <div class="grid">
 <section class="card">
@@ -64,12 +80,12 @@ input[type=range]{width:100%;accent-color:var(--teal)}
   <p id="calc"></p>
 </section>
 <aside class="card">
-  <div class="row" style="justify-content:space-between"><b>Shape</b><div id="modes" class="row hide"><button id="mv">Volume</button><button id="ms">Surface area</button></div></div>
+  <div class="row" style="justify-content:space-between"><b>Shape</b><div id="modes" class="row hide"><button type="button" id="mv">Volume</button><button type="button" id="ms">Surface area</button></div></div>
   <div id="shapes" style="margin-top:8px"></div>
-  <label><span id="swl">Sweep</span><span id="swv"></span></label><input type="range" id="sw" min="0" max="1000">
-  <label><span id="nl">Pieces</span><span id="nv"></span></label><input type="range" id="nn" min="2" max="80">
-  <div id="turnbox" class="hide"><label><span>Turn</span><span id="tv"></span></label><input type="range" id="tn" min="-180" max="180" value="0"></div>
-  <div class="row" style="margin-top:14px"><button id="play">Play</button><button id="reset">Reset</button></div>
+  <label for="sw"><span id="swl">Sweep</span><span id="swv"></span></label><input type="range" id="sw" min="0" max="1000">
+  <label for="nn"><span id="nl">Pieces</span><span id="nv"></span></label><input type="range" id="nn" min="2" max="80">
+  <div id="turnbox" class="hide"><label for="tn"><span>Turn</span><span id="tv"></span></label><input type="range" id="tn" min="-180" max="180" value="0"></div>
+  <div class="row" style="margin-top:14px"><button type="button" id="play" style="flex:1">Play</button><button type="button" id="reset" style="flex:1">Reset</button></div>
 </aside>
 </div>
 </div>
@@ -164,16 +180,32 @@ function compute(){
 function ints(q,x){const ys=[];for(let i=0;i<q.length;i++){const a=q[i],b=q[(i+1)%q.length];if((a.x<=x)!==(b.x<=x))ys.push(a.y+(x-a.x)/(b.x-a.x)*(b.y-a.y))}
  ys.sort((a,b)=>a-b);const r=[];for(let i=0;i+1<ys.length;i+=2)r.push([ys[i],ys[i+1]]);return r}
 
-/* ---------- drawing ---------- */
-function size(){const r=$('cw').getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);cv.width=Math.floor(r.width*d);cv.height=Math.floor(r.height*d);ctx.setTransform(d,0,0,d,0,0);draw()}
+/* ---------- drawing (stabilized ResizeObserver to avoid mobile resize jitter) ---------- */
+let lastW=0,lastH=0,resizeRaf=0;
+function size(){
+ const cw=$('cw'),w=Math.round(cw.clientWidth),h=Math.round(cw.clientHeight);
+ if(w<1||h<1)return;
+ if(Math.abs(w-lastW)<1&&Math.abs(h-lastH)<1)return;
+ lastW=w;lastH=h;
+ const d=Math.min(window.devicePixelRatio||1,2);
+ cv.width=Math.floor(w*d);cv.height=Math.floor(h*d);
+ ctx.setTransform(d,0,0,d,0,0);
+ draw();
+}
+function scheduleSize(){
+ if(resizeRaf)return;
+ resizeRaf=requestAnimationFrame(()=>{resizeRaf=0;size()});
+}
 function draw(){
- const w=cv.clientWidth,h=cv.clientHeight,d=compute();ctx.clearRect(0,0,w,h);
+ const w=cv.clientWidth,h=cv.clientHeight;
+ if(w<1||h<1)return;
+ const d=compute();ctx.clearRect(0,0,w,h);
  ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;
  for(let x=28;x<w;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
  for(let y=28;y<h;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
  if(S.dim==='1d')draw1(w,h,d);else if(S.dim==='2d')draw2(w,h,d);else draw3(w,h,d)}
 function draw1(w,h,d){
- const b=bnd(d.T.pts),pad=34,sc=Math.min((w-2*pad)/Math.max(1e-6,b.x1-b.x0),(h-2*pad)/Math.max(1e-6,b.y1-b.y0)),
+ const b=bnd(d.T.pts),pad=30,sc=Math.min((w-2*pad)/Math.max(1e-6,b.x1-b.x0),(h-2*pad)/Math.max(1e-6,b.y1-b.y0)),
  ox=w/2-sc*(b.x0+b.x1)/2,oy=h/2+sc*(b.y0+b.y1)/2,T=p=>({x:ox+p.x*sc,y:oy-p.y*sc});
  ctx.beginPath();d.T.pts.forEach((p,i)=>{const s=T(p);i?ctx.lineTo(s.x,s.y):ctx.moveTo(s.x,s.y)});
  ctx.strokeStyle='#cbd5e1';ctx.lineWidth=3;ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([]);
@@ -184,12 +216,12 @@ function draw1(w,h,d){
  d.pts.forEach((p,i)=>{const s=T(p);ctx.beginPath();ctx.arc(s.x,s.y,i<=d.k?4:3,0,2*PI);ctx.fillStyle=i<=d.k?'#0f766e':'#94a3b8';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke()});
  const s=T(tip);ctx.beginPath();ctx.arc(s.x,s.y,7,0,2*PI);ctx.fillStyle='#ea580c';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke()}
 function draw2(w,h,d){
- const Rm=Math.max(...d.q.map(p=>Math.hypot(p.x,p.y))),sc=(Math.min(w,h)/2-26)/Rm,cx=w/2,cy=h/2,X=x=>cx+x*sc,Y=y=>cy-y*sc,f=Math.floor(d.k);
+ const Rm=Math.max(...d.q.map(p=>Math.hypot(p.x,p.y))),sc=(Math.min(w,h)/2-24)/Rm,cx=w/2,cy=h/2,X=x=>cx+x*sc,Y=y=>cy-y*sc,f=Math.floor(d.k);
  for(let i=0;i<d.n&&i<=f;i++){const s=d.strips[i],fr=i<f?1:d.k-f;if(fr<=1e-4)continue;
   for(const[y0,y1]of s.iv){ctx.fillStyle=i<f?'rgba(16,185,129,.34)':'rgba(16,185,129,.22)';ctx.fillRect(X(s.x),Y(y1),Math.max(.8,s.dx*sc*fr),Math.max(1,(y1-y0)*sc));
    ctx.strokeStyle='rgba(4,120,87,.45)';ctx.lineWidth=.8;ctx.strokeRect(X(s.x),Y(y1),Math.max(.8,s.dx*sc*fr),Math.max(1,(y1-y0)*sc))}}
  ctx.beginPath();d.q.forEach((p,i)=>i?ctx.lineTo(X(p.x),Y(p.y)):ctx.moveTo(X(p.x),Y(p.y)));ctx.closePath();ctx.strokeStyle='#0f172a';ctx.lineWidth=2.3;ctx.stroke();
- const sx=X(d.b.x0+S.sweep*(d.b.x1-d.b.x0));ctx.beginPath();ctx.moveTo(sx,18);ctx.lineTo(sx,h-18);ctx.strokeStyle='#ea580c';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([])}
+ const sx=X(d.b.x0+S.sweep*(d.b.x1-d.b.x0));ctx.beginPath();ctx.moveTo(sx,16);ctx.lineTo(sx,h-16);ctx.strokeStyle='#ea580c';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([])}
 function slicePts(c){
  if(c.t==='c'){const r=Math.max(c.r,.001);return Array.from({length:40},(_,i)=>[r*Math.cos(i*PI/20),r*Math.sin(i*PI/20)])}
  if(c.t==='r'){const a=Math.max(c.w,.001)/2,b=Math.max(c.d,.001)/2;return[[-a,-b],[a,-b],[a,b],[-a,b]]}
@@ -241,7 +273,7 @@ function update(){
   'Midpoint rule: $\\sum A(z_i)\\Delta z\\to\\int A(z)\\,dz$. The exact value comes from the formula; the error shrinks as $n$ grows.');
  draw()}
 function buildShapes(){
- $('shapes').innerHTML='';LIST[S.dim].forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.name.replace(/ \(.*$/,'');b.title=s.name;b.className=i===S.sel[S.dim]?'on':'';
+ $('shapes').innerHTML='';LIST[S.dim].forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.textContent=s.name.replace(/ \(.*$/,'');b.title=s.name;b.className=i===S.sel[S.dim]?'on':'';
   b.onclick=()=>{S.sel[S.dim]=i;buildShapes();update()};$('shapes').appendChild(b)})}
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{S.dim=b.dataset.d;buildShapes();update()});
 $('sw').oninput=e=>{S.play=false;S.sweep=e.target.value/1000;update()};
@@ -254,14 +286,15 @@ let drag=false;const scrub=e=>{const r=cv.getBoundingClientRect();S.sweep=Math.m
 cv.addEventListener('pointerdown',e=>{S.play=false;drag=true;cv.setPointerCapture(e.pointerId);scrub(e)});
 cv.addEventListener('pointermove',e=>{if(drag)scrub(e)});
 cv.addEventListener('pointerup',()=>drag=false);
+cv.addEventListener('pointercancel',()=>drag=false);
 addEventListener('keydown',e=>{if(/INPUT|BUTTON|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
  if(e.code==='Space'){e.preventDefault();$('play').click()}
  else if(e.code==='ArrowRight'){S.play=false;S.sweep=Math.min(1,S.sweep+.03);update()}
  else if(e.code==='ArrowLeft'){S.play=false;S.sweep=Math.max(0,S.sweep-.03);update()}});
 let last=null;(function tick(t){if(S.play){if(last!==null){S.sweep+=(t-last)/1000*.22;if(S.sweep>=1){S.sweep=1;S.play=false}update()}last=t}else last=null;requestAnimationFrame(tick)})(0);
-new ResizeObserver(size).observe($('cw'));
+new ResizeObserver(scheduleSize).observe($('cw'));
 buildShapes();update();size();
-addEventListener('load',update);
+addEventListener('load',()=>{update();size()});
 </script>
 </body>
 </html>
