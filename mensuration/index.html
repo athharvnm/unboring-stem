@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slice &amp; Sum Geometry Studio</title>
+<meta name="description" content="Calculate the area and volume of 2D and 3D geometric shapes quickly and accurately.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://unboringstem.pages.dev/mensuration">
+<meta property="og:title" content="Slice &amp; Sum Geometry Studio">
+<meta property="og:description" content="Calculate the area and volume of 2D and 3D geometric shapes quickly and accurately.">
+<meta property="og:image" content="https://unboringstem.pages.dev/mensuration/social.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--teal:#0f766e;--org:#ea580c;--amb:#d97706;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f1f5f9}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1280px;margin:0 auto;padding:16px;display:grid;gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+h1{margin:0;font-size:24px}h2{margin:0;font-size:18px}
+p{margin:4px 0;color:var(--mut);font-size:13px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:1024px){.grid{grid-template-columns:2fr 1fr}aside{position:sticky;top:16px;align-self:start}}
+button{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:#fff;color:#334155;border-radius:10px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--teal)}
+button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid var(--org);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#cw{position:relative;height:min(60vw,430px);min-height:250px;background:#f8fafc;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:10px 0}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:ew-resize}
+#cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:640px){#cards{grid-template-columns:repeat(4,1fr)}}
+.m{border:1px solid var(--line);border-radius:12px;padding:10px}
+.m b{display:block;font:700 17px ui-monospace,Menlo,monospace}
+.m span{font-size:11px;color:var(--mut)}
+#shapes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#shapes button{text-align:left}
+label{font-size:12px;font-weight:600;display:flex;justify-content:space-between;margin-top:12px}
+input[type=range]{width:100%;accent-color:var(--teal)}
+.fm{font-size:13px;background:#f1f5f9;padding:8px;border-radius:8px;margin-top:8px;word-break:break-word}
+.face{display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #fde68a;margin-top:6px}
+.hide{display:none!important}
+.katex-display{margin:.6em 0;overflow-x:auto;overflow-y:hidden}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+<header class="card">
+  <div><h1>Slice &amp; Sum Geometry Studio</h1>
+  <p>Add up tiny pieces and watch the sum converge on the exact answer as you add more pieces.</p></div>
+  <nav class="row" id="tabs"><button data-d="1d">1D Length</button><button data-d="2d">2D Area</button><button data-d="3d">3D Solids</button></nav>
+</header>
+<div class="grid">
+<section class="card">
+  <h2 id="title"></h2><p id="note"></p>
+  <div id="cw"><canvas id="cv"></canvas></div>
+  <div id="cards"></div>
+  <div class="fm" id="fm"></div>
+  <div id="int"></div>
+  <div id="faces"></div>
+  <p id="calc"></p>
+</section>
+<aside class="card">
+  <div class="row" style="justify-content:space-between"><b>Shape</b><div id="modes" class="row hide"><button id="mv">Volume</button><button id="ms">Surface area</button></div></div>
+  <div id="shapes" style="margin-top:8px"></div>
+  <label><span id="swl">Sweep</span><span id="swv"></span></label><input type="range" id="sw" min="0" max="1000">
+  <label><span id="nl">Pieces</span><span id="nv"></span></label><input type="range" id="nn" min="2" max="80">
+  <div id="turnbox" class="hide"><label><span>Turn</span><span id="tv"></span></label><input type="range" id="tn" min="-180" max="180" value="0"></div>
+  <div class="row" style="margin-top:14px"><button id="play">Play</button><button id="reset">Reset</button></div>
+</aside>
+</div>
+</div>
+<script>
+const PI=Math.PI,$=id=>document.getElementById(id),f2=x=>x.toFixed(2);
+const P=(...a)=>a.map(([x,y])=>({x,y}));
+const poly=(n,r,a0=-PI/2)=>Array.from({length:n},(_,i)=>({x:r*Math.cos(a0+i*2*PI/n),y:r*Math.sin(a0+i*2*PI/n)}));
+const shoe=p=>Math.abs(p.reduce((s,a,i)=>{const b=p[(i+1)%p.length];return s+a.x*b.y-b.x*a.y},0))/2;
+const per=p=>p.reduce((s,a,i)=>{const b=p[(i+1)%p.length];return s+Math.hypot(b.x-a.x,b.y-a.y)},0);
+const bnd=p=>({x0:Math.min(...p.map(a=>a.x)),x1:Math.max(...p.map(a=>a.x)),y0:Math.min(...p.map(a=>a.y)),y1:Math.max(...p.map(a=>a.y))});
+const polyline=pts=>t=>{const k=Math.min(pts.length-2,Math.floor(t*(pts.length-1))),u=t*(pts.length-1)-k;return{x:pts[k][0]+(pts[k+1][0]-pts[k][0])*u,y:pts[k][1]+(pts[k+1][1]-pts[k][1])*u}};
+
+/* ---------- KaTeX helpers (plain-text fallback if the CDN fails) ---------- */
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const kx=(s,disp)=>window.katex?katex.renderToString(s,{throwOnError:false,displayMode:!!disp}):esc(s);
+const rich=s=>s.split('$').map((x,i)=>i%2?kx(x):esc(x)).join('');
+const setK=(id,s,disp)=>{const e=$(id),k=(window.katex?1:0)+s;if(e._k!==k){e._k=k;e.innerHTML=kx(s,disp)}};
+const setR=(id,s)=>{const e=$(id),k=(window.katex?1:0)+s;if(e._k!==k){e._k=k;e.innerHTML=rich(s)}};
+const MAP={'A = s²':'A=s^2','A = l × w':'A=l\\times w','A = πr²':'A=\\pi r^2','A = ½ × b × h':'A=\\tfrac12 bh','A = (3√3/2)s²':'A=\\tfrac{3\\sqrt3}{2}s^2','A = ½(b₁+b₂)h':'A=\\tfrac12(b_1+b_2)h','A = A₁ + A₂':'A=A_1+A_2','A = A_shaft + A_head':'A=A_{\\text{shaft}}+A_{\\text{head}}','A = Σ pieces':'A=\\sum A_{\\text{pieces}}',
+'s³':'s^3','l·w·h':'lwh','πr²h':'\\pi r^2h','(4/3)πr³':'\\tfrac43\\pi r^3','(1/3)πr²h':'\\tfrac13\\pi r^2h','(1/3)b²h':'\\tfrac13b^2h','(πh/3)(r₁²+r₁r₂+r₂²)':'\\tfrac{\\pi h}{3}\\left(r_1^2+r_1r_2+r_2^2\\right)','A_hex·h':'A_{\\text{hex}}h',
+'6s²':'6s^2','2(lw+lh+wh)':'2(lw+lh+wh)','2πr²+2πrh':'2\\pi r^2+2\\pi rh','4πr²':'4\\pi r^2','πr²+πrs':'\\pi r^2+\\pi rs','b²+2b·slant':'b^2+2bs','πr₁²+πr₂²+π(r₁+r₂)s':'\\pi r_1^2+\\pi r_2^2+\\pi(r_1+r_2)s','2A_hex+6sh':'2A_{\\text{hex}}+6sh'};
+const T=s=>MAP[s]||s;
+const AZ=['64','72','16\\pi','\\pi\\left(36-(z-6)^2\\right)','25\\pi\\left(1-\\tfrac z9\\right)^2','64\\left(1-\\tfrac z9\\right)^2','\\pi\\left(6-\\tfrac{3z}{8}\\right)^2','24\\sqrt3'];
+
+/* ---------- 1D: curves defined directly in cm; lengths are measured, never typed in ---------- */
+const S1=[
+ {name:'Straight line (12 cm)',f:t=>({x:12*t,y:0}),exact:12,note:'Every step has the same length, so the sum is exact for any n.'},
+ {name:'Circle rim (r = 5 cm)',f:t=>({x:5*Math.cos(2*PI*t),y:5*Math.sin(2*PI*t)}),exact:10*PI,note:'Chords cut inside the arc, so the sum undershoots $2\\pi r$ and creeps up as n grows.'},
+ {name:'Sine wave (1 cycle, 12 cm wide)',f:t=>({x:12*t,y:3*Math.sin(2*PI*t)}),note:'Longer than the 12 cm ground it covers. Exact length is measured numerically.'},
+ {name:'Zig-zag trail',f:polyline([[0,0],[3,6],[6,-1],[9,5],[12,-2]]),note:'Chords that skip a corner undershoot until n is large enough.'},
+ {name:'Spiral (2 turns)',f:t=>{const a=4*PI*t,r=.5*a;return{x:r*Math.cos(a),y:r*Math.sin(a)}},note:'$ds=\\sqrt{r^2+(dr/d\\theta)^2}\\,d\\theta$ with $r=0.5\\theta$.'},
+ {name:'S-bend',f:t=>{const s=2*t-1;return{x:12*t,y:4*(s*s*s-.65*s)}},note:'Curvature changes sign at the inflection point.'},
+ {name:'L-route (14 cm)',f:polyline([[0,0],[8,0],[8,6]]),exact:14,note:'8 cm across plus 6 cm up. Exact for any n that puts a point on the corner; otherwise the corner is cut.'}
+];
+function table(sh){ if(sh._T)return sh._T; const N=4000,pts=[],cum=[0];
+ for(let i=0;i<=N;i++){pts.push(sh.f(i/N)); if(i)cum.push(cum[i-1]+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y))}
+ return sh._T={pts,cum,L:cum[N]}}
+function atFrac(T,s){const g=s*T.L,c=T.cum;let lo=0,hi=c.length-1;while(hi-lo>1){const m=(lo+hi)>>1;c[m]<=g?lo=m:hi=m}
+ const u=c[hi]>c[lo]?(g-c[lo])/(c[hi]-c[lo]):0,a=T.pts[lo],b=T.pts[hi];return{x:a.x+(b.x-a.x)*u,y:a.y+(b.y-a.y)*u}}
+
+/* ---------- 2D: polygons in cm; exact area/perimeter come from the points ---------- */
+const star=[];for(let i=0;i<10;i++){const r=i%2?2.1:5,a=-PI/2+i*PI/5;star.push({x:r*Math.cos(a),y:r*Math.sin(a)})}
+const S2=[
+ {name:'Square (10 × 10 cm)',pts:P([0,0],[10,0],[10,10],[0,10]),fa:'A = s²',note:'Every strip is 10 cm tall, so the sum is exact.'},
+ {name:'Rectangle (12 × 6 cm)',pts:P([0,0],[12,0],[12,6],[0,6]),fa:'A = l × w',note:'Constant strip height 6 cm across 12 cm.'},
+ {name:'Circle (r = 5 cm)',pts:poly(180,5),A:25*PI,Pm:10*PI,fa:'A = πr²',note:'$\\ell(x)=2\\sqrt{r^2-x^2}$, and $\\int_{-r}^{r}\\ell(x)\\,dx=\\pi r^2$.'},
+ {name:'Equilateral triangle (side 10 cm)',pts:P([0,0],[10,0],[5,5*Math.sqrt(3)]),fa:'A = ½ × b × h',note:'Strip height rises then falls (a tent). Its average is half the height.'},
+ {name:'Regular hexagon (side 5 cm)',pts:poly(6,5,0),fa:'A = (3√3/2)s²',note:'Strips ramp up, stay level, then ramp down.'},
+ {name:'Trapezoid',pts:P([0,0],[11,0],[8,7],[2,7]),fa:'A = ½(b₁+b₂)h',note:'Strip height changes linearly on the slanted sides.'},
+ {name:'L-shape',pts:P([0,0],[10,0],[10,4],[4,4],[4,10],[0,10]),fa:'A = A₁ + A₂',note:'Strip height jumps where the step is.'},
+ {name:'Block arrow',pts:P([0,3],[7,3],[7,0],[12,4],[7,8],[7,5],[0,5]),fa:'A = A_shaft + A_head',note:'Constant shaft, then a linear taper.'},
+ {name:'5-point star',pts:star,fa:'A = Σ pieces',note:'Several separate intervals appear at one x.'}
+];
+
+/* ---------- 3D: cross-section A(z) in cm; V and surface area from formulas ---------- */
+const hexA=s=>3*Math.sqrt(3)/2*s*s;
+const secA=c=>c.t==='c'?PI*c.r*c.r:c.t==='r'?c.w*c.d:hexA(c.s);
+const R=(w,d)=>({t:'r',w,d}),C=r=>({t:'c',r});
+const S3=[
+ {name:'Cube (8 cm)',H:8,sec:z=>R(8,8),V:512,fv:'s³',fs:'6s²',faces:[['Bottom',64],['Top',64],['Front',64],['Back',64],['Left',64],['Right',64]],note:'Constant 8 × 8 slices.'},
+ {name:'Cuboid (12 × 6 × 5 cm)',H:5,sec:z=>R(12,6),V:360,fv:'l·w·h',fs:'2(lw+lh+wh)',faces:[['Bottom 12×6',72],['Top 12×6',72],['Front & back 2×(12×5)',120],['Left & right 2×(6×5)',60]],note:'Constant 12 × 6 slices.'},
+ {name:'Cylinder (r = 4, h = 10 cm)',H:10,sec:z=>C(4),V:PI*16*10,fv:'πr²h',fs:'2πr²+2πrh',faces:[['Bottom πr²',16*PI],['Top πr²',16*PI],['Curved wall 2πrh',80*PI]],note:'Constant circular coins of area $\\pi r^2$.'},
+ {name:'Sphere (r = 6 cm)',H:12,sec:z=>C(Math.sqrt(Math.max(0,36-(z-6)**2))),V:4/3*PI*216,fv:'(4/3)πr³',fs:'4πr²',faces:[['Curved skin 4πr²',144*PI]],note:'$A(z)=\\pi\\left(r^2-(z-r)^2\\right)$, so $V=\\tfrac43\\pi r^3$ and $\\tfrac{dV}{dr}=4\\pi r^2$, the surface area.'},
+ {name:'Cone (r = 5, h = 9 cm)',H:9,sec:z=>C(5*(1-z/9)),V:PI*25*9/3,fv:'(1/3)πr²h',fs:'πr²+πrs',faces:[['Base πr²',25*PI],['Slanted wall πrs',PI*5*Math.hypot(5,9)]],note:'$A(z)=\\pi r^2\\left(1-\\tfrac zh\\right)^2$, so $V=\\tfrac13\\pi r^2h$.'},
+ {name:'Square pyramid (8 × 8, h = 9 cm)',H:9,sec:z=>R(8*(1-z/9),8*(1-z/9)),V:64*9/3,fv:'(1/3)b²h',fs:'b²+2b·slant',faces:[['Base',64],['Four triangles',4*.5*8*Math.hypot(9,4)]],note:'Side length shrinks linearly; slant height is $\\sqrt{h^2+(b/2)^2}$.'},
+ {name:'Frustum (r₁ = 6, r₂ = 3, h = 8 cm)',H:8,sec:z=>C(6-3*z/8),V:PI*8/3*(36+18+9),fv:'(πh/3)(r₁²+r₁r₂+r₂²)',fs:'πr₁²+πr₂²+π(r₁+r₂)s',faces:[['Bottom πr₁²',36*PI],['Top πr₂²',9*PI],['Slanted band π(r₁+r₂)s',PI*9*Math.hypot(3,8)]],note:'Linear radius $r(z)=r_1+(r_2-r_1)\\tfrac zh$.'},
+ {name:'Hexagonal prism (side 4, h = 8 cm)',H:8,sec:z=>({t:'h',s:4}),V:hexA(4)*8,fv:'A_hex·h',fs:'2A_hex+6sh',faces:[['Bottom hexagon',hexA(4)],['Top hexagon',hexA(4)],['Six side rectangles 6×(4×8)',192]],note:'Constant hexagonal slices.'}
+];
+S3.forEach(s=>{s.SA=s.faces.reduce((a,f)=>a+f[1],0)});
+
+/* ---------- state ---------- */
+const LIST={'1d':S1,'2d':S2,'3d':S3};
+const S={dim:'1d',sel:{'1d':0,'2d':0,'3d':0},sweep:.45,n:{'1d':12,'2d':20,'3d':12},turn:0,mode:'vol',play:false};
+const cv=$('cv'),ctx=cv.getContext('2d');
+const acc=(it,k)=>{let s=0,f=Math.floor(k);for(let i=0;i<it.length;i++){if(i<f)s+=it[i];else if(i===f)s+=it[i]*(k-f)}return s};
+
+function compute(){
+ const sh=LIST[S.dim][S.sel[S.dim]],n=S.n[S.dim];
+ if(S.dim==='1d'){
+  const T=table(sh),pts=[];for(let i=0;i<=n;i++)pts.push(atFrac(T,i/n));
+  const it=[];for(let i=0;i<n;i++)it.push(Math.hypot(pts[i+1].x-pts[i].x,pts[i+1].y-pts[i].y));
+  return{sh,n,it,pts,T,exact:sh.exact??T.L,unit:'cm',k:S.sweep*n,piece:'Steps'}}
+ if(S.dim==='2d'){
+  const b0=bnd(sh.pts),cx=(b0.x0+b0.x1)/2,cy=(b0.y0+b0.y1)/2,a=S.turn*PI/180,c=Math.cos(a),s=Math.sin(a);
+  const q=sh.pts.map(p=>({x:(p.x-cx)*c-(p.y-cy)*s,y:(p.x-cx)*s+(p.y-cy)*c})),b=bnd(q),dx=(b.x1-b.x0)/n,strips=[],it=[];
+  for(let i=0;i<n;i++){const xm=b.x0+(i+.5)*dx,iv=ints(q,xm);strips.push({x:b.x0+i*dx,dx,iv});it.push(iv.reduce((t,v)=>t+v[1]-v[0],0)*dx)}
+  const pm=sh.Pm??per(sh.pts);
+  return{sh,n,it,q,b,strips,exact:sh.A??shoe(sh.pts),perim:pm,unit:'cm²',k:S.sweep*n,piece:'Strips'}}
+ if(S.mode==='surf'){const it=sh.faces.map(f=>f[1]);return{sh,n:it.length,it,exact:sh.SA,unit:'cm²',k:S.sweep*it.length,piece:'Faces',surf:true}}
+ const dz=sh.H/n,it=[];for(let i=0;i<n;i++)it.push(secA(sh.sec((i+.5)*dz))*dz);
+ return{sh,n,it,dz,exact:sh.V,unit:'cm³',k:S.sweep*n,piece:'Slices'}}
+function ints(q,x){const ys=[];for(let i=0;i<q.length;i++){const a=q[i],b=q[(i+1)%q.length];if((a.x<=x)!==(b.x<=x))ys.push(a.y+(x-a.x)/(b.x-a.x)*(b.y-a.y))}
+ ys.sort((a,b)=>a-b);const r=[];for(let i=0;i+1<ys.length;i+=2)r.push([ys[i],ys[i+1]]);return r}
+
+/* ---------- drawing ---------- */
+function size(){const r=$('cw').getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);cv.width=Math.floor(r.width*d);cv.height=Math.floor(r.height*d);ctx.setTransform(d,0,0,d,0,0);draw()}
+function draw(){
+ const w=cv.clientWidth,h=cv.clientHeight,d=compute();ctx.clearRect(0,0,w,h);
+ ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;
+ for(let x=28;x<w;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+ for(let y=28;y<h;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ if(S.dim==='1d')draw1(w,h,d);else if(S.dim==='2d')draw2(w,h,d);else draw3(w,h,d)}
+function draw1(w,h,d){
+ const b=bnd(d.T.pts),pad=34,sc=Math.min((w-2*pad)/Math.max(1e-6,b.x1-b.x0),(h-2*pad)/Math.max(1e-6,b.y1-b.y0)),
+ ox=w/2-sc*(b.x0+b.x1)/2,oy=h/2+sc*(b.y0+b.y1)/2,T=p=>({x:ox+p.x*sc,y:oy-p.y*sc});
+ ctx.beginPath();d.T.pts.forEach((p,i)=>{const s=T(p);i?ctx.lineTo(s.x,s.y):ctx.moveTo(s.x,s.y)});
+ ctx.strokeStyle='#cbd5e1';ctx.lineWidth=3;ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([]);
+ const f=Math.floor(d.k);let tip=d.pts[Math.min(f,d.n)];
+ ctx.beginPath();for(let i=0;i<=Math.min(f,d.n);i++){const s=T(d.pts[i]);i?ctx.lineTo(s.x,s.y):ctx.moveTo(s.x,s.y)}
+ if(f<d.n){const a=d.pts[f],c=d.pts[f+1],u=d.k-f;tip={x:a.x+(c.x-a.x)*u,y:a.y+(c.y-a.y)*u};const s=T(tip);ctx.lineTo(s.x,s.y)}
+ ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--teal');ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+ d.pts.forEach((p,i)=>{const s=T(p);ctx.beginPath();ctx.arc(s.x,s.y,i<=d.k?4:3,0,2*PI);ctx.fillStyle=i<=d.k?'#0f766e':'#94a3b8';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke()});
+ const s=T(tip);ctx.beginPath();ctx.arc(s.x,s.y,7,0,2*PI);ctx.fillStyle='#ea580c';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke()}
+function draw2(w,h,d){
+ const Rm=Math.max(...d.q.map(p=>Math.hypot(p.x,p.y))),sc=(Math.min(w,h)/2-26)/Rm,cx=w/2,cy=h/2,X=x=>cx+x*sc,Y=y=>cy-y*sc,f=Math.floor(d.k);
+ for(let i=0;i<d.n&&i<=f;i++){const s=d.strips[i],fr=i<f?1:d.k-f;if(fr<=1e-4)continue;
+  for(const[y0,y1]of s.iv){ctx.fillStyle=i<f?'rgba(16,185,129,.34)':'rgba(16,185,129,.22)';ctx.fillRect(X(s.x),Y(y1),Math.max(.8,s.dx*sc*fr),Math.max(1,(y1-y0)*sc));
+   ctx.strokeStyle='rgba(4,120,87,.45)';ctx.lineWidth=.8;ctx.strokeRect(X(s.x),Y(y1),Math.max(.8,s.dx*sc*fr),Math.max(1,(y1-y0)*sc))}}
+ ctx.beginPath();d.q.forEach((p,i)=>i?ctx.lineTo(X(p.x),Y(p.y)):ctx.moveTo(X(p.x),Y(p.y)));ctx.closePath();ctx.strokeStyle='#0f172a';ctx.lineWidth=2.3;ctx.stroke();
+ const sx=X(d.b.x0+S.sweep*(d.b.x1-d.b.x0));ctx.beginPath();ctx.moveTo(sx,18);ctx.lineTo(sx,h-18);ctx.strokeStyle='#ea580c';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([])}
+function slicePts(c){
+ if(c.t==='c'){const r=Math.max(c.r,.001);return Array.from({length:40},(_,i)=>[r*Math.cos(i*PI/20),r*Math.sin(i*PI/20)])}
+ if(c.t==='r'){const a=Math.max(c.w,.001)/2,b=Math.max(c.d,.001)/2;return[[-a,-b],[a,-b],[a,b],[-a,b]]}
+ return poly(6,c.s,0).map(p=>[p.x,p.y])}
+function draw3(w,h,d){
+ const sh=d.sh,H=sh.H,a=S.turn*PI/180,ca=Math.cos(a),sa=Math.sin(a);
+ let Wm=0;for(let i=0;i<=20;i++){const c=sh.sec(i/20*H);Wm=Math.max(Wm,c.t==='c'?c.r:c.t==='r'?Math.hypot(c.w,c.d)/2:c.s)}
+ const sc=.85*Math.min(w,h)/(H+Wm*1.3),cx=w/2,cy=h/2+H*sc/2;
+ const pr=(x,y,z)=>{const rx=x*ca-z*sa,rz=x*sa+z*ca;return{x:cx+(rx-rz)*.866*sc,y:cy+((rx+rz)*.5-y)*sc}};
+ const ring=(c,y,fill,stroke,lw)=>{ctx.beginPath();slicePts(c).forEach(([x,z],i)=>{const p=pr(x,y,z);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()};
+ const g=Math.max(Wm*1.1,1);ctx.beginPath();[[-g,-g],[g,-g],[g,g],[-g,g]].forEach(([x,z],i)=>{const p=pr(x,0,z);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.closePath();ctx.fillStyle='rgba(226,232,240,.5)';ctx.fill();ctx.strokeStyle='#cbd5e1';ctx.stroke();
+ if(!d.surf){const f=Math.floor(d.k);
+  for(let i=0;i<d.n&&i<=f;i++){const fr=i<f?1:d.k-f;if(fr<=1e-4)continue;const c=sh.sec((i+.5)*d.dz),y0=i*d.dz;
+   ring(c,y0,'rgba(13,148,136,.2)','rgba(15,118,110,.5)',1);ring(c,y0+d.dz*fr,i<f?'rgba(13,148,136,.4)':'rgba(20,184,166,.3)','#0f766e',1.2)}
+ }else{
+  for(let i=0;i<=24;i++){const z=i/24*H,on=z<=S.sweep*H+1e-6;ring(sh.sec(z),z,on?'rgba(245,158,11,.14)':null,on?'#d97706':'rgba(148,163,184,.55)',on?1.6:1)}}}
+
+/* ---------- UI ---------- */
+function card(l,v){return`<div class="m"><span>${l}</span><b>${v}</b></div>`}
+function update(){
+ const d=compute(),sh=d.sh,dim=S.dim,n=S.n[dim],full=d.it.reduce((a,b)=>a+b,0),so=acc(d.it,d.k),err=d.surf?0:(full-d.exact)/d.exact*100;
+ $('title').textContent=sh.name;setR('note',sh.note);
+ $('sw').value=Math.round(S.sweep*1000);$('swv').textContent=Math.round(S.sweep*100)+'%';
+ $('nn').value=n;$('nv').textContent=d.surf?'—':n;$('nn').disabled=!!d.surf;
+ $('tv').textContent=S.turn+'°';
+ $('play').textContent=S.play?'Pause':'Play';
+ $('turnbox').classList.toggle('hide',dim==='1d');$('modes').classList.toggle('hide',dim!=='3d');
+ $('mv').className=S.mode==='vol'?'on':'';$('ms').className=S.mode==='surf'?'on':'';
+ document.querySelectorAll('#tabs button').forEach(b=>b.className=b.dataset.d===dim?'on':'');
+ $('swl').textContent=dim==='1d'?'Walk along path':dim==='2d'?'Sweep strips':d.surf?'Wrap faces':'Stack slices';
+ $('nl').textContent=dim==='1d'?'Number of steps':dim==='2d'?'Number of strips':'Number of slices';
+ const u=d.unit,lbl=dim==='1d'?'Length':dim==='2d'?'Area':d.surf?'Surface area':'Volume';
+ $('cards').innerHTML=card(d.piece+' reached',`${Math.min(d.n,Math.ceil(d.k-1e-9))} / ${d.n}`)+card(lbl+' so far',f2(so)+' '+u)+
+  card(d.surf?'Sum of faces':`Sum of all ${d.n}`,f2(full)+' '+u)+card(d.surf?'Exact':'Exact · error',d.surf?f2(d.exact)+' '+u:`${f2(d.exact)} · ${err>=0?'+':''}${err.toFixed(2)}%`);
+ const un={cm:'\\,\\text{cm}','cm²':'\\,\\text{cm}^2','cm³':'\\,\\text{cm}^3'};
+ let fk,ik;
+ if(dim==='1d'){fk=`L\\approx ${f2(d.exact)}${un.cm}`;
+  ik=`L=\\int_a^b\\sqrt{x'(t)^2+y'(t)^2}\\,dt\\;\\approx\\;\\sum_{i=1}^{${n}}\\lVert\\Delta P_i\\rVert=${f2(full)}${un.cm}`}
+ else if(dim==='2d'){fk=`${T(sh.fa)}=${f2(d.exact)}${un['cm²']}\\qquad P=${f2(d.perim)}${un.cm}`;
+  ik=`A=\\int_{x_{\\min}}^{x_{\\max}}\\ell(x)\\,dx\\;\\approx\\;\\sum_{i=1}^{${n}}\\ell(x_i)\\,\\Delta x=${f2(full)}${un['cm²']}`}
+ else{fk=`V=${T(sh.fv)}=${f2(sh.V)}${un['cm³']}\\qquad SA=${T(sh.fs)}=${f2(sh.SA)}${un['cm²']}`;
+  ik=d.surf?`SA=\\iint_{\\partial\\Omega}dS=\\sum_{f}A_f=${f2(full)}${un['cm²']}`:
+   `A(z)=${AZ[S.sel['3d']]}\\;\\Rightarrow\\;V=\\int_0^{${sh.H}}A(z)\\,dz\\;\\approx\\;\\sum_{i=1}^{${n}}A(z_i)\\,\\Delta z=${f2(full)}${un['cm³']}`}
+ setK('fm',fk,false);setK('int',ik,true);
+ $('faces').innerHTML=d.surf?sh.faces.map((f,i)=>`<div class="face" style="background:${i<d.k?'#fef3c7':'#fff'}"><span>${f[0]}</span><b>${f2(f[1])} cm²</b></div>`).join(''):'';
+ setR('calc',dim==='1d'?'Steps are equal in arc length. The sum $\\sum\\lVert\\Delta P_i\\rVert$ is a polyline inside the curve, so it undershoots and converges to $\\int ds$ as $n\\to\\infty$.':
+  dim==='2d'?'Midpoint rule on the shape as turned: $\\sum \\ell(x_i)\\Delta x\\to\\int\\ell(x)\\,dx$. Turning the shape leaves the exact area unchanged.':
+  d.surf?'Surface area is the sum of every outer face, so the total is exact rather than a limit.':
+  'Midpoint rule: $\\sum A(z_i)\\Delta z\\to\\int A(z)\\,dz$. The exact value comes from the formula; the error shrinks as $n$ grows.');
+ draw()}
+function buildShapes(){
+ $('shapes').innerHTML='';LIST[S.dim].forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.name.replace(/ \(.*$/,'');b.title=s.name;b.className=i===S.sel[S.dim]?'on':'';
+  b.onclick=()=>{S.sel[S.dim]=i;buildShapes();update()};$('shapes').appendChild(b)})}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{S.dim=b.dataset.d;buildShapes();update()});
+$('sw').oninput=e=>{S.play=false;S.sweep=e.target.value/1000;update()};
+$('nn').oninput=e=>{S.n[S.dim]=+e.target.value;update()};
+$('tn').oninput=e=>{S.turn=+e.target.value;update()};
+$('mv').onclick=()=>{S.mode='vol';update()};$('ms').onclick=()=>{S.mode='surf';update()};
+$('play').onclick=()=>{if(!S.play&&S.sweep>=.999)S.sweep=0;S.play=!S.play;update()};
+$('reset').onclick=()=>{S.play=false;S.sweep=0;S.turn=0;$('tn').value=0;update()};
+let drag=false;const scrub=e=>{const r=cv.getBoundingClientRect();S.sweep=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));update()};
+cv.addEventListener('pointerdown',e=>{S.play=false;drag=true;cv.setPointerCapture(e.pointerId);scrub(e)});
+cv.addEventListener('pointermove',e=>{if(drag)scrub(e)});
+cv.addEventListener('pointerup',()=>drag=false);
+addEventListener('keydown',e=>{if(/INPUT|BUTTON|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+ if(e.code==='Space'){e.preventDefault();$('play').click()}
+ else if(e.code==='ArrowRight'){S.play=false;S.sweep=Math.min(1,S.sweep+.03);update()}
+ else if(e.code==='ArrowLeft'){S.play=false;S.sweep=Math.max(0,S.sweep-.03);update()}});
+let last=null;(function tick(t){if(S.play){if(last!==null){S.sweep+=(t-last)/1000*.22;if(S.sweep>=1){S.sweep=1;S.play=false}update()}last=t}else last=null;requestAnimationFrame(tick)})(0);
+new ResizeObserver(size).observe($('cw'));
+buildShapes();update();size();
+addEventListener('load',update);
+</script>
+</body>
+</html>
