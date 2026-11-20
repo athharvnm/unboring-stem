@@ -64,6 +64,14 @@ input[type=range]{width:100%;height:28px;margin:2px 0;accent-color:var(--teal);t
 .face{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;padding:7px 10px;border-radius:8px;border:1px solid #fde68a;margin-top:6px;min-width:0}
 .face span{min-width:0;overflow-wrap:break-word}
 .face b{font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
+.kid-box{margin-top:10px;padding:12px;border-radius:12px;background:#f0fdfa;border:1px solid #99f6e4}
+.kid-title{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:#0f766e;margin-bottom:4px}
+#kid-text{margin:0;color:#134e4a;font-size:13.5px;line-height:1.55}
+#gutsy-btn{margin-top:10px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;background:#fff;border:1.5px dashed #14b8a6;color:#0f766e;font-weight:700;border-radius:10px;transition:background .15s ease,border-color .15s ease}
+#gutsy-btn:hover{background:#ccfbf1;border-style:solid;border-color:#0f766e}
+#gutsy-btn.open{background:#0f766e;border-style:solid;border-color:#0f766e;color:#fff}
+#calculus-panel{margin-top:10px;padding:10px;border-radius:10px;background:#fff;border:1px solid #cbd5e1;min-width:0;max-width:100%}
+#calculus-panel #calc{margin:4px 0 0;color:#475569;font-size:12.5px}
 .hide{display:none!important}
 .katex-display{margin:.55em 0;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 </style>
@@ -87,9 +95,16 @@ input[type=range]{width:100%;height:28px;margin:2px 0;accent-color:var(--teal);t
   </div>
   <div id="cards"></div>
   <div class="fm" id="fm"></div>
-  <div id="int"></div>
   <div id="faces"></div>
-  <p id="calc"></p>
+  <div class="kid-box">
+    <div class="kid-title">How it works in plain words</div>
+    <p id="kid-text"></p>
+    <button type="button" id="gutsy-btn" aria-expanded="false" aria-controls="calculus-panel">Ready for the calculus behind it? Tap to see the formula</button>
+    <div id="calculus-panel" class="hide">
+      <div id="int"></div>
+      <p id="calc"></p>
+    </div>
+  </div>
 </section>
 <aside class="card">
   <div class="row" style="justify-content:space-between"><b>Shape</b><div id="modes" class="row hide"><button type="button" id="mv">Volume</button><button type="button" id="ms">Surface area</button></div></div>
@@ -169,7 +184,7 @@ S3.forEach(s=>{s.SA=s.faces.reduce((a,f)=>a+f[1],0)});
 
 /* ---------- state ---------- */
 const LIST={'1d':S1,'2d':S2,'3d':S3};
-const S={dim:'1d',sel:{'1d':0,'2d':0,'3d':0},sweep:0,n:{'1d':12,'2d':20,'3d':80},turn:0,mode:'vol',play:true};
+const S={dim:'1d',sel:{'1d':0,'2d':0,'3d':0},sweep:0,n:{'1d':80,'2d':80,'3d':80},turn:0,mode:'vol',play:true,showCalc:false};
 const cv=$('cv'),ctx=cv.getContext('2d');
 const acc=(it,k)=>{let s=0,f=Math.floor(k);for(let i=0;i<it.length;i++){if(i<f)s+=it[i];else if(i===f)s+=it[i]*(k-f)}return s};
 
@@ -188,28 +203,28 @@ function compute(){
  if(S.mode==='surf'){const it=sh.faces.map(f=>f[1]);return{sh,n:it.length,it,exact:sh.SA,unit:'cm²',k:S.sweep*it.length,piece:'Faces',surf:true}}
  const dz=sh.H/n,it=[];for(let i=0;i<n;i++)it.push(secA(sh.sec((i+.5)*dz))*dz);
  return{sh,n,it,dz,exact:sh.V,unit:'cm³',k:S.sweep*n,piece:'Slices'}}
+
 function ints(q,x){const ys=[];for(let i=0;i<q.length;i++){const a=q[i],b=q[(i+1)%q.length];if((a.x<=x)!==(b.x<=x))ys.push(a.y+(x-a.x)/(b.x-a.x)*(b.y-a.y))}
  ys.sort((a,b)=>a-b);const r=[];for(let i=0;i+1<ys.length;i+=2)r.push([ys[i],ys[i+1]]);return r}
 
-/* ---------- drawing (stabilized ResizeObserver to avoid mobile resize jitter) ---------- */
-let lastW=0,lastH=0,resizeRaf=0;
+/* ---------- drawing ---------- */
+let lastW=0,lastH=0,resizeRaf=null;
 function size(){
- const cw=$('cw'),w=Math.round(cw.clientWidth),h=Math.round(cw.clientHeight);
- if(w<1||h<1)return;
- if(Math.abs(w-lastW)<1&&Math.abs(h-lastH)<1)return;
- lastW=w;lastH=h;
- const d=Math.min(window.devicePixelRatio||1,2);
- cv.width=Math.floor(w*d);cv.height=Math.floor(h*d);
- ctx.setTransform(d,0,0,d,0,0);
- draw();
-}
-function scheduleSize(){
- if(resizeRaf)return;
- resizeRaf=requestAnimationFrame(()=>{resizeRaf=0;size()});
+ if(resizeRaf)cancelAnimationFrame(resizeRaf);
+ resizeRaf=requestAnimationFrame(()=>{
+  const r=$('cw').getBoundingClientRect();
+  const w=Math.round(r.width),h=Math.round(r.height);
+  if(w<10||h<10||(w===lastW&&h===lastH))return;
+  lastW=w;lastH=h;
+  const d=Math.min(devicePixelRatio||1,2);
+  cv.width=Math.floor(w*d);cv.height=Math.floor(h*d);
+  ctx.setTransform(d,0,0,d,0,0);
+  draw();
+ });
 }
 function draw(){
  const w=cv.clientWidth,h=cv.clientHeight;
- if(w<1||h<1)return;
+ if(!w||!h)return;
  const d=compute();ctx.clearRect(0,0,w,h);
  ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;
  for(let x=28;x<w;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
@@ -223,7 +238,7 @@ function draw1(w,h,d){
  const f=Math.floor(d.k);let tip=d.pts[Math.min(f,d.n)];
  ctx.beginPath();for(let i=0;i<=Math.min(f,d.n);i++){const s=T(d.pts[i]);i?ctx.lineTo(s.x,s.y):ctx.moveTo(s.x,s.y)}
  if(f<d.n){const a=d.pts[f],c=d.pts[f+1],u=d.k-f;tip={x:a.x+(c.x-a.x)*u,y:a.y+(c.y-a.y)*u};const s=T(tip);ctx.lineTo(s.x,s.y)}
- ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--teal');ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+ ctx.strokeStyle='#0f766e';ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
  d.pts.forEach((p,i)=>{const s=T(p);ctx.beginPath();ctx.arc(s.x,s.y,i<=d.k?4:3,0,2*PI);ctx.fillStyle=i<=d.k?'#0f766e':'#94a3b8';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke()});
  const s=T(tip);ctx.beginPath();ctx.arc(s.x,s.y,7,0,2*PI);ctx.fillStyle='#ea580c';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke()}
 function draw2(w,h,d){
@@ -245,25 +260,48 @@ function draw3(w,h,d){
  const ring=(c,y,fill,stroke,lw)=>{ctx.beginPath();slicePts(c).forEach(([x,z],i)=>{const p=pr(x,y,z);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()};
  const g=Math.max(Wm*1.1,1);ctx.beginPath();[[-g,-g],[g,-g],[g,g],[-g,g]].forEach(([x,z],i)=>{const p=pr(x,0,z);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.closePath();ctx.fillStyle='rgba(226,232,240,.5)';ctx.fill();ctx.strokeStyle='#cbd5e1';ctx.stroke();
  if(!d.surf){const f=Math.floor(d.k);
-  const lwBot=d.n>50?.35:d.n>30?.55:1,lwTop=d.n>50?.45:d.n>30?.7:1.2;
-  const strokeBot=d.n>30?'rgba(15,118,110,.28)':'rgba(15,118,110,.5)',strokeTop=d.n>30?'rgba(15,118,110,.65)':'#0f766e';
-  for(let i=0;i<d.n&&i<=f;i++){const fr=i<f?1:d.k-f;if(fr<=1e-4)continue;const c=sh.sec((i+.5)*d.dz),y0=i*d.dz;
-   ring(c,y0,'rgba(13,148,136,.16)',strokeBot,lwBot);ring(c,y0+d.dz*fr,i<f?'rgba(13,148,136,.34)':'rgba(20,184,166,.3)',strokeTop,lwTop)}
+  const stride=Math.max(1,Math.ceil(d.n/40));
+  const thin=d.n>30;
+  for(let i=0;i<d.n&&i<=f;i++){const fr=i<f?1:d.k-f;if(fr<=1e-4)continue;
+   const uMid=(i+.5)/d.n,c=sh.sec(uMid*H),y0=i*d.dz,y1=y0+d.dz*fr;
+   const light=0.58+0.42*Math.sin(uMid*PI);
+   const rC=Math.round(13+25*(1-light)),gC=Math.round(148+45*light),bC=Math.round(136+35*light);
+   const showRim=(i%stride===0)||(i===f)||fr<1;
+   ring(c,y0,`rgba(${rC},${gC},${bC},${thin?.22:.26})`,showRim?'rgba(15,23,42,.38)':'rgba(15,118,110,.22)',showRim?.85:.45);
+   ring(c,y1,`rgba(${rC},${gC},${bC},${i<f?.42:.34})`,showRim?'#0f172a':'rgba(15,118,110,.45)',showRim?1.15:.6)}
+  const topU=Math.min(1,d.k/d.n);
+  if(topU>0.01){
+   const topC=sh.sec(topU*H),topY=topU*H;
+   const pts=slicePts(topC).map(([x,z])=>pr(x,topY,z));
+   const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+   const grad=ctx.createRadialGradient(
+    (Math.min(...xs)+Math.max(...xs))*.5-.18*Math.max(10,Math.max(...xs)-Math.min(...xs)),
+    (Math.min(...ys)+Math.max(...ys))*.5-.18*Math.max(10,Math.max(...ys)-Math.min(...ys)),
+    2,
+    (Math.min(...xs)+Math.max(...xs))*.5,
+    (Math.min(...ys)+Math.max(...ys))*.5,
+    Math.max(14,Math.hypot(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys))*.65)
+   );
+   grad.addColorStop(0,'rgba(240,253,250,.72)');
+   grad.addColorStop(.55,'rgba(20,184,166,.36)');
+   grad.addColorStop(1,'rgba(15,118,110,.52)');
+   ctx.beginPath();pts.forEach((p,idx)=>idx?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();
+   ctx.fillStyle=grad;ctx.fill();ctx.strokeStyle='#ea580c';ctx.lineWidth=1.8;ctx.stroke()}
  }else{
   for(let i=0;i<=24;i++){const z=i/24*H,on=z<=S.sweep*H+1e-6;ring(sh.sec(z),z,on?'rgba(245,158,11,.14)':null,on?'#d97706':'rgba(148,163,184,.55)',on?1.6:1)}}}
 
 /* ---------- UI ---------- */
-const ICON_PLAY='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>';
+const ICON_PLAY='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
 const ICON_PAUSE='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
 function card(l,v){return`<div class="m"><span>${l}</span><b>${v}</b></div>`}
 function update(){
  const d=compute(),sh=d.sh,dim=S.dim,n=S.n[dim],full=d.it.reduce((a,b)=>a+b,0),so=acc(d.it,d.k),err=d.surf?0:(full-d.exact)/d.exact*100;
  $('title').textContent=sh.name;setR('note',sh.note);
  $('sw').value=Math.round(S.sweep*1000);$('swv').textContent=Math.round(S.sweep*100)+'%';
- $('nn').value=n;$('nv').textContent=d.surf?'N/A':n;$('nn').disabled=!!d.surf;
+ $('nn').value=n;$('nv').textContent=d.surf?'—':n;$('nn').disabled=!!d.surf;
  $('tv').textContent=S.turn+'°';
- $('play').innerHTML=S.play?(ICON_PAUSE+'<span>Pause</span>'):(ICON_PLAY+'<span>Play</span>');
- $('play').classList.toggle('paused',!S.play);
+ $('play').innerHTML=S.play?`${ICON_PAUSE}<span>Pause</span>`:`${ICON_PLAY}<span>Play</span>`;
+ $('play').classList.toggle('paused',S.play);
  $('turnbox').classList.toggle('hide',dim==='1d');$('modes').classList.toggle('hide',dim!=='3d');
  $('mv').className=S.mode==='vol'?'on':'';$('ms').className=S.mode==='surf'?'on':'';
  document.querySelectorAll('#tabs button').forEach(b=>b.className=b.dataset.d===dim?'on':'');
@@ -283,6 +321,14 @@ function update(){
    `A(z)=${AZ[S.sel['3d']]}\\;\\Rightarrow\\;V=\\int_0^{${sh.H}}A(z)\\,dz\\;\\approx\\;\\sum_{i=1}^{${n}}A(z_i)\\,\\Delta z=${f2(full)}${un['cm³']}`}
  setK('fm',fk,false);setK('int',ik,true);
  $('faces').innerHTML=d.surf?sh.faces.map((f,i)=>`<div class="face" style="background:${i<d.k?'#fef3c7':'#fff'}"><span>${f[0]}</span><b>${f2(f[1])} cm²</b></div>`).join(''):'';
+ $('kid-text').textContent=dim==='1d'?`Imagine walking along the path in ${n} tiny straight steps and adding every step together. The more steps you take, the closer your total gets to the exact curve length (${f2(d.exact)} cm)!`:
+  dim==='2d'?`Think of coloring the shape with ${n} thin vertical paper strips and adding up all their areas. Skinny strips hug the edges better, getting super close to ${f2(d.exact)} cm²!`:
+  d.surf?`Think of wrapping the 3D solid like a gift box and adding the area of all ${d.n} outer faces together to get ${f2(d.exact)} cm²!`:
+  `Imagine stacking ${n} thin pancake slices from bottom to top and adding up their volumes. Thinner slices match the shape smoothly, closing in on ${f2(d.exact)} cm³!`;
+ $('calculus-panel').classList.toggle('hide',!S.showCalc);
+ $('gutsy-btn').classList.toggle('open',S.showCalc);
+ $('gutsy-btn').setAttribute('aria-expanded',String(S.showCalc));
+ $('gutsy-btn').textContent=S.showCalc?'Hide the calculus formula':'Ready for the calculus behind it? Tap to see the formula';
  setR('calc',dim==='1d'?'Steps are equal in arc length. The sum $\\sum\\lVert\\Delta P_i\\rVert$ is a polyline inside the curve, so it undershoots and converges to $\\int ds$ as $n\\to\\infty$.':
   dim==='2d'?'Midpoint rule on the shape as turned: $\\sum \\ell(x_i)\\Delta x\\to\\int\\ell(x)\\,dx$. Turning the shape leaves the exact area unchanged.':
   d.surf?'Surface area is the sum of every outer face, so the total is exact rather than a limit.':
@@ -296,21 +342,21 @@ $('sw').oninput=e=>{S.play=false;S.sweep=e.target.value/1000;update()};
 $('nn').oninput=e=>{S.n[S.dim]=+e.target.value;update()};
 $('tn').oninput=e=>{S.turn=+e.target.value;update()};
 $('mv').onclick=()=>{S.mode='vol';S.sweep=0;S.play=true;update()};$('ms').onclick=()=>{S.mode='surf';S.sweep=0;S.play=true;update()};
+$('gutsy-btn').onclick=()=>{S.showCalc=!S.showCalc;update()};
 $('play').onclick=()=>{if(!S.play&&S.sweep>=.999)S.sweep=0;S.play=!S.play;update()};
 $('reset').onclick=()=>{S.play=false;S.sweep=0;S.turn=0;$('tn').value=0;update()};
 let drag=false;const scrub=e=>{const r=cv.getBoundingClientRect();S.sweep=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));update()};
 cv.addEventListener('pointerdown',e=>{S.play=false;drag=true;cv.setPointerCapture(e.pointerId);scrub(e)});
 cv.addEventListener('pointermove',e=>{if(drag)scrub(e)});
 cv.addEventListener('pointerup',()=>drag=false);
-cv.addEventListener('pointercancel',()=>drag=false);
 addEventListener('keydown',e=>{if(/INPUT|BUTTON|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
  if(e.code==='Space'){e.preventDefault();$('play').click()}
  else if(e.code==='ArrowRight'){S.play=false;S.sweep=Math.min(1,S.sweep+.03);update()}
  else if(e.code==='ArrowLeft'){S.play=false;S.sweep=Math.max(0,S.sweep-.03);update()}});
 let last=null;(function tick(t){if(S.play){if(last!==null){S.sweep+=(t-last)/1000*.22;if(S.sweep>=1){S.sweep=1;S.play=false}update()}last=t}else last=null;requestAnimationFrame(tick)})(0);
-new ResizeObserver(scheduleSize).observe($('cw'));
+new ResizeObserver(size).observe($('cw'));
 buildShapes();update();size();
-addEventListener('load',()=>{update();size()});
+addEventListener('load',update);
 </script>
 </body>
 </html>
