@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unboring STEM — Interactive Math &amp; Science Explorations</title>
+  <meta name="description" content="Interactive STEM modules covering Optics, Mensuration, Trigonometry, and Projectiles. Visual, hands-on learning—with more modules on the way." />
+
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Unboring STEM" />
+  <meta property="og:url" content="https://unboringstem.pages.dev/" />
+  <meta property="og:title" content="Unboring STEM — Interactive Math &amp; Science Explorations" />
+  <meta property="og:description" content="Explore Optics, Mensuration, Trigonometry, and Projectiles through hands-on, visual simulations. More modules on the way." />
+  <meta property="og:image" content="https://unboringstem.pages.dev/social.png" />
+  <meta property="og:image:alt" content="Unboring STEM — Interactive STEM Modules Preview" />
+
+  <!-- Twitter / X Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@nikhilnarayanan" />
+  <meta name="twitter:url" content="https://unboringstem.pages.dev/" />
+  <meta name="twitter:title" content="Unboring STEM — Interactive Math &amp; Science Explorations" />
+  <meta name="twitter:description" content="Explore Optics, Mensuration, Trigonometry, and Projectiles through hands-on, visual simulations. More modules on the way." />
+  <meta name="twitter:image" content="https://unboringstem.pages.dev/social.png" />
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased selection:bg-indigo-600 selection:text-white relative">
+
+  <!-- Subtle Geometric Graph-Paper Background Pattern -->
+  <div
+    class="fixed inset-0 -z-10 pointer-events-none opacity-60"
+    style="
+      background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+      background-size: 24px 24px;
+    "
+    aria-hidden="true"
+  ></div>
+
+  <!-- Top Header / Brand Bar -->
+  <header class="w-full max-w-5xl mx-auto px-6 pt-12 pb-8 sm:pt-16 sm:pb-12">
+    <div class="flex flex-col items-start gap-4">
+      <!-- Status Badge -->
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+        4 Modules Live &middot; More on the way
+      </span>
+
+      <!-- Main Title -->
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950">
+        Unboring <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">STEM</span>
+      </h1>
+
+      <!-- Subtitle / Tagline -->
+      <p class="max-w-2xl text-base sm:text-lg text-slate-600 leading-relaxed">
+        Hands-on, visual explorations of math and physics concepts—built to make intuition click. Pick a module below to start experimenting.
+      </p>
+    </div>
+  </header>
+
+  <!-- Main Content: Scalable Module Grid -->
+  <main class="flex-1 w-full max-w-5xl mx-auto px-6 pb-16">
+    <!--
+      ========================================================================
+      MODULE CARDS GRID
+      To add a new module in the future:
+      1. Copy one of the <a href="..."> card blocks below.
+      2. Update the href URL, badge label, title, description, and SVG icon.
+      3. Place it right before the "More modules coming soon" card.
+      ========================================================================
+    -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Module 1: Optics -->
+      <a
+        href="https://unboringstem.pages.dev/optics"
+        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-amber-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between gap-4 mb-5">
+            <!-- Icon -->
+            <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200/70 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+              </svg>
+            </div>
+            <!-- Subject Tag -->
+            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
+              Physics &middot; 01
+            </span>
+          </div>
+
+          <h2 class="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors mb-2">
+            Optics
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Bend rays of light, experiment with reflection and refraction, and see how lenses and mirrors shape images in real time.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-amber-600">
+          <span>Launch module</span>
+          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </div>
+      </a>
+
+      <!-- Module 2: Mensuration -->
+      <a
+        href="https://unboringstem.pages.dev/mensuration"
+        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between gap-4 mb-5">
+            <!-- Icon -->
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200/70 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+              </svg>
+            </div>
+            <!-- Subject Tag -->
+            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
+              Geometry &middot; 02
+            </span>
+          </div>
+
+          <h2 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors mb-2">
+            Mensuration
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Unfold 3D solids, stretch dimensions, and build intuition for surface area, perimeter, and volume without memorizing formulas.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-emerald-600">
+          <span>Launch module</span>
+          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </div>
+      </a>
+
+      <!-- Module 3: Trigonometry -->
+      <a
+        href="https://unboringstem.pages.dev/trigonometry"
+        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-indigo-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between gap-4 mb-5">
+            <!-- Icon -->
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200/70 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12c2.25-6 4.5-6 6.75 0s4.5 6 6.75 0 4.5-6 4.5 0" />
+              </svg>
+            </div>
+            <!-- Subject Tag -->
+            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
+              Mathematics &middot; 03
+            </span>
+          </div>
+
+          <h2 class="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors mb-2">
+            Trigonometry
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Connect triangles to the unit circle and watch sine, cosine, and tangent waves come alive as angles rotate smoothly.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-indigo-600">
+          <span>Launch module</span>
+          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </div>
+      </a>
+
+      <!-- Module 4: Projectiles -->
+      <a
+        href="https://unboringstem.pages.dev/projectiles"
+        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-rose-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between gap-4 mb-5">
+            <!-- Icon -->
+            <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200/70 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 18c2.5-10 11.5-10 16-2m0 0-3.5-.5M20 16l-.5-3.5" />
+              </svg>
+            </div>
+            <!-- Subject Tag -->
+            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
+              Mechanics &middot; 04
+            </span>
+          </div>
+
+          <h2 class="text-xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors mb-2">
+            Projectiles
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Tweak launch angles, initial velocity, and gravity to trace parabolic arcs, peak heights, and horizontal range.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-rose-600">
+          <span>Launch module</span>
+          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </div>
+      </a>
+
+      <!-- Coming Soon / Future Modules Indicator -->
+      <div class="md:col-span-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl border border-dashed border-slate-300 bg-white/60 text-slate-600">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">More interactive modules in progress</p>
+            <p class="text-xs sm:text-sm text-slate-500">New simulations across physics, calculus, and geometry are added regularly.</p>
+          </div>
+        </div>
+        <span class="text-xs font-mono text-slate-500 bg-slate-100 px-3 py-1 rounded-full shrink-0">
+          Work in progress
+        </span>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-slate-200/80 bg-white/80 backdrop-blur-xs">
+    <div class="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-600">
+      <p class="font-medium text-slate-800">Unboring STEM</p>
+      <p>
+        Built by
+        <a
+          href="https://x.com/nikhilnarayanan"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-semibold text-indigo-600 hover:text-indigo-700 underline decoration-indigo-300 underline-offset-4 hover:decoration-indigo-600 transition-colors"
+        >
+          Nikhil Narayanan
+        </a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
