@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#f1f5f9" />
+  <script>
+    /* Light is the default; restore the visitor's saved choice before first paint */
+    try {
+      if (localStorage.getItem('bdl-theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#060913');
+      }
+    } catch (e) {}
+  </script>
+
+  <!-- Primary SEO -->
+  <title>Ballistics & Drag Lab: Projectile Motion vs Air Resistance</title>
+  <meta name="description" content="Interactive projectile simulator. Compare ideal vacuum flight with real air drag: tune speed, angle, mass and shape on Earth, Moon, Mars or Jupiter." />
+  <meta name="author" content="Nikhil" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <!-- TODO: replace https://YOUR-DOMAIN.com/ with the real address of this page (keep social.jpg beside it) -->
+  <link rel="canonical" href="https://unboringstem.pages.dev/projectiles" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AF%3C/text%3E%3C/svg%3E" />
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp, Telegram, Slack, Discord) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Fun with Projectiles" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://unboringstem.pages.dev/projeciles" />
+  <meta property="og:title" content="See what air really does to a cannonball | Ballistics & Drag Lab" />
+  <meta property="og:description" content="Fire a cannon and watch air drag shorten the range, flatten the apex and steepen the fall, compared live against a perfect vacuum. Try Earth, Moon, Mars and Jupiter." />
+  <meta property="og:image" content="https://unboringstem.pages.dev/projeciles/social.jpg" />
+  <meta property="og:image:secure_url" content="https://unborinstem.pages.dev/projeciles/social.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Two projectile arcs from a cannon: a tall dashed vacuum path and a shorter, steeper orange path with air drag." />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ballistics & Drag Lab: Vacuum vs Real-Air Projectile Motion" />
+  <meta name="twitter:description" content="Fire a cannon and compare a perfect vacuum with real quadratic drag. Tune speed, angle, mass and shape on Earth, Moon, Mars or Jupiter and watch range and apex change live." />
+  <meta name="twitter:image" content="https://unboringstem.pages.dev/projeciles/social.jpg" />
+  <meta name="twitter:image:alt" content="Two projectile arcs from a cannon: a tall dashed vacuum path and a shorter, steeper orange path with air drag." />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "The Ballistics & Drag Lab",
+    "description": "Interactive projectile motion simulator comparing ideal vacuum flight with quadratic air drag, using an RK4 solver on Earth, Moon, Mars and Jupiter.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "en",
+    "url": "https://unboringstem.pages.dev/projectiles/",
+    "image": "https://unboringstem.pages.dev/projectiles/social.jpg",
+    "isAccessibleForFree": true
+  }
+  </script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: {
+              925: '#0a0f1c',
+              950: '#060913',
+            }
+          }
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Custom range slider styling for crisp lab-instrument precision */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--slider-track-bg, #1e293b);
+      border: 1px solid var(--slider-track-border, #334155);
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #6366f1;
+      border: 2px solid #e0e7ff;
+      margin-top: -6px;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+      transition: transform 0.12s ease, background-color 0.12s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      background: #818cf8;
+    }
+    input[type="range"]:focus {
+      outline: none;
+    }
+    /* Custom subtle scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--scrollbar-track, #0f172a);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb, #334155);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    canvas {
+      touch-action: pan-y; /* one finger scrolls the page; pinch is handled in JS */
+    }
+    /* Theme-aware slider/scrollbar colours (previously only dark values existed) */
+    :root { --slider-track-bg: #e2e8f0; --slider-track-border: #cbd5e1; --scrollbar-track: #f1f5f9; --scrollbar-thumb: #cbd5e1; }
+    html.dark { --slider-track-bg: #1e293b; --slider-track-border: #334155; --scrollbar-track: #0f172a; --scrollbar-thumb: #334155; }
+    /* Firefox sliders (the -webkit rules above don't apply there) */
+    input[type="range"]::-moz-range-track {
+      height: 6px; border-radius: 999px;
+      background: var(--slider-track-bg, #1e293b); border: 1px solid var(--slider-track-border, #334155);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 12px; height: 12px; border-radius: 50%; background: #6366f1; border: 2px solid #e0e7ff;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body {
+      min-height: 100vh; min-height: 100dvh;
+      padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    /* Desktop: lock the app to the viewport (dvh avoids mobile address-bar jumps) */
+    @media (min-width: 1024px) { body { height: 100vh; height: 100dvh; } }
+    /* Touch devices: bigger sliders and buttons */
+    @media (pointer: coarse) {
+      input[type="range"]::-webkit-slider-thumb { width: 26px; height: 26px; margin-top: -11px; }
+      input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; }
+      input[type="range"]::-webkit-slider-runnable-track { height: 8px; }
+      input[type="range"] { min-height: 32px; }
+      .step-btn { width: 2.25rem !important; height: 2.25rem !important; font-size: 1rem !important; }
+    }
+    /* Very small phones: the vector legend would crowd the canvas */
+    @media (max-width: 479px) { #vector-legend { display: none !important; } }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white min-h-screen flex flex-col lg:overflow-hidden transition-colors duration-200">
+
+  <!-- Top Header Bar -->
+  <header class="bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0 z-20 backdrop-blur-md">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-amber-500 p-[1px] shadow-lg shadow-indigo-500/20">
+        <div class="w-full h-full bg-slate-50 dark:bg-slate-950 rounded-[11px] flex items-center justify-center">
+          <svg class="w-5 h-5 text-amber-500 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M3 20 Q 11 2 21 20" stroke-dasharray="2 2" class="text-sky-500 dark:text-sky-400" stroke="currentColor"/>
+            <path d="M3 20 Q 9 6 16 20" class="text-orange-500" stroke="currentColor"/>
+            <circle cx="16" cy="20" r="2" fill="#f97316"/>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">The Ballistics &amp; Drag Lab</h1>
+          <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30">RK4 Solver • dt = 5ms</span>
+        </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">2D Kinematics: Quadratic Aerodynamic Drag (Fd = -½ ρ Cd A v v⃗) vs. Ideal Vacuum</p>
+      </div>
+    </div>
+
+    <!-- Primary Simulation Action Toolbar -->
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Theme Toggle Button -->
+      <button id="btn-theme" title="Toggle Light/Dark Mode" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition active:scale-95 cursor-pointer">
+        <!-- Sun icon (shown in dark mode) -->
+        <svg id="icon-sun" class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg id="icon-moon" class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+
+      <button id="btn-fire" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-semibold text-xs sm:text-sm shadow-lg shadow-orange-500/25 transition active:scale-95 cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span>Fire Cannon</span>
+      </button>
+
+      <button id="btn-pause" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-medium text-xs sm:text-sm transition active:scale-95 cursor-pointer disabled:opacity-40" disabled>
+        <svg id="icon-pause" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        <span id="label-pause">Pause</span>
+      </button>
+
+      <button id="btn-step" title="Advance simulation by 1 frame (16.7ms)" class="inline-flex items-center gap-1 px-2.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-medium text-xs sm:text-sm transition active:scale-95 cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        <span class="hidden md:inline">Step</span>
+      </button>
+
+      <button id="btn-clear" class="inline-flex items-center gap-1 px-2.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:border-rose-300 dark:hover:border-rose-800/70 hover:text-rose-700 dark:hover:text-rose-200 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs sm:text-sm transition active:scale-95 cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2m-9 4v10m4-10v10m4-10v10M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+        <span class="hidden min-[420px]:inline">Clear</span>
+      </button>
+
+      <label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer select-none hover:bg-slate-200 dark:hover:bg-slate-800">
+        <input id="toggle-compare" type="checkbox" checked class="w-3.5 h-3.5 rounded accent-indigo-500 cursor-pointer" />
+        <span>Compare Shots</span>
+      </label>
+    </div>
+  </header>
+
+  <!-- Small-screen notice (hidden from tablet width up; dismissible) -->
+  <div id="mobile-notice" role="status" class="md:hidden shrink-0 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-100 px-3 py-2 text-xs leading-relaxed">
+    <div class="flex items-start gap-2">
+      <span aria-hidden="true">📱</span>
+      <p class="flex-1">We'd love for you to try this on your phone, but the lab packs more controls and readouts than a small screen can comfortably hold. For the best experience, use a tablet or computer, or turn your phone sideways.</p>
+      <button id="btn-dismiss-notice" type="button" aria-label="Dismiss notice" class="shrink-0 -mt-1 -mr-1 w-8 h-8 rounded-lg text-base text-amber-800 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-500/20 cursor-pointer">✕</button>
+    </div>
+  </div>
+
+  <!-- Main Workspace Split Layout -->
+  <main class="flex-1 flex flex-col lg:flex-row lg:overflow-hidden">
+
+    <!-- Left/Center Section: Interactive Canvas Viewport + Real-Time Telemetry HUD -->
+    <section class="flex-1 flex flex-col min-w-0 bg-slate-100 dark:bg-slate-950 relative">
+      
+      <!-- Canvas Wrapper -->
+      <div id="canvas-container" class="relative w-full h-[56vh] min-h-[300px] max-h-[640px] lg:h-auto lg:min-h-0 lg:max-h-none lg:flex-1 overflow-hidden select-none">
+        <canvas id="sim-canvas" role="img" aria-label="Projectile trajectories: ideal vacuum compared with air drag" class="absolute inset-0 block w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+
+        <!-- Top-Left Canvas Legend & Environment Badge -->
+        <div class="absolute top-3 left-3 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-17rem)] lg:max-w-[calc(100%-17rem)]">
+          <div class="bg-white/90 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-xl flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-0.5 border-t-2 border-dashed border-sky-500 dark:border-sky-400 inline-block"></span>
+              <span class="text-sky-600 dark:text-sky-300 font-medium">Ideal Vacuum</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-1 rounded-full bg-orange-500 inline-block shadow-[0_0_8px_#f97316]"></span>
+              <span class="text-orange-600 dark:text-orange-300 font-medium">Quadratic Drag</span>
+            </div>
+            <div class="h-3.5 w-[1px] bg-slate-300 dark:bg-slate-700 hidden sm:block"></div>
+            <div class="font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <span id="hud-env-name" class="text-indigo-600 dark:text-indigo-400 font-semibold">Earth</span>:
+              g=<span id="hud-g">9.81</span> m/s²,
+              &rho;=<span id="hud-rho">1.225</span> kg/m³
+            </div>
+          </div>
+
+          <!-- Vector Legend (shown when vectors enabled) -->
+          <div id="vector-legend" class="bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800/90 rounded-lg px-2.5 py-1.5 shadow-lg flex items-center gap-3 text-[11px] w-fit">
+            <span class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-mono">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>v⃗ Velocity
+            </span>
+            <span class="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-mono">
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span>F⃗<sub>d</sub> Drag
+            </span>
+            <span class="flex items-center gap-1 text-purple-600 dark:text-purple-400 font-mono">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span>F⃗<sub>g</sub> Gravity
+            </span>
+          </div>
+        </div>
+
+        <!-- Top-Right Viewport Controls (Vectors Toggle, Speed, Camera Reset) -->
+        <div class="absolute top-3 right-3 flex flex-col sm:flex-row items-end sm:items-center gap-2">
+          <label class="bg-white/90 dark:bg-slate-900/85 hover:bg-slate-50 dark:hover:bg-slate-800/90 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1.5 cursor-pointer shadow-lg select-none">
+            <input id="toggle-vectors" type="checkbox" checked class="w-3.5 h-3.5 rounded accent-emerald-500 cursor-pointer" />
+            <span>Force Vectors</span>
+          </label>
+
+          <button id="btn-autofit" class="bg-indigo-600/90 hover:bg-indigo-500 backdrop-blur-md border border-indigo-400/40 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white flex items-center gap-1.5 shadow-lg transition cursor-pointer" title="Toggle Auto-Fit Camera / Reset Zoom">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+            </svg>
+            <span id="label-autofit">Auto-Fit: ON</span>
+          </button>
+        </div>
+
+        <!-- Bottom-Right Zoom & Scale Indicator -->
+        <div class="absolute bottom-3 right-3 flex items-center gap-1.5 bg-white/90 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-[11px] font-mono text-slate-600 dark:text-slate-400">
+          <button id="btn-zoom-out" class="hover:text-slate-900 dark:hover:text-white px-2.5 py-1 min-w-[28px] rounded bg-slate-100 dark:bg-slate-800/80 cursor-pointer" title="Zoom Out">−</button>
+          <span id="hud-zoom">100%</span>
+          <button id="btn-zoom-in" class="hover:text-slate-900 dark:hover:text-white px-2.5 py-1 min-w-[28px] rounded bg-slate-100 dark:bg-slate-800/80 cursor-pointer" title="Zoom In">+</button>
+          <span class="text-slate-400 dark:text-slate-600 mx-0.5">|</span>
+          <span class="hidden sm:inline">Scroll or pinch to zoom · drag to pan</span>
+        </div>
+
+        <!-- Live Flight Clock Pill (Bottom-Left of Canvas) -->
+        <div class="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-1 text-xs font-mono text-slate-700 dark:text-slate-300 flex items-center gap-3">
+          <span>t = <strong id="hud-time" class="text-slate-900 dark:text-white">0.00</strong> s</span>
+          <span id="hud-status-badge" class="px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Ready</span>
+        </div>
+      </div>
+
+      <!-- Real-Time Comparative Telemetry Dashboard (Bottom Bar under Canvas) -->
+      <div class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 sm:px-5 py-3 shrink-0">
+        <div class="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-3">
+          
+          <!-- Metric 1: Apex Height -->
+          <div class="bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/90 rounded-xl p-2.5 sm:p-3">
+            <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">
+              <span>Apex Height (y<sub>max</sub>)</span>
+              <span id="tel-apex-diff" class="font-mono text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.2 rounded">0.0%</span>
+            </div>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono text-xs sm:text-sm">
+              <div>
+                <span class="text-[10px] text-orange-600 dark:text-orange-400 block">DRAG</span>
+                <span id="tel-apex-drag" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">0.00</span> <span class="text-slate-500 text-xs">m</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-sky-600 dark:text-sky-400 block">VACUUM</span>
+                <span id="tel-apex-vac" class="text-sm sm:text-base font-semibold text-sky-700 dark:text-sky-300">0.00</span> <span class="text-slate-500 text-xs">m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric 2: Total Range -->
+          <div class="bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/90 rounded-xl p-2.5 sm:p-3">
+            <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">
+              <span>Range (x<sub>max</sub>)</span>
+              <span id="tel-range-diff" class="font-mono text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.2 rounded">0.0%</span>
+            </div>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono text-xs sm:text-sm">
+              <div>
+                <span class="text-[10px] text-orange-600 dark:text-orange-400 block">DRAG</span>
+                <span id="tel-range-drag" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">0.00</span> <span class="text-slate-500 text-xs">m</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-sky-600 dark:text-sky-400 block">VACUUM</span>
+                <span id="tel-range-vac" class="text-sm sm:text-base font-semibold text-sky-700 dark:text-sky-300">0.00</span> <span class="text-slate-500 text-xs">m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric 3: Time of Flight -->
+          <div class="bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/90 rounded-xl p-2.5 sm:p-3">
+            <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">
+              <span>Time of Flight</span>
+              <span id="tel-time-diff" class="font-mono text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded">0.0%</span>
+            </div>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono text-xs sm:text-sm">
+              <div>
+                <span class="text-[10px] text-orange-600 dark:text-orange-400 block">DRAG</span>
+                <span id="tel-time-drag" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">0.00</span> <span class="text-slate-500 text-xs">s</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-sky-600 dark:text-sky-400 block">VACUUM</span>
+                <span id="tel-time-vac" class="text-sm sm:text-base font-semibold text-sky-700 dark:text-sky-300">0.00</span> <span class="text-slate-500 text-xs">s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric 4: Speed & Terminal Velocity -->
+          <div class="bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/90 rounded-xl p-2.5 sm:p-3">
+            <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">
+              <span id="tel-vel-label">Live / Impact Speed</span>
+              <span class="font-mono text-indigo-600 dark:text-indigo-300" title="Theoretical Terminal Velocity v_t = sqrt(2mg / (rho * Cd * A))">v<sub>t</sub>: <span id="tel-vt">46.6</span> m/s</span>
+            </div>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono text-xs sm:text-sm">
+              <div>
+                <span class="text-[10px] text-orange-600 dark:text-orange-400 block">DRAG</span>
+                <span id="tel-vel-drag" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">50.0</span> <span class="text-slate-500 text-xs">m/s</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-sky-600 dark:text-sky-400 block">VACUUM</span>
+                <span id="tel-vel-vac" class="text-sm sm:text-base font-semibold text-sky-700 dark:text-sky-300">50.0</span> <span class="text-slate-500 text-xs">m/s</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Sidebar: Physics Controls & Environmental Presets -->
+    <aside class="w-full lg:w-[370px] xl:w-[400px] 2xl:w-[440px] bg-white dark:bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-800 flex flex-col lg:h-full lg:overflow-y-auto shrink-0">
+      <div class="p-4 sm:p-5 pb-6 space-y-5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start lg:block lg:space-y-5">
+
+        <!-- Section 1: Environment Presets -->
+        <div>
+          <div class="flex items-center justify-between mb-2.5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">1. Planetary Environment</h2>
+            <span class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400">g &amp; &rho; presets</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2" id="env-presets">
+            <button data-env="earth" class="env-btn active flex items-center justify-between px-3 py-2 rounded-xl border text-left transition cursor-pointer bg-indigo-50 dark:bg-indigo-600/20 border-indigo-500 text-slate-900 dark:text-white shadow-sm">
+              <div>
+                <div class="text-xs font-semibold">🌍 Earth</div>
+                <div class="text-[10px] font-mono text-slate-600 dark:text-slate-300">9.81 m/s² • 1.225</div>
+              </div>
+            </button>
+            <button data-env="moon" class="env-btn flex items-center justify-between px-3 py-2 rounded-xl border text-left transition cursor-pointer bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700">
+              <div>
+                <div class="text-xs font-semibold">🌕 Moon</div>
+                <div class="text-[10px] font-mono text-slate-500 dark:text-slate-400">1.62 m/s² • 0.000</div>
+              </div>
+            </button>
+            <button data-env="mars" class="env-btn flex items-center justify-between px-3 py-2 rounded-xl border text-left transition cursor-pointer bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700">
+              <div>
+                <div class="text-xs font-semibold">🔴 Mars</div>
+                <div class="text-[10px] font-mono text-slate-500 dark:text-slate-400">3.72 m/s² • 0.020</div>
+              </div>
+            </button>
+            <button data-env="jupiter" class="env-btn flex items-center justify-between px-3 py-2 rounded-xl border text-left transition cursor-pointer bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700">
+              <div>
+                <div class="text-xs font-semibold">🟠 Jupiter (1 bar)</div>
+                <div class="text-[10px] font-mono text-slate-500 dark:text-slate-400">24.79 m/s² • 0.160</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Launch Kinematics -->
+        <div class="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-3.5 space-y-4">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">2. Launch Kinematics</h2>
+
+          <!-- Initial Velocity v0 -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="slider-v0" class="text-xs font-medium text-slate-800 dark:text-slate-200">Initial Velocity (<span class="font-mono text-indigo-600 dark:text-indigo-300">v<sub>0</sub></span>)</label>
+              <div class="flex items-center gap-1">
+                <button data-target="slider-v0" data-step="-1" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">−</button>
+                <span id="val-v0" class="font-mono text-xs font-semibold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded min-w-[68px] text-center">50.0 m/s</span>
+                <button data-target="slider-v0" data-step="1" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">+</button>
+              </div>
+            </div>
+            <input id="slider-v0" type="range" min="10" max="100" step="0.5" value="50" class="w-full" />
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              The muzzle speed of the projectile at launch. Higher speeds quadratically amplify air resistance force (<span class="font-mono text-orange-600 dark:text-orange-400">F<sub>d</sub> &prop; v²</span>).
+            </p>
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-0.5">
+              <span>10 m/s</span>
+              <span>55 m/s</span>
+              <span>100 m/s</span>
+            </div>
+          </div>
+
+          <!-- Launch Angle theta -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="slider-angle" class="text-xs font-medium text-slate-800 dark:text-slate-200">Launch Angle (<span class="font-mono text-indigo-600 dark:text-indigo-300">&theta;</span>)</label>
+              <div class="flex items-center gap-1">
+                <button data-target="slider-angle" data-step="-1" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">−</button>
+                <span id="val-angle" class="font-mono text-xs font-semibold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded min-w-[68px] text-center">45.0°</span>
+                <button data-target="slider-angle" data-step="1" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">+</button>
+              </div>
+            </div>
+            <input id="slider-angle" type="range" min="0" max="90" step="0.5" value="45" class="w-full" />
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              Angle relative to the horizontal ground. In a vacuum, 45° yields maximum range; with drag, the optimal angle shifts lower.
+            </p>
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-0.5">
+              <span>0° (Flat)</span>
+              <span>45° (Max Vacuum)</span>
+              <span>90° (Vertical)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Projectile Properties & Aerodynamics -->
+        <div class="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-3.5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">3. Projectile &amp; Drag</h2>
+            <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">A = <span id="val-area" class="text-indigo-600 dark:text-indigo-300">0.0314</span> m²</span>
+          </div>
+
+          <!-- Mass m -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="slider-mass" class="text-xs font-medium text-slate-800 dark:text-slate-200">Projectile Mass (<span class="font-mono text-indigo-600 dark:text-indigo-300">m</span>)</label>
+              <div class="flex items-center gap-1">
+                <button data-target="slider-mass" data-step="-0.5" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">−</button>
+                <span id="val-mass" class="font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded min-w-[68px] text-center">2.0 kg</span>
+                <button data-target="slider-mass" data-step="0.5" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">+</button>
+              </div>
+            </div>
+            <input id="slider-mass" type="range" min="0.1" max="50" step="0.1" value="2.0" class="w-full" />
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              Inertia of the projectile (<span class="font-mono text-emerald-600 dark:text-emerald-400">a<sub>drag</sub> = F<sub>d</sub>/m</span>). Heavier objects resist air deceleration much better than light objects.
+            </p>
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-0.5">
+              <span>0.1 kg</span>
+              <span>25 kg</span>
+              <span>50 kg</span>
+            </div>
+          </div>
+
+          <!-- Radius r -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="slider-radius" class="text-xs font-medium text-slate-800 dark:text-slate-200">Radius (<span class="font-mono text-indigo-600 dark:text-indigo-300">r</span>) <span class="text-slate-400 dark:text-slate-500 text-[10px]">[A = &pi;r²]</span></label>
+              <div class="flex items-center gap-1">
+                <button data-target="slider-radius" data-step="-0.01" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">−</button>
+                <span id="val-radius" class="font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded min-w-[68px] text-center">0.10 m</span>
+                <button data-target="slider-radius" data-step="0.01" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">+</button>
+              </div>
+            </div>
+            <input id="slider-radius" type="range" min="0.02" max="0.50" step="0.01" value="0.10" class="w-full" />
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              Determines cross-sectional frontal area (<span class="font-mono text-indigo-600 dark:text-indigo-300">A</span>). Larger radius catches more air molecules, increasing drag forces.
+            </p>
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-0.5">
+              <span>0.02 m</span>
+              <span>0.25 m</span>
+              <span>0.50 m</span>
+            </div>
+          </div>
+
+          <!-- Drag Coefficient Cd -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="slider-cd" class="text-xs font-medium text-slate-800 dark:text-slate-200">Drag Coefficient (<span class="font-mono text-indigo-600 dark:text-indigo-300">C<sub>d</sub></span>)</label>
+              <div class="flex items-center gap-1">
+                <button data-target="slider-cd" data-step="-0.05" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">−</button>
+                <span id="val-cd" class="font-mono text-xs font-semibold text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded min-w-[68px] text-center">0.47</span>
+                <button data-target="slider-cd" data-step="0.05" class="step-btn w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-xs cursor-pointer">+</button>
+              </div>
+            </div>
+            <input id="slider-cd" type="range" min="0" max="1.5" step="0.01" value="0.47" class="w-full" />
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+              Aerodynamic streamlined shape factor. Low values (0.3) mean slippery shapes like bullets; high values (1.05) mean blunt flat surfaces like cubes.
+            </p>
+            <!-- Shape Quick Badges -->
+            <div class="grid grid-cols-4 gap-1.5 mt-2">
+              <button data-cd="0.00" class="cd-badge py-1 px-1.5 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-[10px] font-mono text-slate-700 dark:text-slate-300 cursor-pointer transition">Vacuum<br><span class="text-sky-600 dark:text-sky-400">0.00</span></button>
+              <button data-cd="0.30" class="cd-badge py-1 px-1.5 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-[10px] font-mono text-slate-700 dark:text-slate-300 cursor-pointer transition">Bullet<br><span class="text-indigo-600 dark:text-indigo-400">0.30</span></button>
+              <button data-cd="0.47" class="cd-badge py-1 px-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/20 border border-indigo-300 dark:border-indigo-500/60 text-[10px] font-mono text-slate-900 dark:text-white cursor-pointer transition">Sphere<br><span class="text-orange-600 dark:text-orange-400">0.47</span></button>
+              <button data-cd="1.05" class="cd-badge py-1 px-1.5 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-[10px] font-mono text-slate-700 dark:text-slate-300 cursor-pointer transition">Cube<br><span class="text-rose-600 dark:text-rose-400">1.05</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Physics Equations Reference Card -->
+        <div class="bg-indigo-50/70 dark:bg-indigo-950/25 border border-indigo-200 dark:border-indigo-500/20 rounded-2xl p-3.5 text-xs space-y-2">
+          <div class="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 font-semibold">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            <span>Key Physics Insights</span>
+          </div>
+          <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-[11px]">
+            Unlike vacuum motion where mass cancels out (<span class="font-mono text-sky-600 dark:text-sky-300">a = -g</span>), aerodynamic deceleration scales inversely with mass (<span class="font-mono text-orange-600 dark:text-orange-300">a<sub>d</sub> = F<sub>d</sub>/m</span>). Lighter or wider projectiles lose horizontal momentum rapidly, creating an asymmetric path with a steeper descent!
+          </p>
+          <div class="pt-1 border-t border-indigo-200 dark:border-indigo-500/15 font-mono text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+            <span>F<sub>d</sub> = ½&rho;C<sub>d</sub>Av²</span>
+            <span>v<sub>t</sub> = &radic;(2mg / &rho;C<sub>d</sub>A)</span>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    /**
+     * ============================================================================
+     * THE BALLISTICS & DRAG LAB — MODULAR SIMULATION ENGINE
+     * ============================================================================
+     */
+
+    class PhysicsEngine {
+      static computeDragAccel(vx, vy, params) {
+        const speed = Math.hypot(vx, vy);
+        const k = (0.5 * params.rho * params.cd * params.area) / params.mass;
+        const ax = -k * speed * vx;
+        const ay = -params.g - k * speed * vy;
+        return { ax, ay };
+      }
+
+      static stepRK4(state, dt, params) {
+        const { x, y, vx, vy } = state;
+        const a1 = this.computeDragAccel(vx, vy, params);
+        const k1_x = vx, k1_y = vy;
+        const k1_vx = a1.ax, k1_vy = a1.ay;
+
+        const vx2 = vx + 0.5 * dt * k1_vx;
+        const vy2 = vy + 0.5 * dt * k1_vy;
+        const a2 = this.computeDragAccel(vx2, vy2, params);
+        const k2_x = vx2, k2_y = vy2;
+        const k2_vx = a2.ax, k2_vy = a2.ay;
+
+        const vx3 = vx + 0.5 * dt * k2_vx;
+        const vy3 = vy + 0.5 * dt * k2_vy;
+        const a3 = this.computeDragAccel(vx3, vy3, params);
+        const k3_x = vx3, k3_y = vy3;
+        const k3_vx = a3.ax, k3_vy = a3.ay;
+
+        const vx4 = vx + dt * k3_vx;
+        const vy4 = vy + dt * k3_vy;
+        const a4 = this.computeDragAccel(vx4, vy4, params);
+        const k4_x = vx4, k4_y = vy4;
+        const k4_vx = a4.ax, k4_vy = a4.ay;
+
+        return {
+          x: x + (dt / 6) * (k1_x + 2 * k2_x + 2 * k3_x + k4_x),
+          y: y + (dt / 6) * (k1_y + 2 * k2_y + 2 * k3_y + k4_y),
+          vx: vx + (dt / 6) * (k1_vx + 2 * k2_vx + 2 * k3_vx + k4_vx),
+          vy: vy + (dt / 6) * (k1_vy + 2 * k2_vy + 2 * k3_vy + k4_vy),
+          t: state.t + dt
+        };
+      }
+
+      static evalVacuumAt(t, v0x, v0y, g) {
+        return {
+          x: v0x * t,
+          y: v0y * t - 0.5 * g * t * t,
+          vx: v0x,
+          vy: v0y - g * t,
+          t
+        };
+      }
+
+      static computeAnalyticalSummary(params) {
+        const rad = (params.angleDeg * Math.PI) / 180;
+        const v0x = params.v0 * Math.cos(rad);
+        const v0y = params.v0 * Math.sin(rad);
+
+        const timeOfFlight = params.g > 0 ? (2 * v0y) / params.g : 0;
+        const apexHeight = params.g > 0 ? (v0y * v0y) / (2 * params.g) : 0;
+        const apexX = v0x * (timeOfFlight / 2);
+        const range = v0x * timeOfFlight;
+        const impactSpeed = params.v0;
+
+        const dragDenom = params.rho * params.cd * params.area;
+        const terminalVelocity =
+          dragDenom > 1e-9 ? Math.sqrt((2 * params.mass * params.g) / dragDenom) : Infinity;
+
+        return {
+          v0x,
+          v0y,
+          timeOfFlight,
+          apexHeight,
+          apexX,
+          range,
+          impactSpeed,
+          terminalVelocity
+        };
+      }
+
+      static simulateFullTrajectory(params, useDrag = true) {
+        const rad = (params.angleDeg * Math.PI) / 180;
+        const v0x = params.v0 * Math.cos(rad);
+        const v0y = params.v0 * Math.sin(rad);
+        const dt = 0.005;
+        const points = [{ x: 0, y: 0 }];
+        let state = { x: 0, y: 0, vx: v0x, vy: v0y, t: 0 };
+        let maxY = 0;
+        let apex = { x: 0, y: 0 };
+        let steps = 0;
+
+        if (params.angleDeg <= 0 || params.v0 <= 0) {
+          return { points, maxX: 0, maxY: 0, apex, tof: 0, impactSpeed: params.v0 };
+        }
+
+        while (steps < 80000) {
+          steps++;
+          const prev = state;
+          state = useDrag
+            ? this.stepRK4(state, dt, params)
+            : this.evalVacuumAt(state.t + dt, v0x, v0y, params.g);
+
+          if (state.y > maxY) {
+            maxY = state.y;
+            apex = { x: state.x, y: state.y };
+          }
+
+          if (state.y <= 0 && state.t > dt * 0.5) {
+            const alpha = prev.y / (prev.y - state.y);
+            const hitX = prev.x + alpha * (state.x - prev.x);
+            const tof = prev.t + alpha * dt;
+            const hvx = prev.vx + alpha * (state.vx - prev.vx);
+            const hvy = prev.vy + alpha * (state.vy - prev.vy);
+            points.push({ x: hitX, y: 0 });
+            return { points, maxX: hitX, maxY, apex, tof, impactSpeed: Math.hypot(hvx, hvy) };
+          }
+
+          if (steps % 4 === 0) points.push({ x: state.x, y: state.y });
+        }
+        return { points, maxX: state.x, maxY, apex, tof: state.t, impactSpeed: Math.hypot(state.vx, state.vy) };
+      }
+    }
+
+    class ViewportCamera {
+      constructor() {
+        this.scale = 3.0;
+        this.targetScale = 3.0;
+        this.originX = 72;
+        this.originY = 400;
+        this.targetOriginX = 72;
+        this.targetOriginY = 400;
+        this.autoFit = true;
+        this.snapNext = true; // jump (no easing) on first frame and after a resize
+        this.isDragging = false;
+        this.dragStart = { x: 0, y: 0 };
+      }
+
+      worldToScreen(wx, wy) {
+        return {
+          x: this.originX + wx * this.scale,
+          y: this.originY - wy * this.scale
+        };
+      }
+
+      screenToWorld(sx, sy) {
+        return {
+          x: (sx - this.originX) / this.scale,
+          y: (this.originY - sy) / this.scale
+        };
+      }
+
+      updateAutoFit(maxWorldX, maxWorldY, width, height, dtFrame) {
+        if (!this.autoFit) return;
+
+        const compact = width < 640;
+        const padLeft = compact ? 46 : 72;
+        const padRight = compact ? 22 : 56;
+        const padTop = compact ? 96 : 68;
+        const padBottom = compact ? 48 : 56;
+
+        const usableW = Math.max(120, width - padLeft - padRight);
+        const usableH = Math.max(120, height - padTop - padBottom);
+
+        // Round the fitted extents UP to "nice" steps, so small slider tweaks leave the view untouched
+        // and it only re-fits when a shot genuinely needs more (or much less) room.
+        const niceCeil = (v) => {
+          const p = Math.pow(10, Math.floor(Math.log10(v)));
+          const n = v / p;
+          return p * [1, 1.5, 2, 3, 4, 5, 6, 8, 10].find(s => n <= s + 1e-9);
+        };
+        const safeX = niceCeil(Math.max(20, maxWorldX * 1.05));
+        const safeY = niceCeil(Math.max(12, maxWorldY * 1.1));
+
+        const scaleX = usableW / safeX;
+        const scaleY = usableH / safeY;
+        this.targetScale = Math.min(scaleX, scaleY);
+        this.targetOriginX = padLeft;
+        this.targetOriginY = height - padBottom;
+
+        const lerp = this.snapNext ? 1 : 1 - Math.exp(-7 * dtFrame);
+        this.snapNext = false;
+        this.scale += (this.targetScale - this.scale) * lerp;
+        this.originX += (this.targetOriginX - this.originX) * lerp;
+        this.originY += (this.targetOriginY - this.originY) * lerp;
+      }
+
+      zoomAt(factor, screenX, screenY) {
+        this.autoFit = false;
+        const worldBefore = this.screenToWorld(screenX, screenY);
+        const newScale = Math.min(80, Math.max(0.15, this.scale * factor));
+        this.scale = newScale;
+        this.originX = screenX - worldBefore.x * this.scale;
+        this.originY = screenY + worldBefore.y * this.scale;
+      }
+    }
+
+    class Renderer {
+      constructor(canvas, camera) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.camera = camera;
+        this.width = 800;
+        this.height = 500;
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+      }
+
+      resize() {
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        this.width = Math.max(300, rect.width);
+        this.height = Math.max(260, rect.height);
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        this.canvas.width = Math.round(this.width * this.dpr);
+        this.canvas.height = Math.round(this.height * this.dpr);
+        this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      }
+
+      getNiceStep(rawStep) {
+        const pow10 = Math.pow(10, Math.floor(Math.log10(rawStep)));
+        const norm = rawStep / pow10;
+        if (norm < 1.5) return 1 * pow10;
+        if (norm < 3.5) return 2 * pow10;
+        if (norm < 7.5) return 5 * pow10;
+        return 10 * pow10;
+      }
+
+      isDarkMode() {
+        return document.documentElement.classList.contains('dark');
+      }
+
+      draw(simState) {
+        const ctx = this.ctx;
+        const { width, height, camera } = this;
+        const currentParams = (simState && simState.params) ? simState.params : { rho: 1.225, cd: 0.47, area: Math.PI * 0.01, mass: 2.0, g: 9.81, angleDeg: 45 };
+        const dark = this.isDarkMode();
+
+        // 1. Background gradient adapting to theme
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+        if (dark) {
+          bgGrad.addColorStop(0, '#060a14');
+          bgGrad.addColorStop(1, '#0c1324');
+        } else {
+          bgGrad.addColorStop(0, '#f8fafc');
+          bgGrad.addColorStop(1, '#e2e8f0');
+        }
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, width, height);
+
+        // 2. Adaptive Metric Grid & Axes
+        this.drawGridAndAxes(dark);
+
+        // 3. Historical Ghost Trajectories ("Compare Shots")
+        if (simState.compareMode && simState.history.length > 0) {
+          for (const run of simState.history) {
+            this.drawPath(run.vacPoints, dark ? 'rgba(56, 189, 248, 0.22)' : 'rgba(14, 165, 233, 0.25)', 1.5, [4, 4]);
+            this.drawPath(run.dragPoints, dark ? 'rgba(249, 115, 22, 0.28)' : 'rgba(234, 88, 12, 0.3)', 2.0, []);
+          }
+        }
+
+        // 4. Pre-launch Aim Preview
+        if (simState.status === 'idle' && simState.preview) {
+          this.drawPath(simState.preview.vacPoints, dark ? 'rgba(56, 189, 248, 0.45)' : 'rgba(14, 165, 233, 0.5)', 2, [5, 5]);
+          if (currentParams.rho > 0 && currentParams.cd > 0) {
+            this.drawPath(simState.preview.dragPoints, dark ? 'rgba(249, 115, 22, 0.35)' : 'rgba(234, 88, 12, 0.4)', 2, [3, 3]);
+          }
+        }
+
+        // 5. Active / Completed Trajectories
+        if (simState.vacTrail.length > 1) {
+          this.drawPath(simState.vacTrail, dark ? '#38bdf8' : '#0284c7', 2.4, [6, 5]);
+        }
+        if (simState.dragTrail.length > 1) {
+          this.drawPath(simState.dragTrail, dark ? '#f97316' : '#ea580c', 3.0, []);
+        }
+
+        // 6. Apex Markers
+        if (simState.vacApex.y > 0.1) {
+          this.drawApexMarker(simState.vacApex, dark ? '#38bdf8' : '#0284c7', 'Vac Apex', dark);
+        }
+        if (simState.dragApex.y > 0.1 && (currentParams.rho > 0 && currentParams.cd > 0)) {
+          this.drawApexMarker(simState.dragApex, dark ? '#fb923c' : '#c2410c', 'Drag Apex', dark);
+        }
+
+        // 7. Cannon Launcher at Origin (0,0)
+        this.drawCannon(currentParams.angleDeg, dark);
+
+        // 8. Active Projectiles & Force Vectors
+        if (simState.status !== 'idle') {
+          // Vacuum Ghost Projectile
+          const vacPos = camera.worldToScreen(simState.vac.x, simState.vac.y);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(vacPos.x, vacPos.y, 6.5, 0, Math.PI * 2);
+          ctx.fillStyle = dark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(14, 165, 233, 0.4)';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = dark ? '#38bdf8' : '#0284c7';
+          ctx.stroke();
+          ctx.restore();
+
+          // Real-World Drag Projectile
+          const dragPos = camera.worldToScreen(simState.drag.x, simState.drag.y);
+          ctx.save();
+          const glow = ctx.createRadialGradient(dragPos.x, dragPos.y, 2, dragPos.x, dragPos.y, 22);
+          glow.addColorStop(0, dark ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 1)');
+          glow.addColorStop(0.3, dark ? 'rgba(251, 146, 60, 0.95)' : 'rgba(249, 115, 22, 0.95)');
+          glow.addColorStop(1, dark ? 'rgba(249, 115, 22, 0)' : 'rgba(234, 88, 12, 0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(dragPos.x, dragPos.y, 22, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(dragPos.x, dragPos.y, 8, 0, Math.PI * 2);
+          ctx.fillStyle = dark ? '#ffffff' : '#ffffff';
+          ctx.fill();
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = dark ? '#ea580c' : '#c2410c';
+          ctx.stroke();
+          ctx.restore();
+
+          if (simState.showVectors && !simState.dragLanded) {
+            this.drawProjectileVectors(simState.drag, currentParams);
+          }
+        }
+      }
+
+      drawGridAndAxes(dark) {
+        const ctx = this.ctx;
+        const { width, height, camera } = this;
+
+        const targetPixelSpacing = 85;
+        const majorStep = this.getNiceStep(targetPixelSpacing / camera.scale);
+        const minorStep = majorStep / 5;
+
+        const topLeftWorld = camera.screenToWorld(0, 0);
+        const bottomRightWorld = camera.screenToWorld(width, height);
+
+        const startX = Math.floor(topLeftWorld.x / majorStep) * majorStep;
+        const endX = Math.ceil(bottomRightWorld.x / majorStep) * majorStep;
+        const startY = Math.floor(bottomRightWorld.y / majorStep) * majorStep;
+        const endY = Math.ceil(topLeftWorld.y / majorStep) * majorStep;
+
+        // Minor Grid Lines
+        if (minorStep * camera.scale >= 12) {
+          ctx.strokeStyle = dark ? 'rgba(30, 41, 59, 0.35)' : 'rgba(203, 213, 225, 0.4)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for (let x = startX; x <= endX; x += minorStep) {
+            const sx = camera.worldToScreen(x, 0).x;
+            ctx.moveTo(sx, 0);
+            ctx.lineTo(sx, height);
+          }
+          for (let y = startY; y <= endY; y += minorStep) {
+            const sy = camera.worldToScreen(0, y).y;
+            ctx.moveTo(0, sy);
+            ctx.lineTo(width, sy);
+          }
+          ctx.stroke();
+        }
+
+        // Major Grid Lines
+        ctx.strokeStyle = dark ? 'rgba(51, 65, 85, 0.45)' : 'rgba(203, 213, 225, 0.8)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let x = startX; x <= endX; x += majorStep) {
+          const sx = camera.worldToScreen(x, 0).x;
+          ctx.moveTo(sx, 0);
+          ctx.lineTo(sx, height);
+        }
+        for (let y = startY; y <= endY; y += majorStep) {
+          const sy = camera.worldToScreen(0, y).y;
+          ctx.moveTo(0, sy);
+          ctx.lineTo(width, sy);
+        }
+        ctx.stroke();
+
+        // Ground Surface Fill
+        const groundY = camera.originY;
+        if (groundY < height) {
+          const groundGrad = ctx.createLinearGradient(0, groundY, 0, height);
+          if (dark) {
+            groundGrad.addColorStop(0, 'rgba(15, 23, 42, 0.92)');
+            groundGrad.addColorStop(1, '#04070e');
+          } else {
+            groundGrad.addColorStop(0, 'rgba(226, 232, 240, 0.95)');
+            groundGrad.addColorStop(1, '#cbd5e1');
+          }
+          ctx.fillStyle = groundGrad;
+          ctx.fillRect(0, groundY, width, height - groundY);
+
+          ctx.strokeStyle = dark ? '#475569' : '#94a3b8';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(0, groundY);
+          ctx.lineTo(width, groundY);
+          ctx.stroke();
+        }
+
+        // Y-Axis
+        const axisX = camera.originX;
+        if (axisX >= 0 && axisX <= width) {
+          ctx.strokeStyle = dark ? 'rgba(100, 116, 139, 0.6)' : 'rgba(148, 163, 184, 0.7)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(axisX, 0);
+          ctx.lineTo(axisX, Math.min(height, groundY));
+          ctx.stroke();
+        }
+
+        // Axis Numeric Labels
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.fillStyle = dark ? '#94a3b8' : '#64748b';
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const labelY = Math.min(height - 20, Math.max(8, groundY + 7));
+        for (let x = startX; x <= endX; x += majorStep) {
+          if (Math.abs(x) < 1e-6) continue;
+          const sx = camera.worldToScreen(x, 0).x;
+          if (sx > 25 && sx < width - 25) {
+            ctx.fillText(`${Number(x.toFixed(2))}m`, sx, labelY);
+          }
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        const labelX = Math.max(46, Math.min(width - 10, axisX - 8));
+        for (let y = startY; y <= endY; y += majorStep) {
+          if (y <= 1e-6) continue;
+          const sy = camera.worldToScreen(0, y).y;
+          if (sy > 20 && sy < groundY - 12) {
+            ctx.fillText(`${Number(y.toFixed(2))}m`, labelX, sy);
+          }
+        }
+      }
+
+      drawPath(points, color, lineWidth, dashPattern) {
+        if (!points || points.length < 2) return;
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.setLineDash(dashPattern);
+
+        ctx.beginPath();
+        const p0 = this.camera.worldToScreen(points[0].x, points[0].y);
+        ctx.moveTo(p0.x, p0.y);
+        for (let i = 1; i < points.length; i++) {
+          const pt = this.camera.worldToScreen(points[i].x, points[i].y);
+          ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      drawApexMarker(apexWorld, color, label, dark) {
+        const ctx = this.ctx;
+        const pos = this.camera.worldToScreen(apexWorld.x, apexWorld.y);
+
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.35;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        ctx.lineTo(pos.x, this.camera.originY);
+        ctx.stroke();
+
+        ctx.globalAlpha = 1;
+        ctx.setLineDash([]);
+        ctx.fillStyle = dark ? '#0f172a' : '#ffffff';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y - 5);
+        ctx.lineTo(pos.x + 5, pos.y);
+        ctx.lineTo(pos.x, pos.y + 5);
+        ctx.lineTo(pos.x - 5, pos.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = '600 10px "JetBrains Mono", monospace';
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.fillText(`${apexWorld.y.toFixed(1)}m`, pos.x, pos.y - 10);
+        ctx.restore();
+      }
+
+      drawCannon(angleDeg, dark) {
+        const ctx = this.ctx;
+        const base = this.camera.worldToScreen(0, 0);
+        const rad = (-angleDeg * Math.PI) / 180;
+
+        ctx.save();
+        ctx.translate(base.x, base.y);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 34, 0, rad, true);
+        ctx.strokeStyle = dark ? 'rgba(129, 140, 248, 0.45)' : 'rgba(99, 102, 241, 0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.rotate(rad);
+        const barrelGrad = ctx.createLinearGradient(0, -7, 0, 7);
+        if (dark) {
+          barrelGrad.addColorStop(0, '#64748b');
+          barrelGrad.addColorStop(0.5, '#cbd5e1');
+          barrelGrad.addColorStop(1, '#334155');
+        } else {
+          barrelGrad.addColorStop(0, '#475569');
+          barrelGrad.addColorStop(0.5, '#94a3b8');
+          barrelGrad.addColorStop(1, '#1e293b');
+        }
+        ctx.fillStyle = barrelGrad;
+        ctx.beginPath();
+        ctx.roundRect(-4, -6.5, 32, 13, [3, 2, 2, 3]);
+        ctx.fill();
+        ctx.strokeStyle = dark ? '#0f172a' : '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 9, 0, Math.PI * 2);
+        ctx.fillStyle = dark ? '#1e293b' : '#cbd5e1';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = dark ? '#818cf8' : '#4f46e5';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 3, 0, Math.PI * 2);
+        ctx.fillStyle = dark ? '#f8fafc' : '#ffffff';
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      drawProjectileVectors(dragState, params) {
+        const ctx = this.ctx;
+        const pos = this.camera.worldToScreen(dragState.x, dragState.y);
+
+        const speed = Math.hypot(dragState.vx, dragState.vy);
+        if (speed > 0.2) {
+          const vLen = Math.min(75, Math.max(18, speed * 0.95));
+          const vxPx = (dragState.vx / speed) * vLen;
+          const vyPx = -(dragState.vy / speed) * vLen;
+          this.drawArrow(pos.x, pos.y, pos.x + vxPx, pos.y + vyPx, '#10b981', 'v');
+        }
+
+        const accel = PhysicsEngine.computeDragAccel(dragState.vx, dragState.vy, params);
+        const adx = accel.ax;
+        const ady = accel.ay + params.g;
+        const adMag = Math.hypot(adx, ady);
+
+        // Fg and Fd share one px-per-(m/s²) scale (same mass, so accel is proportional to force).
+        // The scale is fixed per shot: the largest arrow ever needed is max(g, drag at launch speed).
+        const kRef = (0.5 * params.rho * params.cd * params.area) / params.mass;
+        const forceScale = 80 / Math.max(params.g, kRef * params.v0 * params.v0, 1e-6);
+
+        if (params.g > 0) {
+          this.drawArrow(pos.x, pos.y, pos.x, pos.y + params.g * forceScale, '#8b5cf6', 'Fg');
+        }
+
+        if (adMag > 1e-6) {
+          this.drawArrow(pos.x, pos.y, pos.x + adx * forceScale, pos.y - ady * forceScale, '#f43f5e', 'Fd');
+        }
+      }
+
+      drawArrow(x1, y1, x2, y2, color, label) {
+        const ctx = this.ctx;
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.hypot(dx, dy);
+        if (len < 6) return;
+
+        const angle = Math.atan2(dy, dx);
+        const headLen = 8;
+
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2.2;
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+
+        if (label) {
+          ctx.font = '700 10px "JetBrains Mono", monospace';
+          ctx.fillText(label, x2 + Math.cos(angle) * 9, y2 + Math.sin(angle) * 9);
+        }
+        ctx.restore();
+      }
+    }
+
+    class LabController {
+      constructor() {
+        this.ENVIRONMENTS = {
+          earth:   { name: 'Earth',   g: 9.81,  rho: 1.225 },
+          moon:    { name: 'Moon',    g: 1.62,  rho: 0.000 },
+          mars:    { name: 'Mars',    g: 3.72,  rho: 0.020 },
+          jupiter: { name: 'Jupiter (1 bar)', g: 24.79, rho: 0.160 }
+        };
+
+        this.params = {
+          envKey: 'earth',
+          envName: 'Earth',
+          g: 9.81,
+          rho: 1.225,
+          v0: 50.0,
+          angleDeg: 45.0,
+          mass: 2.0,
+          radius: 0.10,
+          area: Math.PI * 0.10 * 0.10,
+          cd: 0.47
+        };
+
+        this.simState = {
+          status: 'idle',
+          compareMode: true,
+          showVectors: true,
+          time: 0,
+          vac: { x: 0, y: 0, vx: 0, vy: 0, t: 0 },
+          drag: { x: 0, y: 0, vx: 0, vy: 0, t: 0 },
+          vacLanded: false,
+          dragLanded: false,
+          vacTrail: [],
+          dragTrail: [],
+          vacApex: { x: 0, y: 0 },
+          dragApex: { x: 0, y: 0 },
+          vacMetrics: { apex: 0, range: 0, tof: 0, impactSpeed: 0 },
+          dragMetrics: { apex: 0, range: 0, tof: 0, impactSpeed: 0 },
+          history: [],
+          preview: null
+        };
+
+        this.canvas = document.getElementById('sim-canvas');
+        this.camera = new ViewportCamera();
+        this.renderer = new Renderer(this.canvas, this.camera);
+
+        this.lastTimestamp = null;
+        this.bindUI();
+        this.recalculatePreviewAndSummary();
+        this.renderer.resize();
+        if (window.ResizeObserver) {
+          new ResizeObserver(() => { this.renderer.resize(); this.camera.snapNext = true; }).observe(this.canvas.parentElement);
+        } else {
+          window.addEventListener('resize', () => this.renderer.resize());
+        }
+      }
+
+      bindUI() {
+        // Theme toggle button
+        document.getElementById('btn-theme').addEventListener('click', () => {
+          const dark = document.documentElement.classList.toggle('dark');
+          try { localStorage.setItem('bdl-theme', dark ? 'dark' : 'light'); } catch (e) {}
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', dark ? '#060913' : '#f1f5f9');
+        });
+
+        const bindSlider = (id, key, formatter, onChangeExtra) => {
+          const slider = document.getElementById(id);
+          slider.addEventListener('input', () => {
+            this.params[key] = parseFloat(slider.value);
+            if (onChangeExtra) onChangeExtra();
+            this.updateParamDisplays();
+            this.onParametersChanged();
+          });
+        };
+
+        bindSlider('slider-v0', 'v0');
+        bindSlider('slider-angle', 'angleDeg');
+        bindSlider('slider-mass', 'mass');
+        bindSlider('slider-radius', 'radius', null, () => {
+          this.params.area = Math.PI * this.params.radius * this.params.radius;
+        });
+        bindSlider('slider-cd', 'cd', null, () => this.highlightCdBadge());
+
+        document.querySelectorAll('.step-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const target = document.getElementById(btn.dataset.target);
+            const step = parseFloat(btn.dataset.step);
+            const nextVal = Math.min(parseFloat(target.max), Math.max(parseFloat(target.min), parseFloat(target.value) + step));
+            target.value = nextVal.toFixed(2);
+            target.dispatchEvent(new Event('input'));
+          });
+        });
+
+        document.querySelectorAll('.cd-badge').forEach(badge => {
+          badge.addEventListener('click', () => {
+            const val = parseFloat(badge.dataset.cd);
+            const slider = document.getElementById('slider-cd');
+            slider.value = val;
+            slider.dispatchEvent(new Event('input'));
+          });
+        });
+
+        document.querySelectorAll('.env-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.env;
+            const env = this.ENVIRONMENTS[key];
+            this.params.envKey = key;
+            this.params.envName = env.name;
+            this.params.g = env.g;
+            this.params.rho = env.rho;
+
+            document.querySelectorAll('.env-btn').forEach(b => {
+              b.classList.remove('bg-indigo-50', 'dark:bg-indigo-600/20', 'border-indigo-500', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+              b.classList.add('bg-slate-50', 'dark:bg-slate-950/60', 'border-slate-200', 'dark:border-slate-800', 'text-slate-700', 'dark:text-slate-300');
+            });
+            btn.classList.remove('bg-slate-50', 'dark:bg-slate-950/60', 'border-slate-200', 'dark:border-slate-800', 'text-slate-700', 'dark:text-slate-300');
+            btn.classList.add('bg-indigo-50', 'dark:bg-indigo-600/20', 'border-indigo-500', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+
+            document.getElementById('hud-env-name').textContent = env.name;
+            document.getElementById('hud-g').textContent = env.g.toFixed(2);
+            document.getElementById('hud-rho').textContent = env.rho.toFixed(3);
+
+            this.onParametersChanged();
+          });
+        });
+
+        document.getElementById('btn-fire').addEventListener('click', () => this.fireCannon());
+        document.getElementById('btn-pause').addEventListener('click', () => this.togglePause());
+        document.getElementById('btn-step').addEventListener('click', () => this.stepSingleFrame());
+        document.getElementById('btn-clear').addEventListener('click', () => this.clearTraces());
+
+        document.getElementById('toggle-compare').addEventListener('change', (e) => {
+          this.simState.compareMode = e.target.checked;
+        });
+
+        document.getElementById('toggle-vectors').addEventListener('change', (e) => {
+          this.simState.showVectors = e.target.checked;
+          document.getElementById('vector-legend').classList.toggle('hidden', !e.target.checked);
+        });
+
+        document.getElementById('btn-autofit').addEventListener('click', () => {
+          this.camera.autoFit = !this.camera.autoFit;
+          this.updateAutoFitButton();
+        });
+
+        document.getElementById('btn-zoom-in').addEventListener('click', () => {
+          this.camera.zoomAt(1.25, this.renderer.width * 0.5, this.renderer.height * 0.5);
+          this.updateAutoFitButton();
+        });
+
+        document.getElementById('btn-zoom-out').addEventListener('click', () => {
+          this.camera.zoomAt(0.8, this.renderer.width * 0.5, this.renderer.height * 0.5);
+          this.updateAutoFitButton();
+        });
+
+        this.canvas.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const rect = this.canvas.getBoundingClientRect();
+          const factor = e.deltaY < 0 ? 1.12 : 0.89;
+          this.camera.zoomAt(factor, e.clientX - rect.left, e.clientY - rect.top);
+          this.updateAutoFitButton();
+        }, { passive: false });
+
+        // Pointer input: one pointer pans, two pointers pinch-zoom (touch, mouse and pen)
+        const pointers = new Map();
+        let pinch = null;
+        const localPos = (e) => {
+          const r = this.canvas.getBoundingClientRect();
+          return { x: e.clientX - r.left, y: e.clientY - r.top };
+        };
+        const beginPan = () => {
+          const p = pointers.values().next().value;
+          this.camera.isDragging = true;
+          this.camera.dragStart = { x: p.x - this.camera.originX, y: p.y - this.camera.originY };
+        };
+        this.canvas.addEventListener('pointerdown', (e) => {
+          pointers.set(e.pointerId, localPos(e));
+          this.canvas.setPointerCapture(e.pointerId);
+          if (pointers.size === 1) {
+            pinch = null;
+            if (e.pointerType !== 'touch') beginPan();
+          } else if (pointers.size === 2) {
+            this.camera.isDragging = false;
+            const [a, b] = [...pointers.values()];
+            pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } };
+          }
+        });
+        this.canvas.addEventListener('pointermove', (e) => {
+          if (!pointers.has(e.pointerId)) return;
+          pointers.set(e.pointerId, localPos(e));
+          if (pointers.size === 2 && pinch) {
+            const [a, b] = [...pointers.values()];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+            const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+            this.camera.zoomAt(dist / pinch.dist, mid.x, mid.y);
+            this.camera.originX += mid.x - pinch.mid.x;
+            this.camera.originY += mid.y - pinch.mid.y;
+            pinch.dist = dist;
+            pinch.mid = mid;
+            this.updateAutoFitButton();
+          } else if (pointers.size === 1 && this.camera.isDragging) {
+            const p = pointers.values().next().value;
+            this.camera.autoFit = false;
+            this.camera.originX = p.x - this.camera.dragStart.x;
+            this.camera.originY = p.y - this.camera.dragStart.y;
+            this.updateAutoFitButton();
+          }
+        });
+        const endPointer = (e) => {
+          pointers.delete(e.pointerId);
+          try { this.canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+          pinch = null;
+          if (pointers.size === 1 && e.pointerType !== 'touch') beginPan();
+          else this.camera.isDragging = false;
+        };
+        this.canvas.addEventListener('pointerup', endPointer);
+        this.canvas.addEventListener('pointercancel', endPointer);
+
+        window.addEventListener('keydown', (e) => {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+          if (e.code === 'Space') {
+            e.preventDefault();
+            if (this.simState.status === 'running' || this.simState.status === 'paused') {
+              this.togglePause();
+            } else {
+              this.fireCannon();
+            }
+          } else if (e.key === 'r' || e.key === 'R') {
+            this.camera.autoFit = true;
+            this.updateAutoFitButton();
+          }
+        });
+
+        const notice = document.getElementById('mobile-notice');
+        if (notice) {
+          try { if (sessionStorage.getItem('bdl-notice-dismissed')) notice.remove(); } catch (_) {}
+          const closeBtn = document.getElementById('btn-dismiss-notice');
+          if (closeBtn) closeBtn.addEventListener('click', () => {
+            try { sessionStorage.setItem('bdl-notice-dismissed', '1'); } catch (_) {}
+            notice.remove();
+          });
+        }
+
+        // Mouse clicks drop button focus so Space keeps firing/pausing; keyboard activation is unaffected
+        document.querySelectorAll('button').forEach(b => b.addEventListener('pointerup', () => b.blur()));
+
+        this.updateParamDisplays();
+        this.highlightCdBadge();
+      }
+
+      updateAutoFitButton() {
+        const label = document.getElementById('label-autofit');
+        const btn = document.getElementById('btn-autofit');
+        if (this.camera.autoFit) {
+          label.textContent = 'Auto-Fit: ON';
+          btn.classList.remove('bg-slate-200', 'dark:bg-slate-800/90', 'border-slate-300', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-200');
+          btn.classList.add('bg-indigo-600/90', 'border-indigo-400/40', 'text-white');
+        } else {
+          label.textContent = 'Fit View';
+          btn.classList.remove('bg-indigo-600/90', 'border-indigo-400/40', 'text-white');
+          btn.classList.add('bg-slate-200', 'dark:bg-slate-800/90', 'border-slate-300', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-200');
+        }
+        document.getElementById('hud-zoom').textContent = `${Math.round((this.camera.scale / 3.0) * 100)}%`;
+      }
+
+      updateParamDisplays() {
+        document.getElementById('val-v0').textContent = `${this.params.v0.toFixed(1)} m/s`;
+        document.getElementById('val-angle').textContent = `${this.params.angleDeg.toFixed(1)}°`;
+        document.getElementById('val-mass').textContent = `${this.params.mass.toFixed(1)} kg`;
+        document.getElementById('val-radius').textContent = `${this.params.radius.toFixed(2)} m`;
+        document.getElementById('val-area').textContent = this.params.area.toFixed(4);
+        document.getElementById('val-cd').textContent = this.params.cd.toFixed(2);
+      }
+
+      highlightCdBadge() {
+        document.querySelectorAll('.cd-badge').forEach(b => {
+          const val = parseFloat(b.dataset.cd);
+          if (Math.abs(val - this.params.cd) < 0.005) {
+            b.classList.remove('bg-white', 'dark:bg-slate-900', 'border-slate-200', 'dark:border-slate-800', 'text-slate-700', 'dark:text-slate-300');
+            b.classList.add('bg-indigo-50', 'dark:bg-indigo-500/20', 'border-indigo-300', 'dark:border-indigo-500/60', 'text-slate-900', 'dark:text-white');
+          } else {
+            b.classList.add('bg-white', 'dark:bg-slate-900', 'border-slate-200', 'dark:border-slate-800', 'text-slate-700', 'dark:text-slate-300');
+            b.classList.remove('bg-indigo-50', 'dark:bg-indigo-500/20', 'border-indigo-300', 'dark:border-indigo-500/60', 'text-slate-900', 'dark:text-white');
+          }
+        });
+      }
+
+      isLocked() {
+        return this.simState.status === 'running' || this.simState.status === 'paused';
+      }
+
+      onParametersChanged() {
+        if (this.isLocked()) return; // in-flight shot keeps its launch parameters
+        this.recalculatePreviewAndSummary();
+        if (this.simState.status === 'idle') {
+          this.updateTelemetryUI();
+        }
+      }
+
+      recalculatePreviewAndSummary() {
+        const analytical = PhysicsEngine.computeAnalyticalSummary(this.params);
+        const vacSim = PhysicsEngine.simulateFullTrajectory(this.params, false);
+        const dragSim = PhysicsEngine.simulateFullTrajectory(this.params, true);
+
+        this.simState.preview = {
+          analytical,
+          vacPoints: vacSim.points,
+          dragPoints: dragSim.points,
+          maxX: Math.max(vacSim.maxX, dragSim.maxX),
+          maxY: Math.max(vacSim.maxY, dragSim.maxY),
+          dragApex: dragSim.maxY,
+          dragRange: dragSim.maxX,
+          dragTof: dragSim.tof,
+          dragImpact: dragSim.impactSpeed
+        };
+
+        const vtEl = document.getElementById('tel-vt');
+        vtEl.textContent = Number.isFinite(analytical.terminalVelocity)
+          ? analytical.terminalVelocity.toFixed(1)
+          : '∞ (Vac)';
+      }
+
+      fireCannon() {
+        this.launchParams = { ...this.params };
+        if (this.simState.compareMode && this.simState.dragTrail.length > 2) {
+          this.simState.history.push({
+            vacPoints: [...this.simState.vacTrail],
+            dragPoints: [...this.simState.dragTrail]
+          });
+          if (this.simState.history.length > 12) {
+            this.simState.history.shift();
+          }
+        }
+
+        const rad = (this.params.angleDeg * Math.PI) / 180;
+        const v0x = this.params.v0 * Math.cos(rad);
+        const v0y = this.params.v0 * Math.sin(rad);
+
+        this.simState.status = 'running';
+        this.simState.time = 0;
+        this.simState.vac = { x: 0, y: 0, vx: v0x, vy: v0y, t: 0 };
+        this.simState.drag = { x: 0, y: 0, vx: v0x, vy: v0y, t: 0 };
+        this.simState.vacLanded = this.params.angleDeg <= 0;
+        this.simState.dragLanded = this.params.angleDeg <= 0;
+        this.simState.vacTrail = [{ x: 0, y: 0 }];
+        this.simState.dragTrail = [{ x: 0, y: 0 }];
+        this.simState.vacApex = { x: 0, y: 0 };
+        this.simState.dragApex = { x: 0, y: 0 };
+        this.simState.vacMetrics = { apex: 0, range: 0, tof: 0, impactSpeed: this.params.v0 };
+        this.simState.dragMetrics = { apex: 0, range: 0, tof: 0, impactSpeed: this.params.v0 };
+
+        this.recalculatePreviewAndSummary();
+        this.updateControlsState();
+      }
+
+      togglePause() {
+        if (this.simState.status === 'running') {
+          this.simState.status = 'paused';
+        } else if (this.simState.status === 'paused') {
+          this.simState.status = 'running';
+        }
+        this.updateControlsState();
+      }
+
+      stepSingleFrame() {
+        if (this.simState.status === 'idle' || this.simState.status === 'completed') {
+          this.fireCannon();
+          this.simState.status = 'paused';
+        }
+        if (this.simState.status === 'paused') {
+          this.advancePhysics(1 / 60);
+          this.updateTelemetryUI();
+          this.updateControlsState();
+        }
+      }
+
+      clearTraces() {
+        this.simState.history = [];
+        this.simState.status = 'idle';
+        this.simState.time = 0;
+        this.simState.vacTrail = [];
+        this.simState.dragTrail = [];
+        this.simState.vacApex = { x: 0, y: 0 };
+        this.simState.dragApex = { x: 0, y: 0 };
+        this.recalculatePreviewAndSummary();
+        this.updateTelemetryUI();
+        this.updateControlsState();
+      }
+
+      updateControlsState() {
+        const btnPause = document.getElementById('btn-pause');
+        const labelPause = document.getElementById('label-pause');
+        const iconPause = document.getElementById('icon-pause');
+        const badge = document.getElementById('hud-status-badge');
+
+        if (this.simState.status === 'running') {
+          btnPause.disabled = false;
+          labelPause.textContent = 'Pause';
+          iconPause.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+          badge.textContent = 'In Flight';
+          badge.className = 'px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
+        } else if (this.simState.status === 'paused') {
+          btnPause.disabled = false;
+          labelPause.textContent = 'Resume';
+          iconPause.innerHTML = '<path d="M8 5v14l11-7z"/>';
+          badge.textContent = 'Paused';
+          badge.className = 'px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30';
+        } else if (this.simState.status === 'completed') {
+          btnPause.disabled = true;
+          labelPause.textContent = 'Pause';
+          badge.textContent = 'Landed';
+          badge.className = 'px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30';
+        } else {
+          btnPause.disabled = true;
+          labelPause.textContent = 'Pause';
+          badge.textContent = 'Ready';
+          badge.className = 'px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+        }
+      }
+
+      advancePhysics(frameDt) {
+        const subStepDt = 0.005;
+        const steps = Math.max(1, Math.round(frameDt / subStepDt));
+        const dt = frameDt / steps;
+
+        const lp = this.launchParams || this.params;
+        const rad = (lp.angleDeg * Math.PI) / 180;
+        const v0x = lp.v0 * Math.cos(rad);
+        const v0y = lp.v0 * Math.sin(rad);
+
+        for (let i = 0; i < steps; i++) {
+          this.simState.time += dt;
+
+          if (!this.simState.vacLanded) {
+            const prevVac = this.simState.vac;
+            const nextVac = PhysicsEngine.evalVacuumAt(prevVac.t + dt, v0x, v0y, lp.g);
+
+            if (nextVac.y > this.simState.vacApex.y) {
+              this.simState.vacApex = { x: nextVac.x, y: nextVac.y };
+              this.simState.vacMetrics.apex = nextVac.y;
+            }
+
+            if (nextVac.y <= 0 && nextVac.t > dt * 0.5) {
+              const alpha = prevVac.y / (prevVac.y - nextVac.y);
+              const hitX = prevVac.x + alpha * (nextVac.x - prevVac.x);
+              const hitT = prevVac.t + alpha * dt;
+              const hitVy = prevVac.vy + alpha * (nextVac.vy - prevVac.vy);
+
+              this.simState.vac = { x: hitX, y: 0, vx: v0x, vy: hitVy, t: hitT };
+              this.simState.vacLanded = true;
+              this.simState.vacTrail.push({ x: hitX, y: 0 });
+              this.simState.vacMetrics.range = hitX;
+              this.simState.vacMetrics.tof = hitT;
+              this.simState.vacMetrics.impactSpeed = Math.hypot(v0x, hitVy);
+            } else {
+              this.simState.vac = nextVac;
+              this.simState.vacMetrics.range = nextVac.x;
+              this.simState.vacMetrics.tof = nextVac.t;
+              this.simState.vacMetrics.impactSpeed = Math.hypot(nextVac.vx, nextVac.vy);
+            }
+          }
+
+          if (!this.simState.dragLanded) {
+            const prevDrag = this.simState.drag;
+            const nextDrag = PhysicsEngine.stepRK4(prevDrag, dt, lp);
+
+            if (nextDrag.y > this.simState.dragApex.y) {
+              this.simState.dragApex = { x: nextDrag.x, y: nextDrag.y };
+              this.simState.dragMetrics.apex = nextDrag.y;
+            }
+
+            if (nextDrag.y <= 0 && nextDrag.t > dt * 0.5) {
+              const alpha = prevDrag.y / (prevDrag.y - nextDrag.y);
+              const hitX = prevDrag.x + alpha * (nextDrag.x - prevDrag.x);
+              const hitT = prevDrag.t + alpha * dt;
+              const hitVx = prevDrag.vx + alpha * (nextDrag.vx - prevDrag.vx);
+              const hitVy = prevDrag.vy + alpha * (nextDrag.vy - prevDrag.vy);
+
+              this.simState.drag = { x: hitX, y: 0, vx: hitVx, vy: hitVy, t: hitT };
+              this.simState.dragLanded = true;
+              this.simState.dragTrail.push({ x: hitX, y: 0 });
+              this.simState.dragMetrics.range = hitX;
+              this.simState.dragMetrics.tof = hitT;
+              this.simState.dragMetrics.impactSpeed = Math.hypot(hitVx, hitVy);
+            } else {
+              this.simState.drag = nextDrag;
+              this.simState.dragMetrics.range = nextDrag.x;
+              this.simState.dragMetrics.tof = nextDrag.t;
+              this.simState.dragMetrics.impactSpeed = Math.hypot(nextDrag.vx, nextDrag.vy);
+            }
+          }
+        }
+
+        if (!this.simState.vacLanded) {
+          this.simState.vacTrail.push({ x: this.simState.vac.x, y: this.simState.vac.y });
+        }
+        if (!this.simState.dragLanded) {
+          this.simState.dragTrail.push({ x: this.simState.drag.x, y: this.simState.drag.y });
+        }
+
+        if (this.simState.vacLanded && this.simState.dragLanded) {
+          this.simState.status = 'completed';
+          this.updateControlsState();
+        }
+      }
+
+      formatPercentDiff(dragVal, vacVal) {
+        if (vacVal <= 1e-6) return '0.0%';
+        const pct = ((dragVal - vacVal) / vacVal) * 100;
+        if (Math.abs(pct) < 0.05) return '0.0%';
+        return `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
+      }
+
+      updateTelemetryUI() {
+        document.getElementById('hud-time').textContent = this.simState.time.toFixed(2);
+
+        const isIdle = this.simState.status === 'idle';
+        const vacM = isIdle
+          ? {
+              apex: this.simState.preview.analytical.apexHeight,
+              range: this.simState.preview.analytical.range,
+              tof: this.simState.preview.analytical.timeOfFlight,
+              impactSpeed: this.params.v0
+            }
+          : this.simState.vacMetrics;
+
+        const dragM = isIdle
+          ? {
+              apex: this.simState.preview.dragApex,
+              range: this.simState.preview.dragRange,
+              tof: this.simState.preview.dragTof,
+              impactSpeed: this.simState.preview.dragImpact
+            }
+          : this.simState.dragMetrics;
+
+        document.getElementById('tel-apex-drag').textContent = dragM.apex.toFixed(2);
+        document.getElementById('tel-apex-vac').textContent = vacM.apex.toFixed(2);
+        document.getElementById('tel-apex-diff').textContent = this.formatPercentDiff(dragM.apex, vacM.apex);
+
+        document.getElementById('tel-range-drag').textContent = dragM.range.toFixed(2);
+        document.getElementById('tel-range-vac').textContent = vacM.range.toFixed(2);
+        document.getElementById('tel-range-diff').textContent = this.formatPercentDiff(dragM.range, vacM.range);
+
+        document.getElementById('tel-time-drag').textContent = dragM.tof.toFixed(2);
+        document.getElementById('tel-time-vac').textContent = vacM.tof.toFixed(2);
+        document.getElementById('tel-time-diff').textContent = this.formatPercentDiff(dragM.tof, vacM.tof);
+
+        const velLabel = document.getElementById('tel-vel-label');
+        velLabel.textContent = isIdle ? 'Est. Impact Speed' : (this.simState.status === 'completed' ? 'Impact Velocity' : 'Current Speed');
+        document.getElementById('tel-vel-drag').textContent = dragM.impactSpeed.toFixed(1);
+        document.getElementById('tel-vel-vac').textContent = vacM.impactSpeed.toFixed(1);
+      }
+
+      tick(timestamp) {
+        if (!this.lastTimestamp) this.lastTimestamp = timestamp;
+        const rawDt = (timestamp - this.lastTimestamp) / 1000;
+        this.lastTimestamp = timestamp;
+        const dtFrame = Math.min(0.05, Math.max(0.001, rawDt));
+
+        if (this.simState.status === 'running') {
+          this.advancePhysics(dtFrame);
+          this.updateTelemetryUI();
+        }
+
+        let boundX = this.simState.preview ? this.simState.preview.maxX : 100;
+        let boundY = this.simState.preview ? this.simState.preview.maxY : 50;
+
+        if (this.simState.status !== 'idle') {
+          boundX = Math.max(boundX, this.simState.vac.x, this.simState.drag.x, this.simState.vacMetrics.range, this.simState.dragMetrics.range);
+          boundY = Math.max(boundY, this.simState.vac.y, this.simState.drag.y, this.simState.vacMetrics.apex, this.simState.dragMetrics.apex);
+        }
+
+        if (this.simState.compareMode && this.simState.history.length > 0) {
+          for (const h of this.simState.history) {
+            for (const p of h.vacPoints) {
+              if (p.x > boundX) boundX = p.x;
+              if (p.y > boundY) boundY = p.y;
+            }
+          }
+        }
+
+        this.camera.updateAutoFit(boundX, boundY, this.renderer.width, this.renderer.height, dtFrame);
+        document.getElementById('hud-zoom').textContent = `${Math.round((this.camera.scale / 3.0) * 100)}%`;
+
+        this.simState.params = this.isLocked() ? this.launchParams : this.params;
+        this.renderer.draw(this.simState);
+        requestAnimationFrame((ts) => this.tick(ts));
+      }
+
+      start() {
+        this.updateTelemetryUI();
+        requestAnimationFrame((ts) => this.tick(ts));
+      }
+    }
+
+    window.onload = function () {
+      const lab = new LabController();
+      lab.start();
+    };
+  </script>
+</body>
+</html>
