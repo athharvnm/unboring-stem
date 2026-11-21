@@ -22,10 +22,10 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://unboringstem.pages.dev/">
+<meta name="twitter:url" content="https://unboringstem.pages.dev/optics">
 <meta name="twitter:title" content="Photonic Optics Lab – Interactive Ray Optics Simulator">
 <meta name="twitter:description" content="Simulate lenses, mirrors, Snell's law refraction, and light ray tracing in real-time right in your browser.">
-<meta name="twitter:image" content="https://unboringstem.dev/optics/social.png">
+<meta name="twitter:image" content="https://unboringstem.pages.dev/optics/social.png">
 <meta name="twitter:image:alt" content="Parallel light rays converging through a convex lens onto a focal point">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -136,12 +136,14 @@ const DEF={laser:{size:80},'point-light':{color:'#ffb703'},'plane-mirror':{size:
 const LABEL={laser:'Parallel beam','point-light':'Point source','plane-mirror':'Plane mirror','concave-mirror':'Concave mirror','convex-mirror':'Convex mirror',
  'convex-lens':'Convex lens','concave-lens':'Concave lens','glass-slab':'Glass block',screen:'Screen',ruler:'Ruler',object:'Object'};
 class El{constructor(t,x,y){this.id=Math.random().toString(36).slice(2,9);this.type=t;this.x=x;this.y=y;this.angle=0;
- Object.assign(this,{size:160,depth:120,f:150,n:1.5,spread:40,count:density,color:'#00ffcc',hits:[]},DEF[t]||{});}}
+ Object.assign(this,{size:160,depth:120,f:150,n:1.5,spread:40,count:density,color:'#00ffcc',hits:[],lock:'shape',R:null},DEF[t]||{});}}
 const isSrc=e=>e.type==='laser'||e.type==='point-light';
 const curved=e=>e.type==='concave-mirror'||e.type==='convex-mirror';
 const isLens=e=>e.type==='convex-lens'||e.type==='concave-lens';
 const sag=(R,y)=>R-Math.sqrt(Math.max(R*R-y*y,0));
-const lensR=e=>Math.max(2*(e.n-1)*Math.abs(e.f),e.size*1.3);   // lensmaker (floor keeps big-aperture lenses slim), equiconvex: R = 2(n-1)f
+// Equiconvex lensmaker: 1/f = 2(n-1)/R.  'shape' mode: R is fixed glass (f follows n). 'f' mode: R is derived from f.
+const trueR=e=>e.lock==='shape'&&e.R?e.R:2*(e.n-1)*Math.abs(e.f);
+const lensR=e=>Math.max(trueR(e),e.size*1.3);   // drawing floor keeps wide lenses slim; the ray maths uses f only
 const mirHW=e=>Math.min(e.size/2,Math.abs(2*e.f)*.98);
 const g=v=>Math.round(v/20)*20;
 function bounds(e){switch(e.type){
@@ -477,7 +479,8 @@ $('palette').addEventListener('click',ev=>{const b=ev.target.closest('[data-add]
  const k=els.length%6*20;sel=new El(b.dataset.add,g(W/2)+k,g(H/2)+k);els.push(sel);buildInspector()});
 
 const FMT={pos:e=>`${Math.round(e.x)}, ${Math.round(e.y)}`,angle:e=>Math.round(e.angle*180/Math.PI)+'°',size:e=>Math.round(e.size)+' px',
- f:e=>Math.round(e.f)+' px',n:e=>e.n.toFixed(2),depth:e=>Math.round(e.depth)+' px',spread:e=>Math.round(e.spread)+'°',count:e=>e.count,spot:()=>''};
+ f:e=>Math.round(e.f)+' px',n:e=>e.n.toFixed(2),depth:e=>Math.round(e.depth)+' px',spread:e=>Math.round(e.spread)+'°',count:e=>e.count,spot:()=>'',R:e=>Math.round(trueR(e))+' px',
+ rnote:e=>isLens(e)&&trueR(e)<e.size*1.3-.5?'Drawn slimmer than the true shape (display limit). The true R is shown above; the ray maths uses f only.':''};
 const sl=(l,p,min,max,step,val,deg)=>`<div><label class="flex justify-between text-slate-400 mb-1"><span>${l}</span><span class="mono text-cyan-300" data-v="${p}"></span></label><input type="range" min="${min}" max="${max}" step="${step}" value="${val}" data-p="${p}"${deg?' data-deg="1"':''}></div>`;
 function applyInsp(){$('insp').classList.toggle('hide',insHidden);$('insp-open').classList.toggle('hidden',!(insHidden&&sel))}
 function buildInspector(){
@@ -491,8 +494,15 @@ function buildInspector(){
  if(t==='point-light')h+=sl('Spread angle','spread',5,360,1,e.spread);
  if(isSrc(e)){h+=sl('Ray count','count',1,61,1,e.count)+'<div class="flex gap-2">'+['#00ffcc','#ff4d6d','#4d9bff','#ffd23f'].map(c=>`<button data-c="${c}" class="w-6 h-6 rounded-full border-2 border-slate-600" style="background:${c}"></button>`).join('')+'</div>'}
  if(t==='object')h+='<div class="flex gap-2"><button class="tb'+(e.style!=='arrow'?' on':'')+'" data-st="bottle">Coke bottle</button><button class="tb'+(e.style==='arrow'?' on':'')+'" data-st="arrow">Arrow</button></div><p class="text-slate-500">Stand the base on the dashed optical axis. Three principal rays leave the tip: parallel (red), through the centre (yellow), through the focus (blue).</p>';
- if(isLens(e)||curved(e))h+=sl('Focal length f','f',e.f>0?20:-400,e.f>0?400:-20,1,e.f);
- if(isLens(e))h+=sl('Refractive index (sets lens curvature)','n',1.1,2.5,.01,e.n)+'<p class="text-slate-500">Thin-lens model: R = 2(n−1)f. Index changes the drawn shape, not f.</p>';
+ if(isLens(e)||curved(e)){const fa=Math.abs(e.f),lo=Math.max(1,Math.min(20,Math.floor(fa))),hi=Math.max(400,Math.ceil(fa));
+  h+=sl('Focal length f','f',e.f>0?lo:-hi,e.f>0?hi:-lo,1,e.f)}
+ if(isLens(e)){const sh=e.lock==='shape';
+  h+=`<div class="flex gap-2"><button class="tb${sh?' on':''}" data-lock="shape">Hold shape</button><button class="tb${sh?'':' on'}" data-lock="f">Hold f</button></div>`
+  +sl(sh?'Refractive index n (changes f)':'Refractive index n (redraws curvature)','n',1.1,2.5,.01,e.n)
+  +'<div class="flex justify-between text-slate-400"><span>Radius of curvature R</span><span class="mono text-cyan-300" data-v="R"></span></div><div class="text-amber-400" data-v="rnote"></div>'
+  +(sh?'<p class="text-slate-500">Hold shape (real glass): R stays fixed, so a higher n gives a shorter f, from 1/f = 2(n−1)/R. Dragging the f slider re-grinds the lens to a new R.</p>'
+      :'<p class="text-slate-500">Hold f: f is the control and the curvature is redrawn as R = 2(n−1)f so f never changes. A real lens of fixed shape would change f with n.</p>')
+  +'<p class="text-slate-500">Thin-lens model in air: thickness and colour (dispersion) are ignored.</p>'}
  if(t==='glass-slab')h+=sl('Refractive index n','n',1,2.5,.01,e.n)+sl('Thickness','depth',20,300,1,e.depth);
  if(curved(e)||t==='plane-mirror')h+='<p class="text-slate-500">Silver edge = reflecting face (arrives from the left at 0°). Hatched side is the opaque back.</p>';
  if(curved(e))h+='<p class="text-slate-500">Exact spherical surface (R = 2f): wide apertures and tall objects show real spherical aberration and field curvature.</p>';
@@ -503,9 +513,18 @@ function refresh(){
  if(!sel)return;$('insp').querySelectorAll('[data-v]').forEach(s=>{if(s.dataset.v!=='spot')s.textContent=FMT[s.dataset.v](sel)});
  const a=$('insp').querySelector('[data-p=angle]');if(a)a.value=Math.round(sel.angle*180/Math.PI);
 }
-$('insp').addEventListener('input',ev=>{const t=ev.target;if(!sel||!t.dataset.p)return;
- let v=parseFloat(t.value);if(t.dataset.deg)v=v*Math.PI/180;sel[t.dataset.p]=v;refresh();if(t.dataset.p==='n'||t.dataset.p==='f'||t.dataset.p==='size')refresh()});
-$('insp').addEventListener('click',ev=>{if(ev.target.id==='del')remove(sel);if(ev.target.id==='insp-x'){insHidden=true;tog('b-insp','Properties: ',()=>!insHidden);applyInsp()}if(ev.target.dataset.c&&sel)sel.color=ev.target.dataset.c;if(ev.target.dataset.st&&sel){sel.style=ev.target.dataset.st;buildInspector()}});
+function syncF(){const fs=$('insp').querySelector('[data-p=f]');if(!fs)return;
+ const a=Math.abs(sel.f),lo=Math.max(1,Math.min(20,Math.floor(a))),hi=Math.max(400,Math.ceil(a));
+ fs.min=sel.f>0?lo:-hi;fs.max=sel.f>0?hi:-lo;fs.value=sel.f}
+$('insp').addEventListener('input',ev=>{const t=ev.target,p=t.dataset.p;if(!sel||!p)return;
+ let v=parseFloat(t.value);if(t.dataset.deg)v=v*Math.PI/180;const old=sel[p];sel[p]=v;
+ if(isLens(sel)&&sel.lock==='shape'){
+  if(p==='n'){if(!sel.R)sel.R=2*(old-1)*Math.abs(sel.f);          // freeze the glass shape at the old n
+   sel.f=Math.sign(sel.f)*sel.R/(2*(sel.n-1));syncF()}            // f = R / (2(n-1))
+  else if(p==='f')sel.R=2*(sel.n-1)*Math.abs(sel.f)}              // moving f re-grinds the lens
+ refresh()});
+$('insp').addEventListener('click',ev=>{if(ev.target.id==='del')remove(sel);if(ev.target.id==='insp-x'){insHidden=true;tog('b-insp','Properties: ',()=>!insHidden);applyInsp()}if(ev.target.dataset.c&&sel)sel.color=ev.target.dataset.c;if(ev.target.dataset.st&&sel){sel.style=ev.target.dataset.st;buildInspector()}
+ if(ev.target.dataset.lock&&sel){sel.lock=ev.target.dataset.lock;sel.R=null;buildInspector()}});
 
 /* ---- Toolbar and presets ---- */
 const tog=(id,txt,get)=>{const b=$(id);b.classList.toggle('on',get());b.textContent=txt+(get()?'on':'off')};
