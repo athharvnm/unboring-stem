@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polynomial Roots &amp; Graph Explorer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .canvas-stage {
+      position: relative;
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 250px;
+      height: clamp(250px, 46vh, 520px);
+      overflow: hidden;
+      user-select: none;
+      touch-action: none;
+    }
+    @media (min-width: 1024px) {
+      .canvas-stage {
+        min-height: 360px;
+        height: clamp(360px, 52vh, 580px);
+      }
+    }
+    .canvas-stage > canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .argand-panel.is-hidden-pane {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-900 min-h-screen flex flex-col">
+  <!-- Top Header & Controls -->
+  <header class="bg-white/95 backdrop-blur-xs sticky top-0 z-20 border-b border-stone-200 px-3 sm:px-4 py-2.5 sm:py-3">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 sm:gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h1 class="text-base sm:text-xl font-bold tracking-tight text-stone-900">
+            Polynomial Roots &amp; Graph Explorer
+          </h1>
+          <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-900 border border-amber-200">
+            Degree <span id="header-degree" class="font-mono-code tabular-nums">3</span>
+          </span>
+        </div>
+        <p id="header-subtitle" class="text-xs text-stone-600 mt-0.5">
+          A degree-n polynomial has at most n real roots and exactly n complex roots counted with multiplicity.
+        </p>
+      </div>
+
+      <!-- Degree Selector, Scenario Preset & Argand Toggle -->
+      <div class="flex items-center gap-2 flex-wrap w-full md:w-auto">
+        <div class="inline-flex rounded-xl bg-stone-100 p-1 border border-stone-200 shrink-0" role="group" aria-label="Polynomial degree">
+          <button type="button" data-deg="1" class="deg-btn px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-semibold text-stone-700 hover:bg-white/70 transition">1st</button>
+          <button type="button" data-deg="2" class="deg-btn px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-semibold text-stone-700 hover:bg-white/70 transition">2nd</button>
+          <button type="button" data-deg="3" class="deg-btn px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-semibold bg-stone-900 text-white shadow-2xs transition">3rd</button>
+          <button type="button" data-deg="4" class="deg-btn px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-semibold text-stone-700 hover:bg-white/70 transition">4th</button>
+        </div>
+
+        <select id="scenario-select" aria-label="Preset root configuration" class="flex-1 sm:flex-initial min-w-0 max-w-full sm:max-w-xs px-2.5 py-2 sm:py-1.5 rounded-xl text-xs font-medium bg-white border border-stone-300 text-stone-800 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </select>
+
+        <button id="btn-complex-toggle" type="button" class="px-3 py-2 sm:py-1.5 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200 hover:bg-stone-200/70 transition flex items-center gap-1.5 shrink-0">
+          <span>Argand Plane</span>
+          <span id="complex-state-badge" class="px-1.5 py-0.5 rounded bg-stone-200 text-stone-800 text-[10px] font-mono-code">AUTO</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-2.5 sm:p-4 flex flex-col gap-3 overflow-x-hidden">
+    <!-- Equation & Factor Readout Bar -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-3 sm:px-4 flex flex-col gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-stone-400">Expanded</span>
+          <div id="eq-expanded" class="text-sm sm:text-base font-semibold text-stone-900 bg-stone-50 px-3 py-1 rounded-lg border border-stone-200 overflow-x-auto"></div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-stone-400">Factored</span>
+          <div id="eq-factored-chips" class="flex items-center gap-1.5 flex-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Root Accounting Summary -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-100 text-xs">
+        <div id="root-tally" class="font-medium text-stone-700 tabular-nums"></div>
+        <div id="root-pills" class="flex items-center gap-1.5 flex-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Dual / Single Plane Grid -->
+    <section id="planes-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-0">
+      <!-- Real Plane R^2 -->
+      <div id="real-panel" class="lg:col-span-12 min-w-0 bg-white rounded-2xl border border-stone-200 overflow-hidden flex flex-col">
+        <!-- Toolbar right above/inside the graph stage -->
+        <div class="px-3 py-2 border-b border-stone-100 bg-stone-50/70 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <span class="text-xs font-semibold text-stone-800">Real Plane (x, y)</span>
+            <span id="leading-a-badge" class="px-2 py-0.5 rounded-md text-[11px] font-mono-code tabular-nums font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200"></span>
+            <div class="inline-flex items-center rounded-lg border border-stone-200 bg-white overflow-hidden">
+              <button id="btn-a-dec" type="button" title="Decrease leading coefficient a" class="px-2.5 py-1 sm:py-0.5 text-xs font-bold text-stone-700 hover:bg-stone-100">−</button>
+              <span class="px-1.5 text-[11px] font-mono-code text-stone-500">a</span>
+              <button id="btn-a-inc" type="button" title="Increase leading coefficient a" class="px-2.5 py-1 sm:py-0.5 text-xs font-bold text-stone-700 hover:bg-stone-100">+</button>
+            </div>
+            <button id="btn-a-flip" type="button" class="px-2.5 py-1 sm:py-0.5 rounded-lg text-[11px] font-medium bg-white border border-stone-200 text-stone-700 hover:bg-stone-100">
+              Flip Sign
+            </button>
+          </div>
+
+          <div class="flex items-center gap-1.5 flex-wrap w-full sm:w-auto">
+            <button id="btn-random-graph" type="button" class="flex-1 sm:flex-initial justify-center px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 shadow-xs ring-2 ring-emerald-500/20 active:scale-[0.99] transition flex items-center gap-1.5">
+              <span aria-hidden="true">✨</span>
+              <span>Random Equation</span>
+            </button>
+            <button id="btn-replay-anim" type="button" title="Replay curve drawing animation" class="px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-medium bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 transition">
+              ▶ Trace
+            </button>
+            <button id="btn-ivt-toggle" type="button" class="px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-medium bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 transition">
+              IVT Zones: Off
+            </button>
+            <button id="btn-reset-k" type="button" disabled title="Drag the dashed teal y = k line or graph background to shift the horizontal slice" class="px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-medium bg-stone-100 border border-stone-200 text-stone-400 cursor-not-allowed transition">
+              Reset Slice k=0
+            </button>
+            <button id="btn-autofit" type="button" class="px-2.5 py-1.5 sm:py-1 rounded-lg text-xs font-medium bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 transition">
+              Auto-Fit
+            </button>
+          </div>
+        </div>
+
+        <!-- Real Interactive Canvas -->
+        <div id="real-canvas-wrap" class="canvas-stage">
+          <canvas id="real-canvas"></canvas>
+          <!-- Compact IVT Callout Pill when IVT Zones are active -->
+          <div id="ivt-callout" class="hidden absolute top-2 right-2 left-2 sm:left-auto sm:top-2.5 sm:right-2.5 sm:max-w-sm bg-white/95 backdrop-blur-xs border border-emerald-200 rounded-xl p-2.5 shadow-xs text-[11px] text-stone-700 pointer-events-none">
+            <div class="font-bold text-emerald-900">Intermediate Value Theorem (IVT)</div>
+            <p class="mt-0.5 leading-snug">
+              Because polynomials are smooth and unbroken, whenever the curve moves from the <span class="font-semibold text-amber-700">P(x) &lt; 0</span> region to the <span class="font-semibold text-emerald-700">P(x) &gt; 0</span> region (or vice versa), it <strong>must cross y = 0</strong> at least once—guaranteeing a real root in between.
+            </p>
+          </div>
+        </div>
+
+        <!-- Compact Legend & Slice Status -->
+        <div class="px-3 py-2 border-t border-stone-100 bg-stone-50/60 flex flex-wrap items-center justify-between gap-2 text-[11px] text-stone-600">
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block"></span> Crossing root (odd multiplicity)</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Tangent root (even or higher multiplicity)</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> Complex conjugate pair (off real axis)</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-teal-600 inline-block"></span> Slice <span id="slice-k-readout" class="font-mono-code tabular-nums font-semibold text-teal-700">y = 0.00</span></span>
+          </div>
+          <div id="hover-readout" class="font-mono-code tabular-nums text-stone-700">Drag roots on x-axis, drag curve vertically, or drag y=k line</div>
+        </div>
+      </div>
+
+      <!-- Argand Plane C (shown automatically when complex roots exist, or when toggled) -->
+      <div id="complex-panel" class="argand-panel is-hidden-pane lg:col-span-4 min-w-0 bg-white rounded-2xl border border-stone-200 overflow-hidden flex flex-col">
+        <div class="px-3 py-2 border-b border-indigo-100 bg-indigo-50/70 flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div id="argand-heading" class="text-xs font-bold text-indigo-950">Complex Argand Plane</div>
+            <p id="argand-description" class="text-[11px] text-indigo-900/80 leading-snug mt-0.5">
+              Maps every complex root z = a + bi with Re(z) horizontal and Im(z) vertical. Real roots lie on the horizontal axis (Im(z) = 0); non-real roots appear in mirror pairs a ± bi so all n roots stay conserved.
+            </p>
+          </div>
+        </div>
+
+        <div id="complex-canvas-wrap" class="canvas-stage">
+          <canvas id="complex-canvas"></canvas>
+        </div>
+
+        <div id="argand-auto-banner" class="px-3 py-2 border-t border-indigo-100 bg-indigo-50/40 text-[11px] text-indigo-950">
+          Showing all n roots in the complex plane.
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Mathematical Explanation & Play Prompt Card -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-3.5 sm:px-4 flex flex-col gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-stone-100">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            Try on the graph
+          </span>
+          <span id="play-prompt-text" class="text-xs font-medium text-stone-800"></span>
+        </div>
+        <button id="btn-next-prompt" type="button" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200/70 transition">
+          Next Prompt →
+        </button>
+      </div>
+      <div id="explanation-text" class="text-xs sm:text-sm text-stone-700 leading-relaxed"></div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Preset root configurations per degree
+      const SCENARIOS = {
+        1: [
+          {
+            id: 'deg1-single',
+            label: '1 Real Root (Line)',
+            a: 2,
+            items: [{ kind: 'real', r: -2, mult: 1 }]
+          }
+        ],
+        2: [
+          {
+            id: 'deg2-two-real',
+            label: '2 Distinct Real Roots',
+            a: 1,
+            items: [
+              { kind: 'real', r: -2, mult: 1 },
+              { kind: 'real', r: 3, mult: 1 }
+            ]
+          },
+          {
+            id: 'deg2-double',
+            label: '1 Tangent Double Root (multiplicity 2)',
+            a: 2,
+            items: [{ kind: 'real', r: 1, mult: 2 }]
+          },
+          {
+            id: 'deg2-complex',
+            label: '0 Real + 2 Complex Conjugate Roots',
+            a: 1,
+            items: [{ kind: 'complex', re: 1, im: 2, mult: 1 }]
+          }
+        ],
+        3: [
+          {
+            id: 'deg3-three-real',
+            label: '3 Distinct Real Roots',
+            a: 1,
+            items: [
+              { kind: 'real', r: -3, mult: 1 },
+              { kind: 'real', r: 0, mult: 1 },
+              { kind: 'real', r: 2, mult: 1 }
+            ]
+          },
+          {
+            id: 'deg3-tangent',
+            label: '2 Real (1 Tangent w/ multiplicity 2)',
+            a: 1,
+            items: [
+              { kind: 'real', r: -2, mult: 1 },
+              { kind: 'real', r: 2, mult: 2 }
+            ]
+          },
+          {
+            id: 'deg3-complex',
+            label: '1 Real + 2 Complex Conjugate Roots',
+            a: 1,
+            items: [
+              { kind: 'real', r: -2, mult: 1 },
+              { kind: 'complex', re: 1, im: 2, mult: 1 }
+            ]
+          },
+          {
+            id: 'deg3-triple',
+            label: '1 Inflection Triple Root (multiplicity 3)',
+            a: 1,
+            items: [{ kind: 'real', r: 1, mult: 3 }]
+          }
+        ],
+        4: [
+          {
+            id: 'deg4-four-real',
+            label: '4 Distinct Real Roots',
+            a: 1,
+            items: [
+              { kind: 'real', r: -3, mult: 1 },
+              { kind: 'real', r: -1, mult: 1 },
+              { kind: 'real', r: 1, mult: 1 },
+              { kind: 'real', r: 3, mult: 1 }
+            ]
+          },
+          {
+            id: 'deg4-double-tangent',
+            label: '2 Tangent Double Roots (W-shape)',
+            a: 1,
+            items: [
+              { kind: 'real', r: -2, mult: 2 },
+              { kind: 'real', r: 2, mult: 2 }
+            ]
+          },
+          {
+            id: 'deg4-mixed',
+            label: '2 Real + 2 Complex Conjugate Roots',
+            a: 1,
+            items: [
+              { kind: 'real', r: -2, mult: 1 },
+              { kind: 'real', r: 2, mult: 1 },
+              { kind: 'complex', re: 0, im: 2, mult: 1 }
+            ]
+          },
+          {
+            id: 'deg4-all-complex',
+            label: '0 Real + 4 Complex Conjugate Roots',
+            a: 1,
+            items: [
+              { kind: 'complex', re: -2, im: 1, mult: 1 },
+              { kind: 'complex', re: 2, im: 2, mult: 1 }
+            ]
+          }
+        ]
+      };
+
+      const PLAY_PROMPTS = [
+        'Drag two red crossing roots together on the x-axis until they merge into a golden tangent root—watch the curve bounce instead of crossing!',
+        'Click "IVT Zones: Off" to shade positive and negative regions, then see why an odd-degree curve can never avoid crossing y = 0.',
+        'Drag the teal y = k slice line up and down to watch real intersections collide and vanish into complex conjugate pairs on the Argand plane.',
+        'Drag a tangent double root vertically off the x-axis to split it into a conjugate pair a ± bi without changing the polynomial degree.',
+        'Click "✨ Random Equation" or "Flip Sign" to watch how the curve grows from left to right and lights up each root as it strikes the x-axis.'
+      ];
+
+      // Application state
+      const state = {
+        degree: 3,
+        a: 2,
+        items: [],
+        sliceK: 0,
+        showIVT: false,
+        promptIndex: 0,
+        showComplexSplit: false,
+        complexManualOverride: null,
+        hoveredId: null,
+        drag: null,
+        animProgress: 1,
+        animFrameId: null,
+        realView: { xMin: -5.5, xMax: 5.5, yMin: -12, yMax: 12 },
+        complexView: { xMin: -4.5, xMax: 4.5, yMin: -3.5, yMax: 3.5 }
+      };
+
+      let uidCounter = 1;
+      function nextId() {
+        uidCounter += 1;
+        return 'root-' + uidCounter;
+      }
+
+      function clamp(val, min, max) {
+        return Math.max(min, Math.min(max, val));
+      }
+
+      function roundToStep(val, step) {
+        return Math.round(val / step) * step;
+      }
+
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function formatNum(n, maxDecimals = 2) {
+        if (Math.abs(n) < 1e-9) return '0';
+        const rounded = Number(n.toFixed(maxDecimals));
+        return Object.is(rounded, -0) ? '0' : String(rounded);
+      }
+
+      function renderTex(el, texStr, fallbackText) {
+        if (!el) return;
+        if (window.katex && typeof window.katex.render === 'function') {
+          try {
+            window.katex.render(texStr, el, { throwOnError: false });
+            return;
+          } catch (_) {
+            // Fall through to plain text
+          }
+        }
+        el.textContent = fallbackText || texStr;
+      }
+
+      function itemsFromScenario(rawItems) {
+        return rawItems.map((it) => ({
+          ...it,
+          id: nextId()
+        }));
+      }
+
+      function hasComplexRoots() {
+        return state.items.some((it) => it.kind === 'complex');
+      }
+
+      function polyMul(p1, p2) {
+        const res = new Array(p1.length + p2.length - 1).fill(0);
+        for (let i = 0; i < p1.length; i++) {
+          for (let j = 0; j < p2.length; j++) {
+            res[i + j] += p1[i] * p2[j];
+          }
+        }
+        return res;
+      }
+
+      function getCoefficients() {
+        let poly = [state.a];
+        for (const item of state.items) {
+          if (item.kind === 'real') {
+            const lin = [-item.r, 1];
+            for (let m = 0; m < item.mult; m++) {
+              poly = polyMul(poly, lin);
+            }
+          } else {
+            const quad = [item.re * item.re + item.im * item.im, -2 * item.re, 1];
+            for (let m = 0; m < item.mult; m++) {
+              poly = polyMul(poly, quad);
+            }
+          }
+        }
+        return poly;
+      }
+
+      function evalP(x) {
+        let val = state.a;
+        for (const item of state.items) {
+          if (item.kind === 'real') {
+            val *= Math.pow(x - item.r, item.mult);
+          } else {
+            const dx = x - item.re;
+            val *= Math.pow(dx * dx + item.im * item.im, item.mult);
+          }
+        }
+        return val;
+      }
+
+      function findSliceIntersections(k) {
+        const { xMin, xMax } = state.realView;
+        const scanMin = Math.min(xMin - 2, -8);
+        const scanMax = Math.max(xMax + 2, 8);
+        const samples = 400;
+        const dx = (scanMax - scanMin) / samples;
+        const hits = [];
+
+        let prevX = scanMin;
+        let prevF = evalP(prevX) - k;
+
+        for (let i = 1; i <= samples; i++) {
+          const curX = scanMin + i * dx;
+          const curF = evalP(curX) - k;
+
+          if (Math.abs(curF) < 1e-6) {
+            hits.push(curX);
+          } else if (prevF * curF < 0) {
+            let lo = prevX;
+            let hi = curX;
+            let fLo = prevF;
+            for (let iter = 0; iter < 24; iter++) {
+              const mid = 0.5 * (lo + hi);
+              const fMid = evalP(mid) - k;
+              if (fLo * fMid <= 0) {
+                hi = mid;
+              } else {
+                lo = mid;
+                fLo = fMid;
+              }
+            }
+            hits.push(0.5 * (lo + hi));
+          }
+          prevX = curX;
+          prevF = curF;
+        }
+
+        const unique = [];
+        for (const h of hits) {
+          if (!unique.some((u) => Math.abs(u - h) < 0.03)) {
+            unique.push(h);
+          }
+        }
+        return unique;
+      }
+
+      function realToScreen(x, y, W, H) {
+        const v = state.realView;
+        const sx = ((x - v.xMin) / (v.xMax - v.xMin)) * W;
+        const sy = H - ((y - v.yMin) / (v.yMax - v.yMin)) * H;
+        return { sx, sy };
+      }
+
+      function screenToReal(sx, sy, W, H) {
+        const v = state.realView;
+        const x = v.xMin + (sx / W) * (v.xMax - v.xMin);
+        const y = v.yMin + ((H - sy) / H) * (v.yMax - v.yMin);
+        return { x, y };
+      }
+
+      function complexToScreen(re, im, W, H) {
+        const v = state.complexView;
+        const sx = ((re - v.xMin) / (v.xMax - v.xMin)) * W;
+        const sy = H - ((im - v.yMin) / (v.yMax - v.yMin)) * H;
+        return { sx, sy };
+      }
+
+      function screenToComplex(sx, sy, W, H) {
+        const v = state.complexView;
+        const re = v.xMin + (sx / W) * (v.xMax - v.xMin);
+        const im = v.yMin + ((H - sy) / H) * (v.yMax - v.yMin);
+        return { re, im };
+      }
+
+      function niceGridStep(span) {
+        const raw = span / 8;
+        const pow10 = Math.pow(10, Math.floor(Math.log10(Math.max(raw, 1e-6))));
+        const norm = raw / pow10;
+        let mult = 1;
+        if (norm >= 5) mult = 5;
+        else if (norm >= 2) mult = 2;
+        return mult * pow10;
+      }
+
+      function autoFitViews() {
+        let minX = -4;
+        let maxX = 4;
+        let maxIm = 3;
+
+        for (const item of state.items) {
+          if (item.kind === 'real') {
+            minX = Math.min(minX, item.r - 1.5);
+            maxX = Math.max(maxX, item.r + 1.5);
+          } else {
+            minX = Math.min(minX, item.re - 1.5);
+            maxX = Math.max(maxX, item.re + 1.5);
+            maxIm = Math.max(maxIm, Math.abs(item.im) + 1.2);
+          }
+        }
+
+        state.realView.xMin = minX;
+        state.realView.xMax = maxX;
+
+        const innerMin = minX + 0.4;
+        const innerMax = maxX - 0.4;
+        let maxAbsY = Math.max(6, Math.abs(state.sliceK) * 1.4);
+        for (let i = 0; i <= 80; i++) {
+          const x = innerMin + (i / 80) * (innerMax - innerMin);
+          const y = Math.abs(evalP(x));
+          if (Number.isFinite(y)) {
+            maxAbsY = Math.max(maxAbsY, Math.min(y * 1.25, 60));
+          }
+        }
+        state.realView.yMin = -maxAbsY;
+        state.realView.yMax = maxAbsY;
+
+        state.complexView.xMin = minX;
+        state.complexView.xMax = maxX;
+        state.complexView.yMin = -maxIm;
+        state.complexView.yMax = maxIm;
+      }
+
+      function syncComplexPanelVisibility(forceRefit = false) {
+        const hasC = hasComplexRoots();
+        const shouldShow =
+          state.complexManualOverride !== null ? state.complexManualOverride : hasC;
+
+        const changed = state.showComplexSplit !== shouldShow;
+        state.showComplexSplit = shouldShow;
+
+        const realPanel = document.getElementById('real-panel');
+        const complexPanel = document.getElementById('complex-panel');
+        const badge = document.getElementById('complex-state-badge');
+        const toggleBtn = document.getElementById('btn-complex-toggle');
+
+        if (shouldShow) {
+          realPanel.classList.remove('lg:col-span-12');
+          realPanel.classList.add('lg:col-span-8');
+          complexPanel.classList.remove('is-hidden-pane');
+        } else {
+          realPanel.classList.remove('lg:col-span-8');
+          realPanel.classList.add('lg:col-span-12');
+          complexPanel.classList.add('is-hidden-pane');
+        }
+
+        if (toggleBtn) {
+          toggleBtn.className = shouldShow
+            ? 'px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200 hover:bg-indigo-100/80 transition flex items-center gap-1.5'
+            : 'px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200 hover:bg-stone-200/70 transition flex items-center gap-1.5';
+        }
+
+        if (badge) {
+          badge.textContent = state.complexManualOverride === null
+            ? (hasC ? 'AUTO: ON' : 'AUTO')
+            : (shouldShow ? 'ON' : 'OFF');
+        }
+
+        const banner = document.getElementById('argand-auto-banner');
+        if (banner) {
+          banner.textContent = hasC
+            ? 'Complex conjugate pairs detected — mapped symmetrically across the real axis.'
+            : 'All roots currently lie on the horizontal real axis (Im(z) = 0).';
+        }
+
+        if (changed || forceRefit) {
+          requestAnimationFrame(() => {
+            autoFitViews();
+            renderAllCanvases();
+          });
+        }
+      }
+
+      function startCurveAnimation() {
+        if (state.animFrameId) {
+          cancelAnimationFrame(state.animFrameId);
+          state.animFrameId = null;
+        }
+        state.animProgress = 0;
+        const durationMs = 1150;
+        const startTime = performance.now();
+
+        function tick(now) {
+          const elapsed = now - startTime;
+          const rawT = clamp(elapsed / durationMs, 0, 1);
+          state.animProgress = 1 - Math.pow(1 - rawT, 3);
+          renderRealCanvas();
+          if (rawT < 1) {
+            state.animFrameId = requestAnimationFrame(tick);
+          } else {
+            state.animProgress = 1;
+            state.animFrameId = null;
+            renderRealCanvas();
+          }
+        }
+        state.animFrameId = requestAnimationFrame(tick);
+      }
+
+      function renderRealCanvas() {
+        const canvas = document.getElementById('real-canvas');
+        const wrap = document.getElementById('real-canvas-wrap');
+        if (!canvas || !wrap) return;
+
+        const rect = wrap.getBoundingClientRect();
+        const W = Math.max(10, Math.floor(rect.width));
+        const H = Math.max(10, Math.floor(rect.height));
+        const dpr = window.devicePixelRatio || 1;
+
+        if (canvas.width !== W * dpr || canvas.height !== H * dpr) {
+          canvas.width = W * dpr;
+          canvas.height = H * dpr;
+        }
+
+        const ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, W, H);
+
+        const v = state.realView;
+        const origin = realToScreen(0, 0, W, H);
+
+        if (state.showIVT) {
+          if (origin.sy > 0) {
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.06)';
+            ctx.fillRect(0, 0, W, Math.min(H, origin.sy));
+          }
+          if (origin.sy < H) {
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.06)';
+            ctx.fillRect(0, Math.max(0, origin.sy), W, H - Math.max(0, origin.sy));
+          }
+        }
+
+        const stepX = niceGridStep(v.xMax - v.xMin);
+        const stepY = niceGridStep(v.yMax - v.yMin);
+        const startX = Math.ceil(v.xMin / stepX) * stepX;
+        const startY = Math.ceil(v.yMin / stepY) * stepY;
+
+        ctx.strokeStyle = '#f5f5f4';
+        ctx.lineWidth = 1;
+        ctx.fillStyle = '#a8a29e';
+        const isCompact = W < 440;
+        ctx.font = `${isCompact ? '9px' : '10px'} "JetBrains Mono", monospace`;
+
+        for (let gx = startX; gx <= v.xMax; gx += stepX) {
+          const { sx } = realToScreen(gx, 0, W, H);
+          ctx.beginPath();
+          ctx.moveTo(sx, 0);
+          ctx.lineTo(sx, H);
+          ctx.stroke();
+          if (Math.abs(gx) > 1e-6) {
+            ctx.textAlign = 'center';
+            ctx.fillText(formatNum(gx, 1), sx, clamp(origin.sy + 13, 12, H - 4));
+          }
+        }
+
+        for (let gy = startY; gy <= v.yMax; gy += stepY) {
+          const { sy } = realToScreen(0, gy, W, H);
+          ctx.beginPath();
+          ctx.moveTo(0, sy);
+          ctx.lineTo(W, sy);
+          ctx.stroke();
+          if (Math.abs(gy) > 1e-6) {
+            ctx.textAlign = 'right';
+            ctx.fillText(formatNum(gy, 1), clamp(origin.sx - 6, 28, W - 6), sy + 3);
+          }
+        }
+
+        ctx.strokeStyle = '#a8a29e';
+        ctx.lineWidth = 1.5;
+        if (origin.sy >= 0 && origin.sy <= H) {
+          ctx.beginPath();
+          ctx.moveTo(0, origin.sy);
+          ctx.lineTo(W, origin.sy);
+          ctx.stroke();
+        }
+        if (origin.sx >= 0 && origin.sx <= W) {
+          ctx.beginPath();
+          ctx.moveTo(origin.sx, 0);
+          ctx.lineTo(origin.sx, H);
+          ctx.stroke();
+        }
+
+        const sliceScreen = realToScreen(0, state.sliceK, W, H);
+        if (sliceScreen.sy >= -10 && sliceScreen.sy <= H + 10) {
+          ctx.save();
+          ctx.strokeStyle = '#0d9488';
+          ctx.lineWidth = 1.75;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(0, sliceScreen.sy);
+          ctx.lineTo(W, sliceScreen.sy);
+          ctx.stroke();
+          ctx.restore();
+
+          if (Math.abs(state.sliceK) > 0.04) {
+            const sliceHits = findSliceIntersections(state.sliceK);
+            for (const hx of sliceHits) {
+              const hp = realToScreen(hx, state.sliceK, W, H);
+              ctx.fillStyle = '#0d9488';
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.arc(hp.sx, hp.sy, 4.5, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.stroke();
+            }
+          }
+        }
+
+        const sweepMaxX = v.xMin + state.animProgress * (v.xMax - v.xMin);
+        ctx.strokeStyle = '#1d4ed8';
+        ctx.lineWidth = 2.75;
+        ctx.beginPath();
+        const steps = Math.max(240, W);
+        let penDown = false;
+        let tipPt = null;
+        for (let i = 0; i <= steps; i++) {
+          const sx = (i / steps) * W;
+          const { x } = screenToReal(sx, 0, W, H);
+          if (x > sweepMaxX) break;
+          const y = evalP(x);
+          const { sy } = realToScreen(x, y, W, H);
+          if (!Number.isFinite(sy) || sy < -H * 2 || sy > H * 3) {
+            penDown = false;
+            continue;
+          }
+          tipPt = { sx, sy, x, y };
+          if (!penDown) {
+            ctx.moveTo(sx, sy);
+            penDown = true;
+          } else {
+            ctx.lineTo(sx, sy);
+          }
+        }
+        ctx.stroke();
+
+        if (state.animProgress < 1 && tipPt) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(29, 78, 216, 0.22)';
+          ctx.beginPath();
+          ctx.arc(tipPt.sx, tipPt.sy, 11, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#1d4ed8';
+          ctx.beginPath();
+          ctx.arc(tipPt.sx, tipPt.sy, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        for (const item of state.items) {
+          if (item.kind !== 'complex') continue;
+          const py = evalP(item.re);
+          const curvePt = realToScreen(item.re, py, W, H);
+          const axisPt = realToScreen(item.re, 0, W, H);
+
+          ctx.save();
+          ctx.strokeStyle = 'rgba(99, 102, 241, 0.45)';
+          ctx.setLineDash([4, 4]);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(axisPt.sx, axisPt.sy);
+          ctx.lineTo(curvePt.sx, curvePt.sy);
+          ctx.stroke();
+          ctx.restore();
+
+          ctx.fillStyle = '#6366f1';
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(curvePt.sx, curvePt.sy, 5.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        for (const item of state.items) {
+          if (item.kind !== 'real') continue;
+          const pt = realToScreen(item.r, 0, W, H);
+          const isOdd = item.mult % 2 === 1;
+          const isHovered = state.hoveredId === item.id;
+          const isReached = state.animProgress >= 1 || item.r <= sweepMaxX;
+          const distFromSweep = Math.abs(sweepMaxX - item.r);
+          const justHit = state.animProgress < 1 && isReached && distFromSweep < (v.xMax - v.xMin) * 0.08;
+
+          if (justHit) {
+            ctx.save();
+            ctx.strokeStyle = isOdd ? 'rgba(225, 29, 72, 0.45)' : 'rgba(245, 158, 11, 0.5)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(pt.sx, pt.sy, 16, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          ctx.save();
+          ctx.globalAlpha = isReached ? 1 : 0.25;
+          ctx.fillStyle = isOdd ? '#e11d48' : '#f59e0b';
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.25;
+          ctx.beginPath();
+          ctx.arc(pt.sx, pt.sy, justHit ? 9.5 : (isHovered ? 8.5 : 7), 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          if (item.mult > 1) {
+            ctx.fillStyle = '#78350f';
+            ctx.font = '700 10px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(`×${item.mult}`, pt.sx, clamp(pt.sy - 12, 14, H - 18));
+          }
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      function renderComplexCanvas() {
+        if (!state.showComplexSplit) return;
+        const canvas = document.getElementById('complex-canvas');
+        const wrap = document.getElementById('complex-canvas-wrap');
+        if (!canvas || !wrap) return;
+
+        const rect = wrap.getBoundingClientRect();
+        const W = Math.max(10, Math.floor(rect.width));
+        const H = Math.max(10, Math.floor(rect.height));
+        const dpr = window.devicePixelRatio || 1;
+
+        if (canvas.width !== W * dpr || canvas.height !== H * dpr) {
+          canvas.width = W * dpr;
+          canvas.height = H * dpr;
+        }
+
+        const ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#fafaff';
+        ctx.fillRect(0, 0, W, H);
+
+        const v = state.complexView;
+        const origin = complexToScreen(0, 0, W, H);
+
+        const stepX = niceGridStep(v.xMax - v.xMin);
+        const stepY = niceGridStep(v.yMax - v.yMin);
+        const startX = Math.ceil(v.xMin / stepX) * stepX;
+        const startY = Math.ceil(v.yMin / stepY) * stepY;
+
+        ctx.strokeStyle = '#eef2ff';
+        ctx.lineWidth = 1;
+        ctx.fillStyle = '#818cf8';
+        const isCompactComplex = W < 360;
+        ctx.font = `${isCompactComplex ? '9px' : '10px'} "JetBrains Mono", monospace`;
+
+        for (let gx = startX; gx <= v.xMax; gx += stepX) {
+          const { sx } = complexToScreen(gx, 0, W, H);
+          ctx.beginPath();
+          ctx.moveTo(sx, 0);
+          ctx.lineTo(sx, H);
+          ctx.stroke();
+          if (Math.abs(gx) > 1e-6) {
+            ctx.textAlign = 'center';
+            ctx.fillText(formatNum(gx, 1), sx, clamp(origin.sy + 13, 12, H - 4));
+          }
+        }
+
+        for (let gy = startY; gy <= v.yMax; gy += stepY) {
+          const { sy } = complexToScreen(0, gy, W, H);
+          ctx.beginPath();
+          ctx.moveTo(0, sy);
+          ctx.lineTo(W, sy);
+          ctx.stroke();
+          if (Math.abs(gy) > 1e-6) {
+            ctx.textAlign = 'right';
+            ctx.fillText(`${formatNum(gy, 1)}i`, clamp(origin.sx - 6, 32, W - 6), sy + 3);
+          }
+        }
+
+        ctx.strokeStyle = '#a5b4fc';
+        ctx.lineWidth = 1.5;
+        if (origin.sy >= 0 && origin.sy <= H) {
+          ctx.beginPath();
+          ctx.moveTo(0, origin.sy);
+          ctx.lineTo(W, origin.sy);
+          ctx.stroke();
+        }
+        if (origin.sx >= 0 && origin.sx <= W) {
+          ctx.beginPath();
+          ctx.moveTo(origin.sx, 0);
+          ctx.lineTo(origin.sx, H);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = '600 10px "Inter", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('Re(z)', W - 8, clamp(origin.sy - 6, 12, H - 8));
+        ctx.textAlign = 'left';
+        ctx.fillText('Im(z)', clamp(origin.sx + 6, 8, W - 36), 14);
+
+        for (const item of state.items) {
+          if (item.kind === 'real') {
+            const pt = complexToScreen(item.r, 0, W, H);
+            const isOdd = item.mult % 2 === 1;
+            ctx.fillStyle = isOdd ? '#e11d48' : '#f59e0b';
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(pt.sx, pt.sy, 6.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          } else {
+            const topPt = complexToScreen(item.re, item.im, W, H);
+            const botPt = complexToScreen(item.re, -item.im, W, H);
+
+            ctx.save();
+            ctx.strokeStyle = 'rgba(79, 70, 229, 0.35)';
+            ctx.setLineDash([4, 3]);
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(topPt.sx, topPt.sy);
+            ctx.lineTo(botPt.sx, botPt.sy);
+            ctx.stroke();
+            ctx.restore();
+
+            for (const pt of [topPt, botPt]) {
+              ctx.fillStyle = '#4f46e5';
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.arc(pt.sx, pt.sy, 6.5, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.stroke();
+            }
+          }
+        }
+
+        ctx.restore();
+      }
+
+      function renderEquationAndSummary() {
+        const coeffs = getCoefficients();
+        const deg = coeffs.length - 1;
+        const terms = [];
+
+        for (let p = deg; p >= 0; p--) {
+          const c = coeffs[p];
+          if (Math.abs(c) < 1e-7) continue;
+          const absC = Math.abs(c);
+          const sign = c < 0 ? '-' : (terms.length > 0 ? '+' : '');
+          const coeffStr = (absC === 1 && p > 0) ? '' : formatNum(absC, 2);
+          let varStr = '';
+          if (p === 1) varStr = 'x';
+          else if (p > 1) varStr = `x^{${p}}`;
+          terms.push(`${sign} ${coeffStr}${varStr}`.trim());
+        }
+
+        const expandedTex = `P(x) = ${terms.length ? terms.join(' ') : '0'}`;
+        renderTex(document.getElementById('eq-expanded'), expandedTex, expandedTex);
+
+        renderTex(
+          document.getElementById('leading-a-badge'),
+          `a = ${formatNum(state.a, 2)}`,
+          `a = ${formatNum(state.a, 2)}`
+        );
+        document.getElementById('header-degree').textContent = String(state.degree);
+
+        renderTex(document.getElementById('slice-k-readout'), `y = ${formatNum(state.sliceK, 2)}`);
+        const resetKBtn = document.getElementById('btn-reset-k');
+        if (resetKBtn) {
+          const isSliceActive = Math.abs(state.sliceK) > 1e-6;
+          resetKBtn.disabled = !isSliceActive;
+          if (isSliceActive) {
+            resetKBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-teal-50 border border-teal-300 text-teal-800 hover:bg-teal-100 shadow-2xs cursor-pointer transition';
+            resetKBtn.textContent = `Reset Slice (${formatNum(state.sliceK, 2)} → 0)`;
+          } else {
+            resetKBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-medium bg-stone-100 border border-stone-200 text-stone-400 cursor-not-allowed transition';
+            resetKBtn.textContent = 'Reset Slice k=0';
+          }
+        }
+
+        const ivtBtn = document.getElementById('btn-ivt-toggle');
+        if (ivtBtn) {
+          ivtBtn.textContent = state.showIVT ? 'IVT Zones: On' : 'IVT Zones: Off';
+          ivtBtn.className = state.showIVT
+            ? 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 transition'
+            : 'px-2.5 py-1 rounded-lg text-xs font-medium bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 transition';
+        }
+
+        const ivtCallout = document.getElementById('ivt-callout');
+        if (ivtCallout) {
+          ivtCallout.classList.toggle('hidden', !state.showIVT);
+        }
+        document.getElementById('play-prompt-text').textContent = PLAY_PROMPTS[state.promptIndex % PLAY_PROMPTS.length];
+
+        const chipsWrap = document.getElementById('eq-factored-chips');
+        chipsWrap.innerHTML = '';
+        if (state.a !== 1) {
+          const aChip = document.createElement('span');
+          aChip.className = 'px-2 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200';
+          renderTex(aChip, formatNum(state.a, 2));
+          chipsWrap.appendChild(aChip);
+        }
+
+        for (const item of state.items) {
+          const chip = document.createElement('span');
+          if (item.kind === 'real') {
+            const isOdd = item.mult % 2 === 1;
+            chip.className = isOdd
+              ? 'px-2 py-0.5 rounded-md text-xs font-medium bg-rose-50 text-rose-900 border border-rose-200'
+              : 'px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-900 border border-amber-200';
+            const rAbs = formatNum(Math.abs(item.r), 2);
+            const inner = item.r === 0 ? 'x' : (item.r > 0 ? `(x - ${rAbs})` : `(x + ${rAbs})`);
+            const tex = item.mult > 1 ? `${inner}^{${item.mult}}` : inner;
+            renderTex(chip, tex);
+          } else {
+            chip.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-50 text-indigo-900 border border-indigo-200';
+            const b = -2 * item.re;
+            const c = item.re * item.re + item.im * item.im;
+            const bPart = Math.abs(b) < 1e-7 ? '' : (b > 0 ? ` + ${formatNum(b, 2)}x` : ` - ${formatNum(Math.abs(b), 2)}x`);
+            const cPart = ` + ${formatNum(c, 2)}`;
+            const inner = `(x^2${bPart}${cPart})`;
+            const tex = item.mult > 1 ? `${inner}^{${item.mult}}` : inner;
+            renderTex(chip, tex);
+          }
+          chipsWrap.appendChild(chip);
+        }
+
+        let realCountWithMult = 0;
+        let complexCountWithMult = 0;
+        for (const item of state.items) {
+          if (item.kind === 'real') realCountWithMult += item.mult;
+          else complexCountWithMult += 2 * item.mult;
+        }
+        document.getElementById('root-tally').textContent =
+          `Fundamental Theorem of Algebra: ${realCountWithMult} Real (with multiplicity) + ${complexCountWithMult} Complex = ${state.degree} total roots`;
+
+        const pillsWrap = document.getElementById('root-pills');
+        pillsWrap.innerHTML = '';
+        for (const item of state.items) {
+          const pill = document.createElement('span');
+          if (item.kind === 'real') {
+            pill.className = 'px-2 py-0.5 rounded-full text-[11px] font-medium bg-stone-100 text-stone-800 border border-stone-200';
+            const multNote = item.mult > 1 ? ` (multiplicity ${item.mult})` : '';
+            pill.textContent = `x = ${formatNum(item.r, 2)}${multNote}`;
+          } else {
+            pill.className = 'px-2 py-0.5 rounded-full text-[11px] font-medium bg-indigo-50 text-indigo-900 border border-indigo-200';
+            const multNote = item.mult > 1 ? ` (multiplicity ${item.mult})` : '';
+            pill.textContent = `z = ${formatNum(item.re, 2)} ± ${formatNum(item.im, 2)}i${multNote}`;
+          }
+          pillsWrap.appendChild(pill);
+        }
+
+        const expEl = document.getElementById('explanation-text');
+        const hasTangent = state.items.some((it) => it.kind === 'real' && it.mult % 2 === 0);
+        const hasComplex = hasComplexRoots();
+        const summaryParts = [
+          `<strong>Degree ${state.degree} Topology:</strong> With leading coefficient <code>a = ${formatNum(state.a, 2)}</code>, the curve has ${realCountWithMult} real root(s) counted with multiplicity and ${complexCountWithMult} non-real complex root(s).`
+        ];
+        if (hasTangent) {
+          summaryParts.push(
+            `At an even-multiplicity root (golden), the factor stays non-negative around the root, so the graph touches the x-axis tangentially and turns back without changing sign.`
+          );
+        }
+        if (hasComplex) {
+          summaryParts.push(
+            `Because all coefficients are real numbers, non-real roots always appear in symmetric conjugate pairs <code>a ± bi</code> on the Complex Argand Plane.`
+          );
+        }
+        expEl.innerHTML = summaryParts.join(' ');
+      }
+
+      function renderAllCanvases() {
+        renderRealCanvas();
+        renderComplexCanvas();
+        renderEquationAndSummary();
+      }
+
+      function populateScenarioDropdown(deg) {
+        const select = document.getElementById('scenario-select');
+        const list = SCENARIOS[deg] || [];
+        select.innerHTML = '';
+        for (const sc of list) {
+          const opt = document.createElement('option');
+          opt.value = sc.id;
+          opt.textContent = sc.label;
+          select.appendChild(opt);
+        }
+      }
+
+      function loadScenario(deg, scenarioId) {
+        state.degree = deg;
+        state.sliceK = 0;
+        const list = SCENARIOS[deg] || [];
+        const sc = list.find((s) => s.id === scenarioId) || list[0];
+        if (!sc) return;
+
+        state.a = sc.a || 1;
+        state.items = itemsFromScenario(sc.items);
+
+        document.querySelectorAll('.deg-btn').forEach((btn) => {
+          const btnDeg = Number(btn.dataset.deg);
+          if (btnDeg === deg) {
+            btn.className = 'deg-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-stone-900 text-white shadow-2xs transition';
+          } else {
+            btn.className = 'deg-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-700 hover:bg-white/70 transition';
+          }
+        });
+
+        populateScenarioDropdown(deg);
+        document.getElementById('scenario-select').value = sc.id;
+        syncComplexPanelVisibility(true);
+        startCurveAnimation();
+      }
+
+      function generateRandomEquation() {
+        const deg = state.degree;
+        const aChoices = [-3, -2, -1, 2, 3];
+        state.a = aChoices[randInt(0, aChoices.length - 1)];
+        state.sliceK = 0;
+
+        let remaining = deg;
+        const items = [];
+        const usedReals = new Set();
+
+        while (remaining > 0) {
+          if (remaining >= 2 && Math.random() < 0.35) {
+            const re = randInt(-3, 3);
+            const im = randInt(1, 3);
+            items.push({ id: nextId(), kind: 'complex', re, im, mult: 1 });
+            remaining -= 2;
+          } else if (remaining >= 2 && Math.random() < 0.3) {
+            let r = randInt(-4, 4);
+            while (usedReals.has(r)) r = randInt(-5, 5);
+            usedReals.add(r);
+            items.push({ id: nextId(), kind: 'real', r, mult: 2 });
+            remaining -= 2;
+          } else {
+            let r = randInt(-4, 4);
+            while (usedReals.has(r)) r = randInt(-5, 5);
+            usedReals.add(r);
+            items.push({ id: nextId(), kind: 'real', r, mult: 1 });
+            remaining -= 1;
+          }
+        }
+
+        state.items = items;
+        syncComplexPanelVisibility(true);
+        startCurveAnimation();
+      }
+
+      function mergeCoincidentRealRoots() {
+        const reals = state.items.filter((it) => it.kind === 'real');
+        const others = state.items.filter((it) => it.kind !== 'real');
+        reals.sort((a, b) => a.r - b.r);
+
+        const merged = [];
+        for (const rItem of reals) {
+          const prev = merged[merged.length - 1];
+          if (prev && Math.abs(prev.r - rItem.r) < 0.16) {
+            prev.r = roundToStep(0.5 * (prev.r + rItem.r), 0.1);
+            prev.mult += rItem.mult;
+          } else {
+            merged.push({ ...rItem });
+          }
+        }
+        state.items = [...merged, ...others];
+      }
+
+      function attachRealCanvasEvents() {
+        const canvas = document.getElementById('real-canvas');
+        const wrap = document.getElementById('real-canvas-wrap');
+
+        function getPos(e) {
+          const rect = wrap.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return {
+            sx: clientX - rect.left,
+            sy: clientY - rect.top,
+            W: rect.width,
+            H: rect.height
+          };
+        }
+
+        function onDown(e) {
+          const { sx, sy, W, H } = getPos(e);
+
+          for (const item of state.items) {
+            if (item.kind !== 'real') continue;
+            const pt = realToScreen(item.r, 0, W, H);
+            if (Math.hypot(sx - pt.sx, sy - pt.sy) <= 14) {
+              state.drag = {
+                type: 'real-root',
+                id: item.id,
+                startX: sx,
+                startY: sy,
+                origR: item.r
+              };
+              return;
+            }
+          }
+
+          for (const item of state.items) {
+            if (item.kind !== 'complex') continue;
+            const py = evalP(item.re);
+            const pt = realToScreen(item.re, py, W, H);
+            if (Math.hypot(sx - pt.sx, sy - pt.sy) <= 14) {
+              state.drag = {
+                type: 'complex-shadow',
+                id: item.id,
+                origRe: item.re,
+                origIm: item.im
+              };
+              return;
+            }
+          }
+
+          const sliceY = realToScreen(0, state.sliceK, W, H).sy;
+          if (Math.abs(sy - sliceY) <= 10) {
+            state.drag = { type: 'slice-k' };
+            return;
+          }
+
+          const { y } = screenToReal(sx, sy, W, H);
+          state.drag = { type: 'slice-k', offsetY: state.sliceK - y };
+        }
+
+        function onMove(e) {
+          const { sx, sy, W, H } = getPos(e);
+          const { x, y } = screenToReal(sx, sy, W, H);
+
+          const readout = document.getElementById('hover-readout');
+          if (readout) {
+            readout.textContent = `x = ${formatNum(x, 2)}, P(x) = ${formatNum(evalP(x), 2)}`;
+          }
+
+          if (!state.drag) {
+            let foundHover = null;
+            for (const item of state.items) {
+              if (item.kind === 'real') {
+                const pt = realToScreen(item.r, 0, W, H);
+                if (Math.hypot(sx - pt.sx, sy - pt.sy) <= 14) {
+                  foundHover = item.id;
+                  break;
+                }
+              }
+            }
+            if (foundHover !== state.hoveredId) {
+              state.hoveredId = foundHover;
+              canvas.style.cursor = foundHover ? 'grab' : 'crosshair';
+              renderRealCanvas();
+            }
+            return;
+          }
+
+          if (e.cancelable) e.preventDefault();
+
+          if (state.drag.type === 'real-root') {
+            const target = state.items.find((it) => it.id === state.drag.id);
+            if (target) {
+              const verticalDist = Math.abs(sy - state.drag.startY);
+              if (target.mult >= 2 && verticalDist > 26) {
+                const imVal = clamp(roundToStep(verticalDist / 35, 0.25), 0.5, 4);
+                target.kind = 'complex';
+                target.re = roundToStep(x, 0.1);
+                target.im = imVal;
+                target.mult = Math.max(1, Math.floor(target.mult / 2));
+                state.drag = { type: 'complex-shadow', id: target.id };
+                syncComplexPanelVisibility(false);
+                renderAllCanvases();
+                return;
+              }
+              target.r = clamp(roundToStep(x, 0.1), -6, 6);
+              renderAllCanvases();
+            }
+          } else if (state.drag.type === 'complex-shadow') {
+            const target = state.items.find((it) => it.id === state.drag.id);
+            if (target && target.kind === 'complex') {
+              target.re = clamp(roundToStep(x, 0.1), -6, 6);
+              renderAllCanvases();
+            }
+          } else if (state.drag.type === 'slice-k') {
+            const nextK = y + (state.drag.offsetY || 0);
+            const ySpan = state.realView.yMax - state.realView.yMin;
+            const stepK = ySpan > 30 ? 0.5 : 0.25;
+            const snapZero = ySpan * 0.015;
+            state.sliceK = Math.abs(nextK) < snapZero
+              ? 0
+              : clamp(roundToStep(nextK, stepK), state.realView.yMin * 0.92, state.realView.yMax * 0.92);
+            renderAllCanvases();
+          }
+        }
+
+        function onUp() {
+          if (state.drag && state.drag.type === 'real-root') {
+            mergeCoincidentRealRoots();
+            renderAllCanvases();
+          }
+          state.drag = null;
+        }
+
+        canvas.addEventListener('mousedown', onDown);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+
+        canvas.addEventListener('touchstart', onDown, { passive: false });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+      }
+
+      function attachComplexCanvasEvents() {
+        const canvas = document.getElementById('complex-canvas');
+        const wrap = document.getElementById('complex-canvas-wrap');
+        let cDrag = null;
+
+        function getPos(e) {
+          const rect = wrap.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return {
+            sx: clientX - rect.left,
+            sy: clientY - rect.top,
+            W: rect.width,
+            H: rect.height
+          };
+        }
+
+        function onDown(e) {
+          const { sx, sy, W, H } = getPos(e);
+          for (const item of state.items) {
+            if (item.kind === 'complex') {
+              const p1 = complexToScreen(item.re, item.im, W, H);
+              const p2 = complexToScreen(item.re, -item.im, W, H);
+              if (Math.hypot(sx - p1.sx, sy - p1.sy) <= 14 || Math.hypot(sx - p2.sx, sy - p2.sy) <= 14) {
+                cDrag = { id: item.id };
+                return;
+              }
+            }
+          }
+        }
+
+        function onMove(e) {
+          if (!cDrag) return;
+          if (e.cancelable) e.preventDefault();
+          const { sx, sy, W, H } = getPos(e);
+          const { re, im } = screenToComplex(sx, sy, W, H);
+          const target = state.items.find((it) => it.id === cDrag.id);
+          if (!target) return;
+
+          if (Math.abs(im) < 0.2) {
+            target.kind = 'real';
+            target.r = clamp(roundToStep(re, 0.1), -6, 6);
+            target.mult = target.mult * 2;
+            delete target.re;
+            delete target.im;
+            cDrag = null;
+            mergeCoincidentRealRoots();
+            syncComplexPanelVisibility(false);
+            renderAllCanvases();
+            return;
+          }
+
+          target.re = clamp(roundToStep(re, 0.1), -6, 6);
+          target.im = clamp(roundToStep(Math.abs(im), 0.1), 0.25, 5);
+          renderAllCanvases();
+        }
+
+        function onUp() {
+          cDrag = null;
+        }
+
+        canvas.addEventListener('mousedown', onDown);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+
+        canvas.addEventListener('touchstart', onDown, { passive: false });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+      }
+
+      function initUI() {
+        document.querySelectorAll('.deg-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const deg = Number(btn.dataset.deg);
+            loadScenario(deg, null);
+          });
+        });
+
+        document.getElementById('scenario-select').addEventListener('change', (e) => {
+          loadScenario(state.degree, e.target.value);
+        });
+
+        document.getElementById('btn-complex-toggle').addEventListener('click', () => {
+          if (state.complexManualOverride === null) {
+            state.complexManualOverride = !state.showComplexSplit;
+          } else {
+            state.complexManualOverride = !state.complexManualOverride;
+          }
+          syncComplexPanelVisibility(true);
+        });
+
+        document.getElementById('btn-a-dec').addEventListener('click', () => {
+          const next = state.a - 1;
+          state.a = next === 0 ? -1 : clamp(next, -5, 5);
+          renderAllCanvases();
+        });
+
+        document.getElementById('btn-a-inc').addEventListener('click', () => {
+          const next = state.a + 1;
+          state.a = next === 0 ? 1 : clamp(next, -5, 5);
+          renderAllCanvases();
+        });
+
+        document.getElementById('btn-a-flip').addEventListener('click', () => {
+          state.a = -state.a;
+          renderAllCanvases();
+        });
+
+        document.getElementById('btn-random-graph').addEventListener('click', () => {
+          generateRandomEquation();
+        });
+
+        document.getElementById('btn-replay-anim').addEventListener('click', () => {
+          startCurveAnimation();
+        });
+
+        document.getElementById('btn-ivt-toggle').addEventListener('click', () => {
+          state.showIVT = !state.showIVT;
+          renderAllCanvases();
+        });
+
+        document.getElementById('btn-reset-k').addEventListener('click', () => {
+          state.sliceK = 0;
+          renderAllCanvases();
+        });
+
+        document.getElementById('btn-autofit').addEventListener('click', () => {
+          autoFitViews();
+          renderAllCanvases();
+        });
+
+        document.getElementById('btn-next-prompt').addEventListener('click', () => {
+          state.promptIndex = (state.promptIndex + 1) % PLAY_PROMPTS.length;
+          renderEquationAndSummary();
+        });
+
+        if (typeof ResizeObserver !== 'undefined') {
+          const ro = new ResizeObserver(() => {
+            renderAllCanvases();
+          });
+          ro.observe(document.getElementById('real-canvas-wrap'));
+          ro.observe(document.getElementById('complex-canvas-wrap'));
+        }
+
+        window.addEventListener('resize', renderAllCanvases);
+        attachRealCanvasEvents();
+        attachComplexCanvasEvents();
+      }
+
+      window.addEventListener('load', () => {
+        initUI();
+        loadScenario(3, 'deg3-three-real');
+      });
+    })();
+  </script>
+</body>
+</html>
