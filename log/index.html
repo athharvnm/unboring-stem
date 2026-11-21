@@ -97,15 +97,10 @@
               </div>
             </div>
             <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <label for="s1-morph-slider" class="text-xs font-semibold text-slate-800">2. Ruler View Mode</label>
-                <span id="s1-morph-badge" class="font-mono-code text-xs font-bold px-2.5 py-0.5 rounded bg-teal-600 text-white shrink-0">100% Log Scale</span>
-              </div>
-              <input id="s1-morph-slider" type="range" min="0" max="100" step="1" value="100" oninput="updateS1Morph(this.value)" class="lab-slider" />
-              <div class="flex flex-col sm:flex-row justify-between gap-2 pt-1">
-                <button type="button" onclick="animateS1Morph(0)" class="min-h-[38px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer transition-all">Linear Ruler</button>
-                <button type="button" onclick="animateS1Morph(50)" class="min-h-[38px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer transition-all">50% Blend</button>
-                <button type="button" onclick="animateS1Morph(100)" class="min-h-[38px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-teal-600 text-white hover:bg-teal-700 cursor-pointer transition-all">Logarithmic Ruler</button>
+              <label class="block text-xs font-semibold text-slate-800">2. Ruler View Mode</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="s1-mode-lin" onclick="setS1Mode('linear')">Linear Ruler</button>
+                <button type="button" id="s1-mode-log" onclick="setS1Mode('log')">Logarithmic Ruler</button>
               </div>
               <p id="s1-morph-explainer" class="text-xs text-slate-600 leading-relaxed pt-0.5"></p>
             </div>
@@ -435,10 +430,10 @@
         <div class="lg:col-span-7 lab-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h3 class="lab-card-title text-sm sm:text-base font-bold text-slate-900">Log-Length Bars (Base 2)</h3>
+              <h3 id="s5-canvas-title" class="lab-card-title text-sm sm:text-base font-bold text-slate-900">Interactive Slide Rule (Base 2)</h3>
               <p id="s5-canvas-sub" class="text-xs text-slate-500 mt-0.5"></p>
             </div>
-            <span class="text-[11px] font-mono-code px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0">Axis: u = log₂(value)</span>
+            <span id="s5-pill" class="text-[11px] font-mono-code px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0">Drag the lower scale</span>
           </div>
           <div class="relative w-full h-72 sm:h-[22rem] lg:h-96 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden"><canvas id="s5-sliderule-canvas"></canvas></div>
           <div class="p-3.5 rounded-xl bg-blue-50/75 border border-blue-200 text-xs text-slate-700 leading-relaxed">
@@ -557,7 +552,7 @@
     ];
     const STEP_ON = 'min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight bg-blue-600 text-white shadow-sm cursor-pointer transition-all';
     const STEP_OFF = 'min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer transition-all';
-    const BTN_ON = (c = 'blue') => `min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border bg-${c}-600 text-white border-${c}-600 shadow-sm transition-all cursor-pointer`;
+    const BTN_ON = (c = 'green') => `min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border bg-${c}-600 text-white border-${c}-600 shadow-sm transition-all cursor-pointer`;
     const BTN_OFF = 'min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all cursor-pointer';
 
     let currentStep = 1;
@@ -655,27 +650,20 @@
       renderStep1();
     }
 
-    function updateS1Morph(val) {
-      const c = Math.max(0, Math.min(100, Number(val)));
-      s1State.morph = c;
-      const slider = document.getElementById('s1-morph-slider');
-      if (slider && Number(slider.value) !== c) slider.value = c;
-      const shown = Math.round(c);
-      const badge = document.getElementById('s1-morph-badge');
-      badge.textContent = `${shown}% ${shown === 0 ? 'Linear Scale' : shown === 100 ? 'Log Scale' : 'Blend'}`;
-      badge.className = 'font-mono-code text-xs font-bold px-2.5 py-0.5 rounded text-white shrink-0 ' + (c >= 50 ? 'bg-teal-600' : 'bg-blue-600');
+    function setS1Mode(mode) {
+      const log = mode === 'log';
+      document.getElementById('s1-mode-lin').className = !log ? BTN_ON() : BTN_OFF;
+      document.getElementById('s1-mode-log').className = log ? BTN_ON() : BTN_OFF;
       const ex = document.getElementById('s1-morph-explainer');
-      if (shown === 0) {
-        ex.innerHTML = '<strong>0% Linear Scale:</strong> Position is directly proportional to the actual value. Huge values dominate the right end while smaller values squeeze near the left.';
-      } else if (shown === 100) {
-        ex.innerHTML = '<strong>100% Log Scale:</strong> Position is proportional to \\(\\log_{10}(\\text{value})\\), so every <strong>10&times;</strong> jump gets equal horizontal distance.';
+      if (log) {
+        ex.innerHTML = '<strong>Log scale:</strong> Position is proportional to \\(\\log_{10}(\\text{value})\\), so every <strong>10&times;</strong> jump gets equal horizontal distance.';
         typesetMath(ex);
       } else {
-        ex.innerHTML = `<strong>${shown}% Blend (visual interpolation):</strong> each marker sits ${100 - shown}% of the way toward its linear spot and ${shown}% toward its log spot, showing how small items spread out as you approach a true log scale.`;
+        ex.innerHTML = '<strong>Linear scale:</strong> Position is directly proportional to the actual value. Huge values dominate the right end while smaller values squeeze near the left.';
       }
-      renderStep1();
+      animateS1Morph(log ? 100 : 0);
     }
-
+    function updateS1Morph(v) { s1State.morph = Math.max(0, Math.min(100, Number(v))); renderStep1(); }
     function animateS1Morph(target) {
       if (s1State.animRaf) cancelAnimationFrame(s1State.animRaf);
       const tick = () => {
@@ -709,7 +697,7 @@
       ctx.beginPath(); ctx.moveTo(padL, topY); ctx.lineTo(padL + w, topY); ctx.stroke();
 
       ctx.fillStyle = accent;
-      ctx.fillText(alpha > 0.85 ? 'LOGARITHMIC RULER (Equal spacing per 10× factor)' : 'MORPHING RULER (Slide between Linear and Log)', padL, botY - 34);
+      ctx.fillText(alpha > 0.85 ? 'LOGARITHMIC RULER (Equal spacing per 10× factor)' : 'LINEAR RULER (Equal spacing per 1 unit)', padL, botY - 34);
       ctx.strokeStyle = accent; ctx.lineWidth = 3.5;
       ctx.beginPath(); ctx.moveTo(padL, botY); ctx.lineTo(padL + w, botY); ctx.stroke();
 
@@ -774,7 +762,7 @@
     function setS2Scale(s) {
       s2State.scale = s;
       document.getElementById('s2-scale-lin').className = s === 'linear' ? BTN_ON() : BTN_OFF;
-      document.getElementById('s2-scale-log').className = s === 'log' ? BTN_ON('teal') : BTN_OFF;
+      document.getElementById('s2-scale-log').className = s === 'log' ? BTN_ON() : BTN_OFF;
       renderStep2();
     }
     function setS2Steps(k) {
@@ -904,7 +892,7 @@
 
       ['exp', 'log', 'both'].forEach((m) => {
         document.getElementById(`s3-view-${m}`).className = 'min-h-[38px] py-2 px-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ' +
-          (view === m ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50');
+          (view === m ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50');
       });
 
       document.getElementById('s3-graph-title').innerHTML =
@@ -1016,7 +1004,7 @@
     function setS4Mode(mode) {
       s4State.mode = mode === 'nature' ? 'nature' : 'compound';
       document.getElementById('s4-mode-compound').className = s4State.mode === 'compound' ? BTN_ON() : BTN_OFF;
-      document.getElementById('s4-mode-nature').className = s4State.mode === 'nature' ? BTN_ON('teal') : BTN_OFF;
+      document.getElementById('s4-mode-nature').className = s4State.mode === 'nature' ? BTN_ON() : BTN_OFF;
       document.getElementById('s4-compound-controls').classList.toggle('hidden', s4State.mode !== 'compound');
       document.getElementById('s4-nature-controls').classList.toggle('hidden', s4State.mode !== 'nature');
       document.getElementById('s4-step-breakdown-panel').classList.toggle('hidden', s4State.mode !== 'compound');
@@ -1116,7 +1104,7 @@
       s5State.law = law;
       ['mul', 'div', 'pow'].forEach((l) => {
         document.getElementById(`s5-law-${l}`).className = 'min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border text-center leading-snug transition-all cursor-pointer ' +
-          (l === law ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50');
+          (l === law ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50');
       });
       document.getElementById('s5-b-group').classList.toggle('hidden', law === 'pow');
       document.getElementById('s5-k-group').classList.toggle('hidden', law !== 'pow');
@@ -1157,6 +1145,9 @@
         lo = 0; hi = 16; sub = 'Stack k copies of log₂A: the total length is k·log₂A = log₂(Aᵏ).';
       }
       document.getElementById('s5-canvas-sub').textContent = sub;
+      document.getElementById('s5-canvas-title').textContent = law === 'pow' ? 'Log-Length Bars (Base 2)' : 'Interactive Slide Rule (Base 2)';
+      document.getElementById('s5-pill').textContent = law === 'pow' ? 'Axis: u = log₂(value)' : 'Drag the lower scale';
+      if (law !== 'pow') { drawSlideRule(law, a, b); return; }
 
       const setup = setupCanvas(document.getElementById('s5-sliderule-canvas'));
       if (!setup) return;
@@ -1195,6 +1186,99 @@
       ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = '#D97706'; ctx.lineWidth = 1.4;
       ctx.beginPath(); ctx.moveTo(X(result), row1 + bh + 2); ctx.lineTo(X(result), axisY); ctx.stroke(); ctx.restore();
     }
+
+
+    function drawSlideRule(law, a, b) {
+      const cv = document.getElementById('s5-sliderule-canvas');
+      const setup = setupCanvas(cv); if (!setup) return;
+      const { ctx, width, height } = setup;
+      ctx.clearRect(0, 0, width, height);
+      const mul = law === 'mul';
+      const lo = mul ? 0 : -4, hi = mul ? 8 : 8;
+      const lA = Math.log2(a), lB = Math.log2(b);
+      const offset = mul ? lA : lA - lB;
+      const pad = Math.max(24, Math.min(44, Math.round(width * 0.06)));
+      const W = Math.max(120, width - pad * 2);
+      const X = (u) => pad + ((u - lo) / (hi - lo)) * W;
+      const lbl = (v) => (v < 1 ? `1/${Math.round(1 / v)}` : String(v));
+      const fixedVals = mul ? [1,2,3,4,5,6,7,8,9,10,12,14,16,20,24,32,48,64,96,128,192,256]
+                            : [1/16,1/8,1/4,1/2,1,2,3,4,6,8,12,16,32,64,128,256];
+      const yT = height * 0.27, yB = height * 0.46, bodyH = 40;
+
+      ctx.textAlign = 'left'; ctx.font = '700 11px "Plus Jakarta Sans", sans-serif'; ctx.fillStyle = '#475569';
+      ctx.fillText('FIXED SCALE', pad, yT - 34);
+      ctx.fillStyle = '#0D9488'; ctx.fillText('SLIDING SCALE (drag me)', pad, yB - 8);
+
+      // fixed scale
+      ctx.strokeStyle = '#2563EB'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(X(lo), yT); ctx.lineTo(X(hi), yT); ctx.stroke();
+      ctx.font = '600 9px "JetBrains Mono", monospace'; ctx.textAlign = 'center';
+      fixedVals.forEach((v) => {
+        const u = Math.log2(v); if (u < lo - 1e-9 || u > hi + 1e-9) return;
+        ctx.strokeStyle = '#64748B'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(X(u), yT - 6); ctx.lineTo(X(u), yT + 6); ctx.stroke();
+        ctx.fillStyle = '#334155'; ctx.fillText(lbl(v), X(u), yT - 11);
+      });
+
+      // sliding scale body
+      const bx = X(offset), bw = X(offset + 4) - X(offset);
+      ctx.fillStyle = 'rgba(13,148,136,0.12)'; ctx.strokeStyle = '#0D9488'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(bx, yB, bw, bodyH, 8); ctx.fill(); ctx.stroke();
+      for (let n = 1; n <= 16; n++) {
+        const x = X(offset + Math.log2(n));
+        ctx.strokeStyle = '#0D9488'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(x, yB); ctx.lineTo(x, yB + 8); ctx.stroke();
+        ctx.fillStyle = '#115E59'; ctx.font = '600 9px "JetBrains Mono", monospace';
+        if (![11, 13, 15].includes(n)) ctx.fillText(String(n), x, yB + 22);
+      }
+
+      // alignment markers + cursor
+      const xA = X(lA), xRes = X(mul ? lA + lB : lA - lB), xB = X(offset + lB);
+      const dot = (x, y, c) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, 5.5, 0, Math.PI * 2); ctx.fill(); };
+      ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = '#D97706'; ctx.lineWidth = 1.5;
+      const xc = mul ? xRes : xA;
+      ctx.beginPath(); ctx.moveTo(xc, yT - 2); ctx.lineTo(xc, yB + bodyH); ctx.stroke(); ctx.restore();
+      if (mul) { dot(xA, yT, '#2563EB'); dot(X(offset), yB, '#2563EB'); dot(xB, yB, '#D97706'); dot(xRes, yT, '#D97706'); }
+      else { dot(xA, yT, '#2563EB'); dot(X(offset + lB), yB, '#2563EB'); dot(X(offset), yB, '#D97706'); dot(xRes, yT, '#D97706'); }
+
+      // readout
+      const res = mul ? a * b : a / b;
+      ctx.textAlign = 'left'; ctx.font = '700 12px "Plus Jakarta Sans", sans-serif'; ctx.fillStyle = '#0F172A';
+      const fmt = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 1000) / 1000));
+      const l1 = mul
+        ? `1 on the sliding scale sits under A = ${a} on the fixed scale.`
+        : `B = ${b} on the sliding scale sits under A = ${a} on the fixed scale.`;
+      const l2 = mul
+        ? `Under B = ${b} on the sliding scale, the fixed scale reads ${fmt(res)} = ${a} × ${b}.`
+        : `The 1 of the sliding scale points at ${fmt(res)} on the fixed scale = ${a} ÷ ${b}.`;
+      ctx.fillText(l1, pad, height * 0.80);
+      ctx.fillStyle = '#B45309'; ctx.fillText(l2, pad, height * 0.80 + 20);
+      ctx.fillStyle = '#64748B'; ctx.font = '500 10px "JetBrains Mono", monospace';
+      ctx.fillText(mul ? 'Lengths add: log₂A + log₂B = log₂(AB)' : 'Lengths subtract: log₂A − log₂B = log₂(A/B)', pad, height * 0.80 + 38);
+      cv.style.cursor = 'grab';
+      cv._rule = { mul, lo, hi, pad, W };
+    }
+
+    (function initS5Drag() {
+      window.addEventListener('DOMContentLoaded', () => {
+        const cv = document.getElementById('s5-sliderule-canvas');
+        let drag = false;
+        const move = (e) => {
+          const r = cv._rule; if (!r || s5State.law === 'pow') return;
+          const px = e.clientX - cv.getBoundingClientRect().left;
+          const u = r.lo + ((px - r.pad) / r.W) * (r.hi - r.lo);
+          const bVal = Number(document.getElementById('s5-b-slider').value);
+          let A = r.mul ? Math.pow(2, Math.max(0, Math.min(4, u))) : bVal * Math.pow(2, Math.max(-4, Math.min(4, u)));
+          A = Math.max(1, Math.min(16, Math.round(A)));
+          document.getElementById('s5-a-slider').value = String(A);
+          renderStep5();
+        };
+        cv.addEventListener('pointerdown', (e) => { if (s5State.law === 'pow') return; drag = true; cv.setPointerCapture(e.pointerId); cv.style.cursor = 'grabbing'; move(e); });
+        cv.addEventListener('pointermove', (e) => { if (drag) move(e); });
+        const end = () => { drag = false; cv.style.cursor = 'grab'; };
+        cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+      });
+    })();
 
     // ---------------------------------------------------------------------
     // STEP 6 quiz
@@ -1255,7 +1339,7 @@
       });
     }
     window.addEventListener('DOMContentLoaded', () => {
-      setS1Preset('size'); updateS1Morph(100);
+      setS1Preset('size'); setS1Mode('log');
       setS2Multiplier(2); setS2Scale('linear');
       setS4Mode('compound'); setS5Law('mul');
       renderQuiz(); goToStep(1);
