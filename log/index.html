@@ -1,0 +1,2134 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logarithms Lab · Interactive Step-by-Step Guide</title>
+  <meta name="description" content="An interactive step-by-step STEM guide to logarithms, scales, inverse functions, Euler's number e, and log laws." />
+  <link rel="canonical" href="https://unboringstem.pages.dev/log" />
+
+  <!-- Open Graph / Social Summary Card -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://unboringstem.pages.dev/log" />
+  <meta property="og:title" content="Logarithms Lab · Interactive Step-by-Step Guide" />
+  <meta property="og:description" content="Explore real-world scales, step-counting intuition, exponential inverses, Euler's number e, and logarithm laws through interactive visual labs." />
+  <meta property="og:image" content="https://unboringstem.pages.dev/log/social.png" />
+  <meta property="og:image:alt" content="Logarithms Lab interactive step-by-step guide preview" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://unboringstem.pages.dev/log" />
+  <meta name="twitter:title" content="Logarithms Lab · Interactive Step-by-Step Guide" />
+  <meta name="twitter:description" content="Explore real-world scales, step-counting intuition, exponential inverses, Euler's number e, and logarithm laws through interactive visual labs." />
+  <meta name="twitter:image" content="https://unboringstem.pages.dev/log/social.png" />
+  <meta name="twitter:image:alt" content="Logarithms Lab interactive step-by-step guide preview" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <style>
+    html, body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    .font-editorial {
+      font-family: 'Instrument Serif', Georgia, serif;
+    }
+    .lab-heading {
+      font-family: 'Instrument Serif', Georgia, serif;
+      letter-spacing: -0.015em;
+      line-height: 1.12;
+    }
+    .lab-card-title {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: -0.015em;
+      line-height: 1.3;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .katex {
+      font-size: 1.02em;
+    }
+
+    /* Consistent STEM Lab Range Sliders across mobile & desktop */
+    input[type="range"].lab-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      outline: none;
+      touch-action: pan-y;
+    }
+    input[type="range"].lab-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2563EB;
+      border: 3px solid #FFFFFF;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+      cursor: pointer;
+      transition: transform 0.14s ease, background-color 0.14s ease;
+    }
+    input[type="range"].lab-slider::-webkit-slider-thumb:hover,
+    input[type="range"].lab-slider::-webkit-slider-thumb:active {
+      transform: scale(1.12);
+      background: #1D4ED8;
+    }
+    input[type="range"].lab-slider.teal::-webkit-slider-thumb {
+      background: #0D9488;
+    }
+    input[type="range"].lab-slider.teal::-webkit-slider-thumb:hover,
+    input[type="range"].lab-slider.teal::-webkit-slider-thumb:active {
+      background: #0F766E;
+    }
+    input[type="range"].lab-slider.amber::-webkit-slider-thumb {
+      background: #D97706;
+    }
+    input[type="range"].lab-slider.amber::-webkit-slider-thumb:hover,
+    input[type="range"].lab-slider.amber::-webkit-slider-thumb:active {
+      background: #B45309;
+    }
+    input[type="range"].lab-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2563EB;
+      border: 3px solid #FFFFFF;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+      cursor: pointer;
+    }
+
+    .lab-card {
+      background-color: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 1rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-blue-100 selection:text-blue-900 flex flex-col min-h-screen w-full overflow-x-hidden">
+
+  <!-- Sticky Top Stepper Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 w-full">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-2.5 py-2.5 sm:py-3">
+        <!-- Brand & Progress Indicator -->
+        <div class="flex items-center justify-between gap-2 sm:gap-3">
+          <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 text-white font-mono-code font-bold text-sm flex items-center justify-center shadow-xs shrink-0">
+              log
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h1 class="text-sm sm:text-base font-bold tracking-tight text-slate-900">
+                  Logarithms Lab
+                </h1>
+                <span id="header-progress-pill" class="text-[11px] font-mono-code font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                  Step 1 of 6
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 truncate">
+                A visual, step-by-step path from everyday scales to continuous growth
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Sequential Stepper Pills (Full wrap, comfortable touch targets, zero horizontal clipping) -->
+        <nav aria-label="Guided Learning Steps" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 w-full">
+          <button type="button" id="step-btn-1" onclick="goToStep(1)" class="min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight transition-all cursor-pointer">
+            1. Why Logs? (Scale)
+          </button>
+          <button type="button" id="step-btn-2" onclick="goToStep(2)" class="min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight transition-all cursor-pointer">
+            2. Step Counter
+          </button>
+          <button type="button" id="step-btn-3" onclick="goToStep(3)" class="min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight transition-all cursor-pointer">
+            3. Base &amp; Inverse
+          </button>
+          <button type="button" id="step-btn-4" onclick="goToStep(4)" class="min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight transition-all cursor-pointer">
+            4. The Constant e
+          </button>
+          <button type="button" id="step-btn-5" onclick="goToStep(5)" class="min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight transition-all cursor-pointer">
+            5. Log Laws
+          </button>
+          <button type="button" id="step-btn-6" onclick="goToStep(6)" class="min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight transition-all cursor-pointer">
+            6. Summary &amp; Check
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+
+    <!-- =================================================================== -->
+    <!-- STEP 1: WHY LOGS? (SCALE)                                           -->
+    <!-- =================================================================== -->
+    <section id="step-panel-1" class="space-y-5 sm:space-y-6">
+      <!-- Story Header -->
+      <div class="lab-card p-4 sm:p-6">
+        <span class="text-[11px] font-mono-code uppercase tracking-wider font-semibold text-blue-600">
+          Step 1 · Motivation Before Formulas
+        </span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl lab-heading font-normal text-slate-900 mt-1">
+          Why do we even need logarithms?
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed mt-2 max-w-4xl">
+          Imagine trying to draw an ant (0.001 m), a person (1.7 m), Mount Everest (8,849 m), and Planet Earth (diameter &approx; 12,742,000 m) on one paper ruler. On a standard linear ruler, everything smaller than a continent gets crushed into a single dot near zero. Logarithmic scales give every <strong>10&times; jump</strong> equal space on the ruler.
+        </p>
+      </div>
+
+      <!-- Primary Interactive Workspace -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+        <!-- Controls & Presets -->
+        <div class="lg:col-span-5 xl:col-span-4 space-y-5">
+          <div class="lab-card p-4 sm:p-5 space-y-5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-2">
+                1. Choose a Real-World Scale
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="s1-preset-size" onclick="setS1Preset('size')" class="min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Physical Sizes
+                </button>
+                <button type="button" id="s1-preset-sound" onclick="setS1Preset('sound')" class="min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Sound (Decibels)
+                </button>
+                <button type="button" id="s1-preset-quake" onclick="setS1Preset('quake')" class="min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Earthquakes (Mag.)
+                </button>
+                <button type="button" id="s1-preset-ph" onclick="setS1Preset('ph')" class="min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Acidity (pH Scale)
+                </button>
+              </div>
+            </div>
+
+            <!-- Interactive Morph Slider: Linear (0%) to Logarithmic (100%) -->
+            <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <label for="s1-morph-slider" class="text-xs font-semibold text-slate-800">
+                  2. Ruler View Mode
+                </label>
+                <span id="s1-morph-badge" class="font-mono-code text-xs font-bold px-2.5 py-0.5 rounded bg-blue-600 text-white shrink-0">
+                  100% Log Scale
+                </span>
+              </div>
+              <input
+                id="s1-morph-slider"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="100"
+                oninput="updateS1Morph(this.value)"
+                class="lab-slider"
+              />
+              <div class="flex flex-col xs:flex-row sm:flex-row justify-between gap-2 pt-1">
+                <button type="button" onclick="animateS1Morph(0)" class="min-h-[38px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer transition-all">
+                  Linear Ruler
+                </button>
+                <button type="button" onclick="animateS1Morph(50)" class="min-h-[38px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer transition-all">
+                  50% Blend
+                </button>
+                <button type="button" onclick="animateS1Morph(100)" class="min-h-[38px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-teal-600 text-white hover:bg-teal-700 cursor-pointer transition-all">
+                  Logarithmic Ruler
+                </button>
+              </div>
+              <p id="s1-morph-explainer" class="text-xs text-slate-600 leading-relaxed pt-0.5">
+                <strong>100% Log Scale:</strong> Position is proportional to <span class="font-mono-code text-slate-900">log<sub>10</sub>(value)</span>, so every <strong>10×</strong> jump gets equal horizontal distance.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dual-Ruler Canvas -->
+        <div class="lg:col-span-7 xl:col-span-8 lab-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h3 id="s1-canvas-title" class="lab-card-title text-sm sm:text-base font-bold text-slate-900">
+                From an Ant to Planet Earth (10 orders of magnitude)
+              </h3>
+              <p id="s1-canvas-subtitle" class="text-xs text-slate-500 mt-0.5">
+                Each equal step on the bottom ruler multiplies size by 10
+              </p>
+            </div>
+            <span class="text-[11px] font-mono-code px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0">
+              No formulas needed yet
+            </span>
+          </div>
+
+          <div class="relative w-full h-72 sm:h-88 lg:h-96 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden">
+            <canvas id="s1-ruler-canvas"></canvas>
+          </div>
+
+          <div id="s1-insight-strip" class="p-3.5 rounded-xl bg-teal-50/75 border border-teal-200 text-xs text-teal-950 leading-relaxed">
+            <strong>Key Takeaway:</strong> Without logarithms, scientists could not compare whispers to jet engines, mild tremors to great earthquakes, or lemon juice to bleach on a single readable scale.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- STEP 2: STEP COUNTER (INTUITION)                                    -->
+    <!-- =================================================================== -->
+    <section id="step-panel-2" class="hidden space-y-5 sm:space-y-6">
+      <div class="lab-card p-4 sm:p-6">
+        <span class="text-[11px] font-mono-code uppercase tracking-wider font-semibold text-blue-600">
+          Step 2 · The Core Intuition
+        </span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl lab-heading font-normal text-slate-900 mt-1">
+          A logarithm is simply a multiplication step counter
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed mt-2 max-w-4xl">
+          Start with <strong>1 unit</strong> and multiply by the same positive factor <span class="font-mono-code font-semibold text-slate-900">b</span> (with <span class="font-mono-code font-semibold text-slate-900">b &gt; 0, b &ne; 1</span>) repeatedly. For a whole number of steps <span class="font-mono-code font-semibold text-slate-900">k</span>, <span class="font-mono-code font-semibold text-slate-900">log<sub>b</sub>(b<sup>k</sup>) = k</span> asks: <strong>"How many multiplication steps did it take to reach our target?"</strong>
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+        <!-- Left Controls & Micro-Challenges -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="lab-card p-4 sm:p-5 space-y-5">
+            <!-- Step Multiplier Selector -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-2">
+                1. Pick Your Step Multiplier
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <button type="button" id="s2-mult-2" onclick="setS2Multiplier(2)" class="min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Double (&times;2)
+                </button>
+                <button type="button" id="s2-mult-3" onclick="setS2Multiplier(3)" class="min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Triple (&times;3)
+                </button>
+                <button type="button" id="s2-mult-10" onclick="setS2Multiplier(10)" class="min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Tenfold (&times;10)
+                </button>
+              </div>
+            </div>
+
+            <!-- Interactive Step Buttons -->
+            <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-semibold text-slate-700">2. Click to Multiply or Undo</span>
+                <span id="s2-steps-badge" class="font-mono-code text-xs font-bold px-2.5 py-0.5 rounded bg-blue-600 text-white">
+                  5 steps
+                </span>
+              </div>
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <button type="button" onclick="changeS2Steps(-1)" class="min-h-[40px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 cursor-pointer transition-all">
+                  &larr; Undo Step (&divide;<span class="s2-m-text">2</span>)
+                </button>
+                <button type="button" onclick="changeS2Steps(1)" class="min-h-[40px] flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-xs transition-all">
+                  Multiply Step (&times;<span class="s2-m-text">2</span>) &rarr;
+                </button>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] font-mono-code text-slate-500 mb-1.5">
+                  <span>Steps: 0 to 6</span>
+                  <span id="s2-target-readout">Target = 32</span>
+                </div>
+                <input id="s2-step-slider" type="range" min="0" max="6" step="1" value="5" oninput="setS2Steps(Number(this.value))" class="lab-slider" />
+              </div>
+            </div>
+
+            <!-- 3 Interactive "Try This" Micro-Challenges -->
+            <div class="space-y-2.5">
+              <div class="text-xs font-bold text-slate-800">Try These 3 Quick Challenges:</div>
+              <div id="s2-challenges" class="space-y-2">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Visual Growth Canvas & Gentle Notation Reveal -->
+        <div class="lg:col-span-7 lab-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h3 class="lab-card-title text-sm sm:text-base font-bold text-slate-900">Visual Growth &amp; Splitting Machine</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Watch how fast repeated multiplication grows from 1 single unit</p>
+            </div>
+            <span id="s2-chain-pill" class="font-mono-code text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 max-w-full overflow-x-auto whitespace-nowrap">
+              1 &rarr; 2 &rarr; 4 &rarr; 8 &rarr; 16 &rarr; 32
+            </span>
+          </div>
+
+          <div class="relative w-full h-72 sm:h-80 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden">
+            <canvas id="s2-growth-canvas"></canvas>
+          </div>
+
+          <!-- Gentle Notation Reveal Box -->
+          <div class="p-4 rounded-xl bg-blue-50/75 border border-blue-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="space-y-1">
+              <div class="text-[11px] font-mono-code uppercase tracking-wider font-bold text-blue-700">
+                Gentle Notation Translation
+              </div>
+              <p id="s2-plain-english" class="text-xs text-slate-700 leading-relaxed">
+                Starting at 1, multiplying by <strong>2</strong> takes <strong>5</strong> steps to reach <strong>32</strong>.
+              </p>
+            </div>
+            <div id="s2-notation-reveal" class="font-mono-code text-sm sm:text-base font-bold px-4 py-2 rounded-xl bg-white border border-blue-200 text-slate-900 shrink-0 text-center">
+              log<sub>2</sub>(32) = 5
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- STEP 3: BASE & INVERSE ("THE UNDO BUTTON")                          -->
+    <!-- =================================================================== -->
+    <section id="step-panel-3" class="hidden space-y-5 sm:space-y-6">
+      <div class="lab-card p-4 sm:p-6">
+        <span class="text-[11px] font-mono-code uppercase tracking-wider font-semibold text-blue-600">
+          Step 3 · Connecting Exponents to Logarithms
+        </span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl lab-heading font-normal text-slate-900 mt-1">
+          Logarithms are the inverse ("undo") operation for exponentials
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed mt-2 max-w-4xl">
+          Addition has subtraction; multiplication has division; for a fixed base <span class="font-mono-code font-semibold text-slate-900">b &gt; 0</span> (<span class="font-mono-code font-semibold text-slate-900">b &ne; 1</span>), the exponential map <span class="font-mono-code font-semibold text-slate-900">x &mapsto; b<sup>x</sup></span> and logarithm <span class="font-mono-code font-semibold text-slate-900">x &mapsto; log<sub>b</sub>(x)</span> undo each other on their domains: <span class="font-mono-code font-semibold text-slate-900">log<sub>b</sub>(b<sup>x</sup>) = x</span> for all real <span class="font-mono-code font-semibold text-slate-900">x</span>, and <span class="font-mono-code font-semibold text-slate-900">b<sup>log<sub>b</sub>(u)</sup> = u</span> for all <span class="font-mono-code font-semibold text-slate-900">u &gt; 0</span>.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+        <!-- Left Forward vs Reverse Machine -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="lab-card p-4 sm:p-5 space-y-5">
+            <!-- Base Selector + Edge-Case Tester -->
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <label for="s3-base-slider" class="text-xs font-semibold text-slate-700">
+                  1. Choose Base (<span class="font-mono-code text-blue-600">b</span>)
+                </label>
+                <span id="s3-base-badge" class="font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-900">
+                  b = 2
+                </span>
+              </div>
+              <input id="s3-base-slider" type="range" min="1.5" max="10" step="0.5" value="2" oninput="updateS3Base(Number(this.value))" class="lab-slider" />
+
+              <div class="grid grid-cols-2 gap-1.5 mt-2.5">
+                <button type="button" onclick="setS3PresetBase(2)" class="min-h-[36px] px-2.5 py-1.5 rounded-lg text-xs font-mono-code bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100 cursor-pointer transition-all">
+                  b = 2 (Binary)
+                </button>
+                <button type="button" onclick="setS3PresetBase(10)" class="min-h-[36px] px-2.5 py-1.5 rounded-lg text-xs font-mono-code bg-teal-50 text-teal-800 border border-teal-200 hover:bg-teal-100 cursor-pointer transition-all">
+                  b = 10 (Decimal)
+                </button>
+                <button type="button" onclick="triggerS3BrokenBase(1)" class="min-h-[36px] px-2.5 py-1.5 rounded-lg text-xs font-mono-code bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 cursor-pointer transition-all">
+                  Test b = 1?
+                </button>
+                <button type="button" onclick="triggerS3BrokenBase(0)" class="min-h-[36px] px-2.5 py-1.5 rounded-lg text-xs font-mono-code bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 cursor-pointer transition-all">
+                  Test b = 0?
+                </button>
+              </div>
+            </div>
+
+            <!-- Interactive Warning State for Invalid Bases -->
+            <div id="s3-warning-box" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-xs text-rose-950 space-y-1">
+              <div id="s3-warning-title" class="font-bold text-rose-800">Domain Restriction: Base cannot be 1!</div>
+              <p id="s3-warning-desc" class="leading-relaxed">
+                If b = 1, then 1^x = 1 for every real x, so it is not one-to-one and cannot be inverted to define log_1(u).
+              </p>
+            </div>
+
+            <!-- Exponent / Input Slider -->
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <label for="s3-exp-slider" class="text-xs font-semibold text-slate-700">
+                  2. Starting Exponent (<span class="font-mono-code text-teal-600">x</span>)
+                </label>
+                <span id="s3-exp-badge" class="font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                  x = 2.0
+                </span>
+              </div>
+              <input id="s3-exp-slider" type="range" min="-1.0" max="3.0" step="0.5" value="2.0" oninput="updateS3Exp(Number(this.value))" class="lab-slider teal" />
+            </div>
+
+            <!-- Graph Mode Switcher: One at a time or Both Together -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-2">
+                3. Graph View Mode
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                <button type="button" id="s3-view-exp" onclick="setS3GraphView('exp')" class="min-h-[38px] py-2 px-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Show b<sup>x</sup> Only
+                </button>
+                <button type="button" id="s3-view-log" onclick="setS3GraphView('log')" class="min-h-[38px] py-2 px-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Show log<sub>b</sub>(x)
+                </button>
+                <button type="button" id="s3-view-both" onclick="setS3GraphView('both')" class="min-h-[38px] py-2 px-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Both Together
+                </button>
+              </div>
+            </div>
+
+            <!-- Coordinate Labels Toggle -->
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <div class="text-xs font-semibold text-slate-800">Helper &amp; Live Coordinate Dots</div>
+                <div class="text-[11px] text-slate-500 leading-snug">Show (0, 1), (1, b), (1, 0), (b, 1) and live probe dots</div>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer shrink-0 min-h-[36px] px-1">
+                <input
+                  id="s3-coords-toggle"
+                  type="checkbox"
+                  checked
+                  onchange="toggleS3HelperCoords(this.checked)"
+                  class="w-4 h-4 rounded accent-blue-600 cursor-pointer"
+                />
+                <span>Dots</span>
+              </label>
+            </div>
+
+            <!-- Simultaneous Forward vs Reverse Machine Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div class="p-3.5 rounded-xl bg-blue-50/75 border border-blue-200">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Forward (Power Up)</div>
+                <div id="s3-forward-eq" class="font-mono-code text-base font-bold text-slate-900 mt-1">
+                  2<sup>2.0</sup> = 4
+                </div>
+                <div class="text-[11px] text-slate-600 mt-1">Input x &rarr; output b<sup>x</sup></div>
+              </div>
+              <div class="p-3.5 rounded-xl bg-teal-50/75 border border-teal-200">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-teal-700">Reverse (Inverse / Log)</div>
+                <div id="s3-reverse-eq" class="font-mono-code text-base font-bold text-slate-900 mt-1">
+                  log<sub>2</sub>(4) = 2.0
+                </div>
+                <div class="text-[11px] text-slate-600 mt-1">Output 4 &rarr; exponent 2.0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Interactive Inverse Graph & Round-Trip Trace -->
+        <div class="lg:col-span-7 lab-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h3 id="s3-graph-title" class="lab-card-title text-sm sm:text-base font-bold text-slate-900">
+                Both Curves Together + y = x Reflection Line
+              </h3>
+              <p id="s3-graph-subtitle" class="text-xs text-slate-500 mt-0.5">
+                Switch between one curve at a time or both together, and follow the live round-trip trace
+              </p>
+            </div>
+            <span id="s3-rt-status-pill" class="text-[11px] font-mono-code px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 font-semibold shrink-0">
+              Stage 1/3: Ready
+            </span>
+          </div>
+
+          <div class="relative w-full h-72 sm:h-88 lg:h-96 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden">
+            <canvas id="s3-mirror-canvas"></canvas>
+          </div>
+
+          <!-- Interactive Round-Trip Flow Diagram & Stepper / Animator -->
+          <div id="s3-roundtrip-callout" class="p-3.5 sm:p-4 rounded-xl bg-amber-50/75 border border-amber-200 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="text-xs font-bold text-amber-950">
+                Live Round-Trip Stepper &amp; Flow:
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" onclick="stepS3RoundTrip()" class="min-h-[34px] px-3 py-1 rounded-lg text-xs font-semibold bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 cursor-pointer transition-all">
+                  Next Stage &rarr;
+                </button>
+                <button type="button" id="s3-play-btn" onclick="toggleS3RoundTripPlay()" class="min-h-[34px] px-3 py-1 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white cursor-pointer transition-all shadow-2xs">
+                  &#9654; Animate Round-Trip
+                </button>
+                <button type="button" onclick="resetS3RoundTrip()" class="min-h-[34px] px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/80 border border-amber-200 hover:bg-white text-slate-700 cursor-pointer transition-all">
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- 3-Stage Flow Pills -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div id="s3-stage-card-1" onclick="setS3RoundTripStage(1)" class="p-2.5 rounded-xl border text-xs cursor-pointer transition-all">
+                <div class="font-mono-code text-[10px] font-bold uppercase">Stage 1 · Start</div>
+                <div id="s3-flow-s1" class="font-mono-code font-bold text-slate-900 mt-0.5">Start with x = 2.0</div>
+              </div>
+              <div id="s3-stage-card-2" onclick="setS3RoundTripStage(2)" class="p-2.5 rounded-xl border text-xs cursor-pointer transition-all">
+                <div class="font-mono-code text-[10px] font-bold uppercase">Stage 2 · Power Up</div>
+                <div id="s3-flow-s2" class="font-mono-code font-bold text-slate-900 mt-0.5">(2.0, 4) on b<sup>x</sup></div>
+              </div>
+              <div id="s3-stage-card-3" onclick="setS3RoundTripStage(3)" class="p-2.5 rounded-xl border text-xs cursor-pointer transition-all">
+                <div class="font-mono-code text-[10px] font-bold uppercase">Stage 3 · Undo Log</div>
+                <div id="s3-flow-s3" class="font-mono-code font-bold text-slate-900 mt-0.5">(4, 2.0) on log<sub>2</sub>(x)</div>
+              </div>
+            </div>
+
+            <p id="s3-rt-plain" class="text-xs text-slate-700 leading-relaxed">
+              Evaluating b<sup>x</sup> gives a height, and taking log<sub>b</sub> of that height returns the original exponent x.
+            </p>
+          </div>
+
+          <!-- Plain-English Coordinate Flip Callout Card -->
+          <div id="s3-coord-flip-card" class="p-3.5 sm:p-4 rounded-xl bg-blue-50/75 border border-blue-200 text-xs text-slate-800 space-y-1.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold text-blue-950">Why Coordinates Flip Across y = x</span>
+              <span id="s3-coord-pair-pill" class="font-mono-code text-[11px] px-2 py-0.5 rounded bg-white border border-blue-200 text-blue-800">
+                (0, 1) &harr; (1, 0) · (1, 2) &harr; (2, 1)
+              </span>
+            </div>
+            <p id="s3-coord-flip-text" class="leading-relaxed text-slate-700">
+              Swapping a coordinate pair <strong>(a, b<sub>coord</sub>)</strong> to <strong>(b<sub>coord</sub>, a)</strong> reflects it across the diagonal line <strong>y = x</strong>. Because <strong>b<sup>0</sup> = 1</strong> and <strong>b<sup>1</sup> = b</strong>, the points <strong>(0, 1)</strong> and <strong>(1, b)</strong> on the exponential curve reflect to <strong>(1, 0)</strong> and <strong>(b, 1)</strong> on the logarithm curve.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
+            <strong>Why Base 10 and Base 2 are everyday heroes:</strong> Base-10 logarithms (<strong>log<sub>10</sub>(x)</strong>) track decimal orders of magnitude (10<sup>2</sup> = 100, 10<sup>3</sup> = 1,000), while base-2 logarithms (<strong>log<sub>2</sub>(x)</strong>) measure binary scales and information bits (2<sup>8</sup> = 256).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- STEP 4: THE CONSTANT e                                              -->
+    <!-- =================================================================== -->
+    <section id="step-panel-4" class="hidden space-y-5 sm:space-y-6">
+      <div class="lab-card p-4 sm:p-6">
+        <span class="text-[11px] font-mono-code uppercase tracking-wider font-semibold text-blue-600">
+          Step 4 · Nature's Continuous Clock
+        </span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl lab-heading font-normal text-slate-900 mt-1">
+          What if growth doesn't wait until the end of the year?
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed mt-2 max-w-4xl">
+          Physical, biological, and financial models often describe change continuously over time rather than in one annual jump. If $1 grows at a hypothetical 100% nominal annual rate (100% interest? Good luck finding a bank that generous, unless your cousin runs it!) compounded in <strong>n</strong> equal periods per year, the balance at year-end is <span class="font-mono-code font-semibold text-slate-900">(1 + 1/n)<sup>n</sup></span>. As <span class="font-mono-code font-semibold text-slate-900">n &rarr; &infin;</span>, this sequence converges monotonically to Euler's number <strong>e &approx; 2.718281828459045</strong>.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+        <!-- Left Controls -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="lab-card p-4 sm:p-5 space-y-5">
+            <!-- Mode Toggle: Compounding Limit vs Natural Decay/Cooling -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-2">
+                1. Choose Experiment
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button type="button" id="s4-mode-compound" onclick="setS4Mode('compound')" class="min-h-[42px] py-2 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Compounding Slicer
+                </button>
+                <button type="button" id="s4-mode-nature" onclick="setS4Mode('nature')" class="min-h-[42px] py-2 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer">
+                  Exponential Decay &amp; ln
+                </button>
+              </div>
+            </div>
+
+            <!-- Compounding Controls -->
+            <div id="s4-compound-controls" class="space-y-4">
+              <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <label for="s4-n-slider" class="text-xs font-semibold text-slate-800">
+                    Compounding Slices (<span class="font-mono-code text-blue-600">n</span>)
+                  </label>
+                  <span id="s4-n-badge" class="font-mono-code text-xs font-bold px-2.5 py-0.5 rounded bg-blue-600 text-white shrink-0">
+                    n = 12 (Monthly)
+                  </span>
+                </div>
+                <input id="s4-n-slider" type="range" min="0" max="6" step="1" value="3" oninput="renderStep4()" class="lab-slider" />
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button type="button" onclick="setS4SliceIdx(0)" class="min-h-[34px] px-2 py-1 rounded-lg text-[11px] font-mono-code bg-white border border-slate-200 hover:border-blue-500 cursor-pointer transition-all">Yearly (n = 1)</button>
+                  <button type="button" onclick="setS4SliceIdx(2)" class="min-h-[34px] px-2 py-1 rounded-lg text-[11px] font-mono-code bg-white border border-slate-200 hover:border-blue-500 cursor-pointer transition-all">Quarterly (n = 4)</button>
+                  <button type="button" onclick="setS4SliceIdx(3)" class="min-h-[34px] px-2 py-1 rounded-lg text-[11px] font-mono-code bg-white border border-slate-200 hover:border-blue-500 cursor-pointer transition-all">Monthly (n = 12)</button>
+                  <button type="button" onclick="setS4SliceIdx(6)" class="min-h-[34px] px-2 py-1 rounded-lg text-[11px] font-mono-code bg-amber-50 border border-amber-300 text-amber-900 font-semibold cursor-pointer transition-all">Continuous (n &rarr; &infin;)</button>
+                </div>
+              </div>
+
+              <!-- Plain-Language Formula & Rate Breakdown -->
+              <div id="s4-formula-explainer" class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1.5 leading-relaxed">
+                <div class="font-bold text-slate-900">How (1 + 1/n)<sup>n</sup> works at a 100% nominal annual rate:</div>
+                <p id="s4-rate-summary">
+                  Splitting a 100% nominal rate into <strong>n</strong> equal periods gives <strong>1/n</strong> per period. Each period multiplies the current balance by <strong>(1 + 1/n)</strong>, compounding prior gains too.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-xl bg-blue-50/75 border border-blue-200">
+                  <div class="text-[11px] font-semibold text-blue-800">Your $1 Becomes</div>
+                  <div id="s4-result-val" class="font-mono-code text-base sm:text-lg font-bold text-slate-900 mt-0.5">$2.6130</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-amber-50/75 border border-amber-200">
+                  <div class="text-[11px] font-semibold text-amber-800">Limit (e)</div>
+                  <div class="font-mono-code text-base sm:text-lg font-bold text-amber-950 mt-0.5">$2.7183</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nature Cooling / Decay Controls -->
+            <div id="s4-nature-controls" class="hidden space-y-4">
+              <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <label for="s4-decay-slider" class="text-xs font-semibold text-slate-800">
+                    Remaining Fraction (y = e<sup>-t</sup>)
+                  </label>
+                  <span id="s4-decay-badge" class="font-mono-code text-xs font-bold px-2.5 py-0.5 rounded bg-teal-600 text-white shrink-0">
+                    50% left
+                  </span>
+                </div>
+                <input id="s4-decay-slider" type="range" min="10" max="100" step="5" value="50" oninput="renderStep4()" class="lab-slider teal" />
+              </div>
+
+              <div class="p-3.5 sm:p-4 rounded-xl bg-teal-50/75 border border-teal-200 font-mono-code text-xs space-y-1.5 text-slate-900">
+                <div>Elapsed Time: <strong id="s4-ln-time" class="text-teal-800">t = -ln(0.50) = 0.693</strong></div>
+                <p class="font-sans text-slate-600 leading-relaxed">
+                  <strong>ln(u)</strong> denotes the natural logarithm <strong>log<sub>e</sub>(u)</strong> for <strong>u &gt; 0</strong>: the inverse of <strong>e<sup>t</sup></strong>, solving <strong>e<sup>-t</sup> = u</strong> via <strong>t = -ln(u)</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Compounding Slicer Canvas -->
+        <div class="lg:col-span-7 lab-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 id="s4-canvas-title" class="lab-card-title text-sm sm:text-base font-bold text-slate-900">
+              Slicing 1 Year into n Compounding Steps: (1 + 1/n)<sup>n</sup>
+            </h3>
+            <p id="s4-canvas-sub" class="text-xs text-slate-500 mt-0.5">
+              Watch how (1 + 1/n)<sup>n</sup> increases with n and approaches the dashed limit at e &approx; 2.71828...
+            </p>
+          </div>
+
+          <div class="relative w-full h-72 sm:h-88 lg:h-96 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden">
+            <canvas id="s4-e-canvas"></canvas>
+          </div>
+
+          <!-- Step-by-Step Compounding Breakdown Cards (Spotlight on n = 4 Quarterly & Live n) -->
+          <div id="s4-step-breakdown-panel" class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <div class="min-w-0">
+                <h4 id="s4-breakdown-title" class="lab-card-title text-xs sm:text-sm font-bold text-slate-900">
+                  Quarterly Spotlight (n = 4): How $1.00 Reaches $2.44140625
+                </h4>
+                <p id="s4-breakdown-sub" class="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                  100% nominal annual rate / 4 quarters = 25% (+1/4) each quarter. Each quarter multiplies the balance by 1.25.
+                </p>
+              </div>
+              <button type="button" onclick="setS4SliceIdx(2)" class="min-h-[34px] px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white border border-slate-300 hover:bg-blue-50 text-slate-800 cursor-pointer shrink-0 transition-all">
+                View n = 4 (Quarterly)
+              </button>
+            </div>
+
+            <div id="s4-quarterly-chain" class="font-mono-code text-[11px] font-semibold px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-800 overflow-x-auto whitespace-nowrap">
+              $1.00 -> $1.25 -> $1.5625 -> $1.953125 -> $2.44140625
+            </div>
+
+            <div id="s4-period-cards" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- STEP 5: LOG SUPERPOWER (LAWS / DUAL SLIDE-RULE)                    -->
+    <!-- =================================================================== -->
+    <section id="step-panel-5" class="hidden space-y-5 sm:space-y-6">
+      <div class="lab-card p-4 sm:p-6">
+        <span class="text-[11px] font-mono-code uppercase tracking-wider font-semibold text-blue-600">
+          Step 5 · Algebraic Identities of Logarithms
+        </span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl lab-heading font-normal text-slate-900 mt-1">
+          Turn multiplication, division, and powers into simpler operations
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed mt-2 max-w-4xl">
+          Because <span class="font-mono-code font-semibold text-slate-900">b<sup>u+v</sup> = b<sup>u</sup>b<sup>v</sup></span>, taking <span class="font-mono-code font-semibold text-slate-900">log<sub>b</sub></span> converts products into sums: for positive numbers <span class="font-mono-code font-semibold text-slate-900">A, B &gt; 0</span> and any real <span class="font-mono-code font-semibold text-slate-900">k</span>, <span class="font-mono-code font-semibold text-slate-900">log<sub>b</sub>(AB) = log<sub>b</sub>(A) + log<sub>b</sub>(B)</span>, <span class="font-mono-code font-semibold text-slate-900">log<sub>b</sub>(A/B) = log<sub>b</sub>(A) &minus; log<sub>b</sub>(B)</span>, and <span class="font-mono-code font-semibold text-slate-900">log<sub>b</sub>(A<sup>k</sup>) = k&middot;log<sub>b</sub>(A)</span>.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+        <!-- Left Controls & Proof Box -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="lab-card p-4 sm:p-5 space-y-5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-2">
+                1. Choose a Log Identity
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button type="button" id="s5-law-mul" onclick="setS5Law('mul')" class="min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border text-center leading-snug transition-all cursor-pointer">
+                  Product (&times;)
+                </button>
+                <button type="button" id="s5-law-div" onclick="setS5Law('div')" class="min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border text-center leading-snug transition-all cursor-pointer">
+                  Quotient (&divide;)
+                </button>
+                <button type="button" id="s5-law-pow" onclick="setS5Law('pow')" class="min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border text-center leading-snug whitespace-nowrap transition-all cursor-pointer">
+                  Power (A<sup>k</sup>)
+                </button>
+              </div>
+            </div>
+
+            <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <label for="s5-a-slider" class="text-xs font-semibold text-slate-800">
+                    First Number (<span class="font-mono-code text-blue-600">A</span>)
+                  </label>
+                  <span id="s5-a-badge" class="font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
+                    4
+                  </span>
+                </div>
+                <input id="s5-a-slider" type="range" min="1" max="16" step="1" value="4" oninput="renderStep5()" class="lab-slider" />
+              </div>
+
+              <div id="s5-b-group">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <label for="s5-b-slider" class="text-xs font-semibold text-slate-800">
+                    Second Number (<span class="font-mono-code text-teal-600">B</span>)
+                  </label>
+                  <span id="s5-b-badge" class="font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                    8
+                  </span>
+                </div>
+                <input id="s5-b-slider" type="range" min="1" max="16" step="1" value="8" oninput="renderStep5()" class="lab-slider teal" />
+              </div>
+
+              <div id="s5-k-group" class="hidden">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <label for="s5-k-slider" class="text-xs font-semibold text-slate-800">
+                    Power Exponent (<span class="font-mono-code text-amber-700">k</span>)
+                  </label>
+                  <span id="s5-k-badge" class="font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200">
+                    3
+                  </span>
+                </div>
+                <input id="s5-k-slider" type="range" min="1" max="4" step="1" value="3" oninput="renderStep5()" class="lab-slider amber" />
+              </div>
+            </div>
+
+            <div id="s5-proof-box" class="p-3.5 sm:p-4 rounded-xl bg-amber-50/75 border border-amber-200 font-mono-code text-xs space-y-1.5 text-slate-800 overflow-x-auto">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Dual Slide-Rule Canvas -->
+        <div class="lg:col-span-7 lab-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h3 class="lab-card-title text-sm sm:text-base font-bold text-slate-900">Interactive Slide-Rule Segment Bars</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Top ticks show 2<sup>u</sup> above and exponent/step offset u below</p>
+            </div>
+            <span class="text-[11px] font-mono-code px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0">
+              Base 2 Ruler
+            </span>
+          </div>
+
+          <div class="relative w-full h-72 sm:h-88 lg:h-96 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden">
+            <canvas id="s5-sliderule-canvas"></canvas>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-blue-50/75 border border-blue-200 text-xs text-slate-700 leading-relaxed">
+            <strong>Historical Note:</strong> Before electronic calculators became ubiquitous, slide rules used logarithmic scales so engineers and scientists could perform products, quotients, powers, and roots mechanically by aligning segments.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- STEP 6: SUMMARY & CONFIDENCE CHECK                                  -->
+    <!-- =================================================================== -->
+    <section id="step-panel-6" class="hidden space-y-5 sm:space-y-6">
+      <div class="lab-card p-4 sm:p-6">
+        <span class="text-[11px] font-mono-code uppercase tracking-wider font-semibold text-teal-600">
+          Step 6 · Visual Cheat-Sheet &amp; Mastery Check
+        </span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl lab-heading font-normal text-slate-900 mt-1">
+          The 5 Big Takeaways You Now Know
+        </h2>
+        <p class="text-sm text-slate-600 mt-1">
+          Review these five core ideas, then test your intuition with five gentle questions below.
+        </p>
+      </div>
+
+      <!-- 5 Visual Takeaway Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="lab-card p-4 space-y-2">
+          <span class="inline-block font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">1. Scale</span>
+          <h3 class="lab-card-title text-sm font-bold text-slate-900">Taming Huge Ranges</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Logarithmic scales map multiplicative 10&times; jumps to additive spacing (decibels, earthquake magnitude scales, and <span class="font-mono-code text-slate-900">pH = &minus;log<sub>10</sub>[H<sup>+</sup>]</span>).
+          </p>
+        </div>
+
+        <div class="lab-card p-4 space-y-2">
+          <span class="inline-block font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">2. Intuition</span>
+          <h3 class="lab-card-title text-sm font-bold text-slate-900">Counting Steps</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            For integer powers, <span class="font-mono-code text-slate-900">log<sub>2</sub>(32) = 5</span> counts how many times you multiply 1 by 2 to reach 32.
+          </p>
+        </div>
+
+        <div class="lab-card p-4 space-y-2">
+          <span class="inline-block font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">3. Inverse</span>
+          <h3 class="lab-card-title text-sm font-bold text-slate-900">The Inverse Map</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            For <span class="font-mono-code text-slate-900">b &gt; 0, b &ne; 1</span>, <span class="font-mono-code text-slate-900">b<sup>y</sup> = x</span> (with <span class="font-mono-code text-slate-900">x &gt; 0</span>) is equivalent to <span class="font-mono-code text-slate-900">log<sub>b</sub>(x) = y</span>, reflecting across <span class="font-mono-code text-slate-900">y = x</span>.
+          </p>
+        </div>
+
+        <div class="lab-card p-4 space-y-2">
+          <span class="inline-block font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">4. Base e</span>
+          <h3 class="lab-card-title text-sm font-bold text-slate-900">Continuous Growth</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <span class="font-mono-code text-slate-900">e &approx; 2.71828</span> is the limit of <span class="font-mono-code text-slate-900">(1 + 1/n)<sup>n</sup></span> as <span class="font-mono-code text-slate-900">n &rarr; &infin;</span>, and <span class="font-mono-code text-slate-900">ln(u)</span> is <span class="font-mono-code text-slate-900">log<sub>e</sub>(u)</span> for <span class="font-mono-code text-slate-900">u &gt; 0</span>.
+          </p>
+        </div>
+
+        <div class="lab-card p-4 space-y-2">
+          <span class="inline-block font-mono-code text-xs font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">5. Laws</span>
+          <h3 class="lab-card-title text-sm font-bold text-slate-900">Products to Sums</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <span class="font-mono-code text-slate-900">log<sub>b</sub>(AB) = log<sub>b</sub>(A) + log<sub>b</sub>(B)</span> for <span class="font-mono-code text-slate-900">A, B &gt; 0</span>. Adding logarithmic lengths corresponds to multiplying values.
+          </p>
+        </div>
+      </div>
+
+      <!-- Encouraging 5-Question Confidence Check -->
+      <div class="lab-card p-4 sm:p-7">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200">
+          <div>
+            <h3 class="lab-card-title text-lg font-bold text-slate-900">
+              Confidence Check (With Step-by-Step Hints)
+            </h3>
+            <p class="text-xs text-slate-500">
+              No pressure: if you miss a question, you will get a friendly hint so you can try again.
+            </p>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <span id="quiz-score-badge" class="font-mono-code text-xs font-bold px-3 py-1.5 rounded-lg bg-teal-50 text-teal-900 border border-teal-200">
+              Completed: 0 / 5
+            </span>
+            <button type="button" onclick="resetQuiz()" class="min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 cursor-pointer transition-all">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="divide-y divide-slate-200">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Persistent Bottom Guided Progression Bar -->
+    <div class="mt-7 sm:mt-8 pt-5 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+      <button
+        type="button"
+        id="bottom-prev-btn"
+        onclick="goToStep(currentStep - 1)"
+        class="min-h-[42px] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none cursor-pointer transition-all text-center"
+      >
+        &larr; Previous Step
+      </button>
+
+      <div class="hidden md:flex items-center justify-center gap-1.5" id="bottom-dots">
+        <!-- Populated by JS -->
+      </div>
+
+      <button
+        type="button"
+        id="bottom-next-btn"
+        onclick="goToStep(currentStep + 1)"
+        class="min-h-[42px] px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs cursor-pointer transition-all text-center"
+      >
+        Next: 2. Step Counter &rarr;
+      </button>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- VANILLA JAVASCRIPT SIMULATION ENGINE                                  -->
+  <!-- ===================================================================== -->
+  <script>
+    // -----------------------------------------------------------------------
+    // RETINA CANVAS & KATEX RENDERING HELPERS
+    // -----------------------------------------------------------------------
+    function tex(latex, displayMode = false) {
+      if (window.katex && typeof window.katex.renderToString === 'function') {
+        try {
+          return window.katex.renderToString(latex, {
+            throwOnError: false,
+            displayMode,
+          });
+        } catch (_err) {
+          return `<code>${latex}</code>`;
+        }
+      }
+      return `<code>${latex}</code>`;
+    }
+
+    function typesetMath(rootEl = document.body) {
+      if (window.renderMathInElement) {
+        window.renderMathInElement(rootEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '$', right: '$', display: false },
+          ],
+          throwOnError: false,
+        });
+      }
+    }
+
+    function setupCanvas(canvas) {
+      if (!canvas || !canvas.parentElement) return null;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      const width = Math.max(240, Math.floor(rect.width));
+      const height = Math.max(190, Math.floor(rect.height));
+      if (canvas.width !== Math.floor(width * dpr) || canvas.height !== Math.floor(height * dpr)) {
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+      }
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, width, height };
+    }
+
+    // -----------------------------------------------------------------------
+    // STEPPER NAVIGATION & PROGRESSION BAR
+    // -----------------------------------------------------------------------
+    const stepMeta = [
+      { id: 1, shortTitle: '1. Why Logs? (Scale)' },
+      { id: 2, shortTitle: '2. Step Counter' },
+      { id: 3, shortTitle: '3. Base & Inverse' },
+      { id: 4, shortTitle: '4. The Constant e' },
+      { id: 5, shortTitle: '5. Log Laws' },
+      { id: 6, shortTitle: '6. Summary & Check' },
+    ];
+
+    let currentStep = 1;
+
+    function goToStep(stepNum) {
+      if (stepNum < 1 || stepNum > 6) return;
+      currentStep = stepNum;
+
+      document.getElementById('header-progress-pill').textContent = `Step ${stepNum} of 6`;
+
+      for (let i = 1; i <= 6; i++) {
+        const panel = document.getElementById(`step-panel-${i}`);
+        const btn = document.getElementById(`step-btn-${i}`);
+        if (i === stepNum) {
+          panel.classList.remove('hidden');
+          btn.className = 'min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight bg-blue-600 text-white shadow-xs cursor-pointer transition-all';
+        } else {
+          panel.classList.add('hidden');
+          btn.className = 'min-h-[38px] px-2.5 py-2 rounded-xl text-xs font-semibold text-center leading-tight text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer transition-all';
+        }
+      }
+
+      // Update Bottom Navigation Buttons & Dots
+      const prevBtn = document.getElementById('bottom-prev-btn');
+      const nextBtn = document.getElementById('bottom-next-btn');
+      prevBtn.disabled = stepNum === 1;
+
+      if (stepNum < 6) {
+        nextBtn.textContent = `Next: ${stepMeta[stepNum].shortTitle} →`;
+        nextBtn.onclick = () => goToStep(stepNum + 1);
+      } else {
+        nextBtn.textContent = 'Restart from Step 1 ↺';
+        nextBtn.onclick = () => goToStep(1);
+      }
+
+      const dotsEl = document.getElementById('bottom-dots');
+      dotsEl.innerHTML = stepMeta.map((s) => `
+        <button type="button" onclick="goToStep(${s.id})" aria-label="${s.shortTitle}"
+          class="h-2.5 rounded-full transition-all cursor-pointer ${s.id === stepNum ? 'w-7 bg-blue-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'}">
+        </button>
+      `).join('');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      requestAnimationFrame(() => {
+        typesetMath(document.getElementById(`step-panel-${stepNum}`));
+        if (stepNum === 1) renderStep1();
+        if (stepNum === 2) renderStep2();
+        if (stepNum === 3) renderStep3();
+        if (stepNum === 4) renderStep4();
+        if (stepNum === 5) renderStep5();
+      });
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 1: WHY LOGS? (SCALE) — Fact-checked physical definitions
+    // -----------------------------------------------------------------------
+    const s1Datasets = {
+      size: {
+        title: 'From an Ant to Planet Earth (10 orders of magnitude)',
+        subtitle: 'Each equal step on the log ruler multiplies length by 10',
+        insight: 'Key Takeaway: On a linear ruler (0%), smaller lengths crowd near zero. Sliding to 100% Log Scale gives every 10x change in length equal horizontal spacing.',
+        minExp: -3,
+        maxExp: 7.2,
+        items: [
+          { name: 'Ant', label: '0.001 m', exp: -3, color: '#0D9488' },
+          { name: 'Human', label: '1.7 m', exp: Math.log10(1.7), color: '#2563EB' },
+          { name: 'Everest', label: '8,849 m', exp: Math.log10(8849), color: '#D97706' },
+          { name: 'Earth (diam.)', label: '1.27e7 m', exp: Math.log10(12742000), color: '#0F172A' },
+        ],
+      },
+      sound: {
+        title: 'Sound Intensity: Whisper to Jet Engine (10^12x intensity ratio)',
+        subtitle: 'Sound intensity level L = 10 log10(I / I0) dB: +10 dB is 10x intensity',
+        insight: 'Key Takeaway: Acoustic intensity I scales as 10^(L/10). A 140 dB jet engine has 10^(12) = 1,000,000,000,000 times the sound intensity I/I0 of a 20 dB whisper.',
+        minExp: 2,
+        maxExp: 14,
+        items: [
+          { name: 'Whisper', label: '20 dB (10^2)', exp: 2, color: '#0D9488' },
+          { name: 'Speech', label: '60 dB (10^6)', exp: 6, color: '#2563EB' },
+          { name: 'Concert', label: '110 dB (10^11)', exp: 11, color: '#D97706' },
+          { name: 'Jet Engine', label: '140 dB (10^14)', exp: 14, color: '#0F172A' },
+        ],
+      },
+      quake: {
+        title: 'Seismic Wave Amplitude: Minor Tremor to Great Earthquake',
+        subtitle: 'Each +1.0 in magnitude corresponds to 10x larger wave amplitude (and ~31.6x energy)',
+        insight: 'Key Takeaway: Each +1.0 step in magnitude scales wave amplitude by 10 (10^7 between M 2.0 and M 9.0), while radiated seismic energy scales roughly as 10^(1.5 * dM) ≈ 31.6x per unit.',
+        minExp: 2,
+        maxExp: 9,
+        items: [
+          { name: 'Minor (M 2.0)', label: '10^2 amp', exp: 2, color: '#0D9488' },
+          { name: 'Moderate (M 4.5)', label: '10^4.5 amp', exp: 4.5, color: '#2563EB' },
+          { name: 'Major (M 7.0)', label: '10^7 amp', exp: '#D97706', color: '#D97706' },
+          { name: 'Great (M 9.0)', label: '10^9 amp', exp: 9, color: '#0F172A' },
+        ],
+      },
+      ph: {
+        title: 'Chemistry pH: pH = -log10[H+] (Acidity vs. Alkalinity)',
+        subtitle: 'Each 1-unit decrease in pH is a 10x increase in hydrogen ion concentration [H+]',
+        insight: 'Key Takeaway: Because pH = -log10[H+], lower pH means higher [H+] (more acidic). Battery acid at pH 1 has [H+] = 10^-1 M, which is 10^12 times [H+] in pH 13 bleach (10^-13 M).',
+        minExp: -13,
+        maxExp: -1,
+        items: [
+          { name: 'Bleach (pH 13)', label: '10^-13 M', exp: -13, color: '#0D9488' },
+          { name: 'Water (pH 7)', label: '10^-7 M', exp: -7, color: '#2563EB' },
+          { name: 'Lemon (pH 2)', label: '10^-2 M', exp: -2, color: '#D97706' },
+          { name: 'Acid (pH 1)', label: '10^-1 M', exp: -1, color: '#0F172A' },
+        ],
+      },
+    };
+
+    const s1State = {
+      preset: 'size',
+      morph: 100,
+      animRaf: null,
+      sawLinear: false,
+      sawLog: true,
+    };
+
+    function setS1Preset(key) {
+      if (!s1Datasets[key]) return;
+      s1State.preset = key;
+      const ds = s1Datasets[key];
+
+      ['size', 'sound', 'quake', 'ph'].forEach((k) => {
+        const btn = document.getElementById(`s1-preset-${k}`);
+        if (!btn) return;
+        if (k === key) {
+          btn.className = 'min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-600 shadow-2xs transition-all cursor-pointer';
+        } else {
+          btn.className = 'min-h-[42px] px-3 py-2 rounded-xl text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all cursor-pointer';
+        }
+      });
+
+      document.getElementById('s1-canvas-title').textContent = ds.title;
+      document.getElementById('s1-canvas-subtitle').textContent = ds.subtitle;
+      document.getElementById('s1-insight-strip').textContent = ds.insight;
+      renderStep1();
+    }
+
+    function updateS1Morph(val) {
+      const clamped = Math.max(0, Math.min(100, Number(val)));
+      s1State.morph = clamped;
+      const slider = document.getElementById('s1-morph-slider');
+      if (slider && Number(slider.value) !== clamped) slider.value = clamped;
+
+      const badge = document.getElementById('s1-morph-badge');
+      const modeLabel = clamped === 0
+        ? 'Linear Scale'
+        : clamped === 100
+          ? 'Log Scale'
+          : 'Blend';
+      badge.textContent = `${clamped}% ${modeLabel}`;
+      badge.className = clamped >= 50
+        ? 'font-mono-code text-xs font-bold px-2.5 py-0.5 rounded bg-teal-600 text-white shrink-0'
+        : 'font-mono-code text-xs font-bold px-2.5 py-0.5 rounded bg-blue-600 text-white shrink-0';
+
+      const explainer = document.getElementById('s1-morph-explainer');
+      if (explainer) {
+        if (clamped === 0) {
+          explainer.innerHTML = '<strong>0% Linear Scale:</strong> Position is directly proportional to actual size/value. Huge values dominate the right end while smaller values squeeze near the left.';
+        } else if (clamped === 100) {
+          explainer.innerHTML = '<strong>100% Log Scale:</strong> Position is proportional to <span class="font-mono-code text-slate-900">log<sub>10</sub>(value)</span>, so every <strong>10×</strong> jump gets equal horizontal distance.';
+        } else {
+          explainer.innerHTML = `<strong>${clamped}% Blend (Visual Interpolation):</strong> Each marker sits <strong>${100 - clamped}%</strong> along its linear ruler spot and <strong>${clamped}%</strong> along its log ruler spot to show how small items spread out as you move toward a true log scale.`;
+        }
+      }
+
+      if (clamped <= 10) s1State.sawLinear = true;
+      if (clamped >= 90) s1State.sawLog = true;
+
+      const missionEl = document.getElementById('s1-mission-status');
+      if (missionEl) {
+        if (s1State.sawLinear && s1State.sawLog) {
+          missionEl.textContent = 'Mission complete!';
+          missionEl.className = 'text-[11px] font-mono-code font-bold text-teal-700';
+        } else if (s1State.sawLinear) {
+          missionEl.textContent = 'Now slide to 100%';
+        } else {
+          missionEl.textContent = 'Slide to 0% first';
+        }
+      }
+
+      renderStep1();
+    }
+
+    function animateS1Morph(target) {
+      if (s1State.animRaf) cancelAnimationFrame(s1State.animRaf);
+      const stepAnim = () => {
+        const diff = target - s1State.morph;
+        if (Math.abs(diff) < 1) {
+          updateS1Morph(target);
+          s1State.animRaf = null;
+          return;
+        }
+        updateS1Morph(s1State.morph + diff * 0.18);
+        s1State.animRaf = requestAnimationFrame(stepAnim);
+      };
+      s1State.animRaf = requestAnimationFrame(stepAnim);
+    }
+
+    function renderStep1() {
+      const canvas = document.getElementById('s1-ruler-canvas');
+      const setup = setupCanvas(canvas);
+      if (!setup) return;
+      const { ctx, width, height } = setup;
+      const ds = s1Datasets[s1State.preset] || s1Datasets.size;
+      const alpha = s1State.morph / 100;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const padL = Math.max(24, Math.min(48, Math.round(width * 0.06)));
+      const padR = padL;
+      const w = Math.max(140, width - padL - padR);
+
+      const topY = Math.max(48, Math.min(82, Math.round(height * 0.2)));
+
+      ctx.fillStyle = '#64748B';
+      ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('STATIC LINEAR RULER (Standard Scale)', padL, topY - 26);
+
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(padL, topY);
+      ctx.lineTo(padL + w, topY);
+      ctx.stroke();
+
+      // Bottom interactive morphing ruler
+      const botY = Math.max(155, Math.min(height - 72, Math.round(height * 0.56)));
+      ctx.fillStyle = alpha > 0.5 ? '#0D9488' : '#2563EB';
+      ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(
+        alpha > 0.85 ? 'LOGARITHMIC RULER (Equal spacing per 10x factor)' : 'INTERACTIVE MORPHING RULER (Slide between Linear and Log)',
+        padL,
+        botY - 34
+      );
+
+      ctx.strokeStyle = alpha > 0.5 ? '#0D9488' : '#2563EB';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(padL, botY);
+      ctx.lineTo(padL + w, botY);
+      ctx.stroke();
+
+      // Background log tick marks
+      const startTick = Math.ceil(ds.minExp);
+      const endTick = Math.floor(ds.maxExp);
+      for (let e = startTick; e <= endTick; e++) {
+        const logN = (e - ds.minExp) / (ds.maxExp - ds.minExp);
+        const tx = padL + logN * w;
+        ctx.save();
+        ctx.globalAlpha = 0.25 + 0.65 * alpha;
+        ctx.strokeStyle = '#64748B';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(tx, botY - 7);
+        ctx.lineTo(tx, botY + 7);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const minReal = Math.pow(10, ds.minExp);
+      const maxReal = Math.pow(10, ds.maxExp);
+
+      ds.items.forEach((it, idx) => {
+        const realVal = Math.pow(10, it.exp);
+        const linNorm = (realVal - minReal) / (maxReal - minReal);
+        const logNorm = (it.exp - ds.minExp) / (ds.maxExp - ds.minExp);
+        const curNorm = (1 - alpha) * linNorm + alpha * logNorm;
+
+        const topX = padL + linNorm * w;
+        const botX = padL + curNorm * w;
+
+        // Connecting guide ribbon between linear position and morphed position
+        ctx.save();
+        ctx.setLineDash([3, 3]);
+        ctx.strokeStyle = '#CBD5E1';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(topX, topY + 6);
+        ctx.lineTo(botX, botY - 6);
+        ctx.stroke();
+        ctx.restore();
+
+        // Dot on static linear ruler
+        ctx.fillStyle = it.color;
+        ctx.beginPath();
+        ctx.arc(topX, topY, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (idx === 0 || idx === ds.items.length - 1) {
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#475569';
+          ctx.textAlign = idx === 0 ? 'left' : 'right';
+          ctx.fillText(idx === 0 ? 'Small items near 0' : it.name, topX, topY + 18);
+        }
+
+        // Dot on morphing ruler
+        ctx.fillStyle = it.color;
+        ctx.beginPath();
+        ctx.arc(botX, botY, 7.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Clamp horizontal label inside canvas bounds on narrow/wide screens
+        const staggerY = idx % 2 === 0 ? 22 : 42;
+        const clampedTextX = Math.max(padL + 26, Math.min(width - padR - 26, botX));
+        ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = it.color;
+        ctx.textAlign = 'center';
+        ctx.fillText(it.name, clampedTextX, botY + staggerY);
+
+        ctx.font = '500 10px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#64748B';
+        ctx.fillText(it.label, clampedTextX, botY + staggerY + 13);
+      });
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 2: STEP COUNTER (INTUITION)
+    // -----------------------------------------------------------------------
+    const s2State = {
+      multiplier: 2,
+      steps: 5,
+      completedChallenges: new Set(),
+    };
+
+    const s2Challenges = [
+      { id: 'c1', mult: 2, targetSteps: 4, label: 'Reach 16 by doubling (×2)', hint: '2×2×2×2 = 16 → 4 steps' },
+      { id: 'c2', mult: 3, targetSteps: 3, label: 'Reach 27 by tripling (×3)', hint: '3×3×3 = 27 → 3 steps' },
+      { id: 'c3', mult: 10, targetSteps: 3, label: 'Reach 1,000 by tenfolding (×10)', hint: '10×10×10 = 1,000 → 3 steps' },
+    ];
+
+    function setS2Multiplier(m) {
+      s2State.multiplier = m;
+      [2, 3, 10].forEach((val) => {
+        const btn = document.getElementById(`s2-mult-${val}`);
+        if (!btn) return;
+        btn.className = val === m
+          ? 'min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-600 shadow-2xs transition-all cursor-pointer'
+          : 'min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all cursor-pointer';
+      });
+      document.querySelectorAll('.s2-m-text').forEach((el) => {
+        el.textContent = String(m);
+      });
+      renderStep2();
+    }
+
+    function setS2Steps(k) {
+      s2State.steps = Math.max(0, Math.min(6, Number(k)));
+      const slider = document.getElementById('s2-step-slider');
+      if (slider) slider.value = String(s2State.steps);
+      renderStep2();
+    }
+
+    function changeS2Steps(delta) {
+      setS2Steps(s2State.steps + delta);
+    }
+
+    function applyS2Challenge(ch) {
+      setS2Multiplier(ch.mult);
+      setS2Steps(ch.targetSteps);
+      s2State.completedChallenges.add(ch.id);
+      renderStep2();
+    }
+
+    function renderS2ChallengesUI() {
+      const container = document.getElementById('s2-challenges');
+      if (!container) return;
+      container.innerHTML = s2Challenges.map((ch) => {
+        const done = s2State.completedChallenges.has(ch.id);
+        return `
+          <button type="button" onclick='applyS2Challenge(${JSON.stringify(ch)})'
+            class="w-full text-left p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 transition-all cursor-pointer ${
+              done
+                ? 'bg-teal-50/80 border-teal-300 text-teal-950'
+                : 'bg-slate-50 border-slate-200 hover:border-blue-400 text-slate-800'
+            }">
+            <span class="font-medium">${ch.label}</span>
+            <span class="font-mono-code text-[11px] font-bold shrink-0 ${done ? 'text-teal-700' : 'text-blue-600'}">
+              ${done ? '✓ Done' : 'Try →'}
+            </span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderStep2() {
+      renderS2ChallengesUI();
+      const { multiplier: b, steps: k } = s2State;
+      const targetVal = Math.pow(b, k);
+
+      document.getElementById('s2-steps-badge').textContent = `${k} ${k === 1 ? 'step' : 'steps'}`;
+      document.getElementById('s2-target-readout').textContent = `Target = ${targetVal.toLocaleString()}`;
+
+      const chain = [];
+      for (let i = 0; i <= k; i++) chain.push(Math.pow(b, i).toLocaleString());
+      document.getElementById('s2-chain-pill').textContent = chain.join(' → ');
+
+      document.getElementById('s2-plain-english').innerHTML =
+        `Starting at <strong>1</strong>, multiplying by <strong>${b}</strong> takes <strong>${k}</strong> ${k === 1 ? 'step' : 'steps'} to reach <strong>${targetVal.toLocaleString()}</strong>.`;
+      document.getElementById('s2-notation-reveal').innerHTML =
+        `log<sub>${b}</sub>(${targetVal.toLocaleString()}) = ${k}`;
+
+      const canvas = document.getElementById('s2-growth-canvas');
+      const setup = setupCanvas(canvas);
+      if (!setup) return;
+      const { ctx, width, height } = setup;
+      ctx.clearRect(0, 0, width, height);
+
+      const steps = 6;
+      const padX = Math.max(20, Math.min(40, Math.round(width * 0.05)));
+      const padTop = 34;
+      const padBot = 46;
+      const plotW = Math.max(120, width - padX * 2);
+      const plotH = Math.max(90, height - padTop - padBot);
+
+      const count = steps + 1;
+      const gap = Math.max(6, Math.min(14, Math.floor(plotW / 32)));
+      const colW = Math.max(18, Math.min(64, (plotW - gap * (count - 1)) / count));
+      const totalW = count * colW + (count - 1) * gap;
+      const startX = Math.max(padX, (width - totalW) / 2);
+
+      // Baseline
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(padX, padTop + plotH);
+      ctx.lineTo(width - padX, padTop + plotH);
+      ctx.stroke();
+
+      for (let i = 0; i <= steps; i++) {
+        const val = Math.pow(b, i);
+        const ratio = i / steps;
+        const barH = Math.max(14, Math.round(ratio * plotH));
+        const x = startX + i * (colW + gap);
+        const y = padTop + plotH - barH;
+        const active = i <= k;
+        const isCurrent = i === k;
+
+        ctx.fillStyle = isCurrent ? '#2563EB' : active ? '#93C5FD' : '#E2E8F0';
+        ctx.beginPath();
+        ctx.roundRect(x, y, colW, barH, [6, 6, 0, 0]);
+        ctx.fill();
+
+        if (isCurrent) {
+          ctx.strokeStyle = '#1E40AF';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        ctx.font = '700 10px "JetBrains Mono", monospace';
+        ctx.fillStyle = active ? '#0F172A' : '#94A3B8';
+        ctx.textAlign = 'center';
+        const valLabel = val >= 10000 ? val.toExponential(0) : val.toLocaleString();
+        ctx.fillText(valLabel, x + colW / 2, y - 7);
+
+        ctx.font = '600 10px "JetBrains Mono", monospace';
+        ctx.fillStyle = isCurrent ? '#2563EB' : '#64748B';
+        ctx.fillText(`k=${i}`, x + colW / 2, padTop + plotH + 16);
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 3: BASE & INVERSE ("THE UNDO BUTTON")
+    // -----------------------------------------------------------------------
+    const s3State = {
+      base: 2,
+      exp: 2.0,
+      brokenBase: null,
+      graphView: 'both',
+      showHelperCoords: true,
+      roundTripStage: 1,
+      roundTripTimer: null,
+    };
+
+    function fmtNum(n) {
+      if (!Number.isFinite(n)) return '—';
+      const rounded = Math.round(n * 1000) / 1000;
+      return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace(/\.?0+$/, '');
+    }
+
+    function updateS3Base(b) {
+      s3State.brokenBase = null;
+      document.getElementById('s3-warning-box').classList.add('hidden');
+      s3State.base = Number(b);
+      document.getElementById('s3-base-slider').value = String(s3State.base);
+      renderStep3();
+    }
+
+    function setS3PresetBase(b) {
+      updateS3Base(b);
+    }
+
+    function updateS3Exp(x) {
+      s3State.exp = Number(x);
+      document.getElementById('s3-exp-slider').value = String(s3State.exp);
+      renderStep3();
+    }
+
+    function setS3GraphView(view) {
+      s3State.graphView = view;
+      renderStep3();
+    }
+
+    function toggleS3HelperCoords(checked) {
+      s3State.showHelperCoords = Boolean(checked);
+      renderStep3();
+    }
+
+    function setS3RoundTripStage(stage) {
+      s3State.roundTripStage = Math.max(1, Math.min(3, stage));
+      renderStep3();
+    }
+
+    function stepS3RoundTrip() {
+      setS3RoundTripStage(s3State.roundTripStage >= 3 ? 1 : s3State.roundTripStage + 1);
+    }
+
+    function stopS3RoundTripPlay() {
+      if (s3State.roundTripTimer) {
+        clearInterval(s3State.roundTripTimer);
+        s3State.roundTripTimer = null;
+      }
+      const btn = document.getElementById('s3-play-btn');
+      if (btn) btn.textContent = '▶ Animate Round-Trip';
+    }
+
+    function toggleS3RoundTripPlay() {
+      if (s3State.roundTripTimer) {
+        stopS3RoundTripPlay();
+        return;
+      }
+      const btn = document.getElementById('s3-play-btn');
+      if (btn) btn.textContent = '⏸ Pause';
+      s3State.roundTripStage = 1;
+      renderStep3();
+      s3State.roundTripTimer = setInterval(() => {
+        if (s3State.roundTripStage < 3) {
+          s3State.roundTripStage += 1;
+          renderStep3();
+        } else {
+          stopS3RoundTripPlay();
+        }
+      }, 1150);
+    }
+
+    function resetS3RoundTrip() {
+      stopS3RoundTripPlay();
+      s3State.roundTripStage = 1;
+      renderStep3();
+    }
+
+    function triggerS3BrokenBase(invalidVal) {
+      s3State.brokenBase = invalidVal;
+      const warnBox = document.getElementById('s3-warning-box');
+      const warnTitle = document.getElementById('s3-warning-title');
+      const warnDesc = document.getElementById('s3-warning-desc');
+      warnBox.classList.remove('hidden');
+
+      if (invalidVal === 1) {
+        warnTitle.textContent = 'Domain Restriction: Base cannot be 1!';
+        warnDesc.textContent = 'If b = 1, then 1^x = 1 for every real x. Because every input maps to 1, the function is not injective (one-to-one) and has no inverse logarithm.';
+      } else {
+        warnTitle.textContent = 'Domain Restriction: Base must be positive (b > 0)!';
+        warnDesc.textContent = 'For a standard real-valued exponential b^x and inverse log_b(u), we require b > 0 and b ≠ 1 so b^x is strictly monotonic and invertible.';
+      }
+      renderStep3();
+    }
+
+    function renderStep3() {
+      const b = s3State.base;
+      const x = s3State.exp;
+      const y = Math.pow(b, x);
+      const bLabel = fmtNum(b);
+      const xLabel = x.toFixed(1);
+      const yLabel = fmtNum(y);
+
+      document.getElementById('s3-base-badge').textContent = `b = ${bLabel}`;
+      document.getElementById('s3-exp-badge').textContent = `x = ${xLabel}`;
+      document.getElementById('s3-forward-eq').innerHTML = `${bLabel}<sup>${xLabel}</sup> = ${yLabel}`;
+      document.getElementById('s3-reverse-eq').innerHTML = `log<sub>${bLabel}</sub>(${yLabel}) = ${xLabel}`;
+
+      // Graph view buttons
+      ['exp', 'log', 'both'].forEach((mode) => {
+        const el = document.getElementById(`s3-view-${mode}`);
+        if (!el) return;
+        el.className = s3State.graphView === mode
+          ? 'min-h-[38px] py-2 px-2 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-600 transition-all cursor-pointer'
+          : 'min-h-[38px] py-2 px-2 rounded-xl text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all cursor-pointer';
+      });
+
+      const titleEl = document.getElementById('s3-graph-title');
+      if (s3State.graphView === 'exp') {
+        titleEl.innerHTML = `Exponential Curve Only: y = ${bLabel}<sup>x</sup>`;
+      } else if (s3State.graphView === 'log') {
+        titleEl.innerHTML = `Logarithm Curve Only: y = log<sub>${bLabel}</sub>(x)`;
+      } else {
+        titleEl.innerHTML = `Both Curves Together: ${bLabel}<sup>x</sup> &amp; log<sub>${bLabel}</sub>(x) across y = x`;
+      }
+
+      document.getElementById('s3-coord-pair-pill').textContent =
+        `(0, 1) ↔ (1, 0) · (1, ${bLabel}) ↔ (${bLabel}, 1)`;
+      document.getElementById('s3-coord-flip-text').innerHTML =
+        `Swapping a coordinate pair <strong>(a, c)</strong> to <strong>(c, a)</strong> reflects it across the diagonal line <strong>y = x</strong>. Because <strong>${bLabel}<sup>0</sup> = 1</strong> and <strong>${bLabel}<sup>1</sup> = ${bLabel}</strong>, the points <strong>(0, 1)</strong> and <strong>(1, ${bLabel})</strong> on <strong>${bLabel}<sup>x</sup></strong> flip to <strong>(1, 0)</strong> and <strong>(${bLabel}, 1)</strong> on <strong>log<sub>${bLabel}</sub>(x)</strong>.`;
+
+      const st = s3State.roundTripStage;
+      document.getElementById('s3-rt-status-pill').textContent = `Stage ${st}/3: ${st === 1 ? 'Input x' : st === 2 ? 'b^x Output' : 'Inverse Undo'}`;
+      document.getElementById('s3-flow-s1').textContent = `Start with x = ${xLabel}`;
+      document.getElementById('s3-flow-s2').innerHTML = `(${xLabel}, ${yLabel}) on ${bLabel}<sup>x</sup>`;
+      document.getElementById('s3-flow-s3').innerHTML = `(${yLabel}, ${xLabel}) on log<sub>${bLabel}</sub>(x)`;
+
+      for (let i = 1; i <= 3; i++) {
+        const card = document.getElementById(`s3-stage-card-${i}`);
+        if (!card) continue;
+        card.className = i === st
+          ? 'p-2.5 rounded-xl border border-amber-500 bg-white text-xs shadow-2xs cursor-pointer transition-all'
+          : 'p-2.5 rounded-xl border border-amber-200/80 bg-white/60 text-xs opacity-80 cursor-pointer transition-all';
+      }
+
+      const canvas = document.getElementById('s3-mirror-canvas');
+      const setup = setupCanvas(canvas);
+      if (!setup) return;
+      const { ctx, width, height } = setup;
+      ctx.clearRect(0, 0, width, height);
+
+      const pad = Math.max(32, Math.min(48, Math.round(width * 0.07)));
+      const plotW = Math.max(120, width - pad * 2);
+      const plotH = Math.max(120, height - pad * 2);
+
+      const minVal = -2;
+      const maxVal = Math.max(8, Math.ceil(y + 1));
+      const toX = (val) => pad + ((val - minVal) / (maxVal - minVal)) * plotW;
+      const toY = (val) => pad + plotH - ((val - minVal) / (maxVal - minVal)) * plotH;
+
+      // Axes
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.lineWidth = 1.2;
+      if (0 >= minVal && 0 <= maxVal) {
+        const x0 = toX(0);
+        const y0 = toY(0);
+        ctx.beginPath();
+        ctx.moveTo(x0, pad);
+        ctx.lineTo(x0, pad + plotH);
+        ctx.moveTo(pad, y0);
+        ctx.lineTo(pad + plotW, y0);
+        ctx.stroke();
+      }
+
+      // y = x mirror line when showing both
+      if (s3State.graphView === 'both') {
+        ctx.save();
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = '#94A3B8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(toX(minVal), toY(minVal));
+        ctx.lineTo(toX(maxVal), toY(maxVal));
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const drawCurve = (fn, xStart, xEnd, color) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let started = false;
+        const samples = 180;
+        for (let i = 0; i <= samples; i++) {
+          const t = xStart + ((xEnd - xStart) * i) / samples;
+          const v = fn(t);
+          if (!Number.isFinite(v) || v < minVal - 2 || v > maxVal + 2) {
+            started = false;
+            continue;
+          }
+          const px = toX(t);
+          const py = toY(v);
+          if (!started) {
+            ctx.moveTo(px, py);
+            started = true;
+          } else {
+            ctx.lineTo(px, py);
+          }
+        }
+        ctx.stroke();
+      };
+
+      if (s3State.graphView === 'exp' || s3State.graphView === 'both') {
+        drawCurve((t) => Math.pow(b, t), minVal, maxVal, '#2563EB');
+      }
+      if (s3State.graphView === 'log' || s3State.graphView === 'both') {
+        drawCurve((t) => (t > 0 ? Math.log(t) / Math.log(b) : NaN), 0.02, maxVal, '#0D9488');
+      }
+
+      if (s3State.showHelperCoords) {
+        const anchors = [];
+        if (s3State.graphView === 'exp' || s3State.graphView === 'both') {
+          anchors.push({ gx: 0, gy: 1, tag: '(0, 1)', color: '#2563EB' });
+          anchors.push({ gx: 1, gy: b, tag: `(1, ${bLabel})`, color: '#2563EB' });
+        }
+        if (s3State.graphView === 'log' || s3State.graphView === 'both') {
+          anchors.push({ gx: 1, gy: 0, tag: '(1, 0)', color: '#0D9488' });
+          anchors.push({ gx: b, gy: 1, tag: `(${bLabel}, 1)`, color: '#0D9488' });
+        }
+
+        anchors.forEach((pt) => {
+          if (pt.gx >= minVal && pt.gx <= maxVal && pt.gy >= minVal && pt.gy <= maxVal) {
+            const px = toX(pt.gx);
+            const py = toY(pt.gy);
+            ctx.fillStyle = pt.color;
+            ctx.beginPath();
+            ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '600 10px "JetBrains Mono", monospace';
+            ctx.fillText(pt.tag, Math.min(width - pad - 36, px + 7), Math.max(pad + 12, py - 6));
+          }
+        });
+
+        // Live probe point
+        if (x >= minVal && x <= maxVal && y >= minVal && y <= maxVal) {
+          const pxExp = toX(x);
+          const pyExp = toY(y);
+          ctx.fillStyle = '#D97706';
+          ctx.beginPath();
+          ctx.arc(pxExp, pyExp, 5.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (s3State.graphView === 'both' || s3State.graphView === 'log') {
+            const pxLog = toX(y);
+            const pyLog = toY(x);
+            ctx.fillStyle = '#0F766E';
+            ctx.beginPath();
+            ctx.arc(pxLog, pyLog, 5.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 4: THE CONSTANT e
+    // -----------------------------------------------------------------------
+    const s4Slices = [
+      { n: 1, label: 'n = 1 (Yearly)' },
+      { n: 2, label: 'n = 2 (Semi-Annual)' },
+      { n: 4, label: 'n = 4 (Quarterly)' },
+      { n: 12, label: 'n = 12 (Monthly)' },
+      { n: 52, label: 'n = 52 (Weekly)' },
+      { n: 365, label: 'n = 365 (Daily)' },
+      { n: 10000, label: 'n → ∞ (Continuous)' },
+    ];
+
+    const s4State = {
+      mode: 'compound',
+    };
+
+    function setS4Mode(mode) {
+      s4State.mode = mode === 'nature' ? 'nature' : 'compound';
+      const compBtn = document.getElementById('s4-mode-compound');
+      const natBtn = document.getElementById('s4-mode-nature');
+      compBtn.className = s4State.mode === 'compound'
+        ? 'min-h-[42px] py-2 px-3 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-600 transition-all cursor-pointer'
+        : 'min-h-[42px] py-2 px-3 rounded-xl text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all cursor-pointer';
+      natBtn.className = s4State.mode === 'nature'
+        ? 'min-h-[42px] py-2 px-3 rounded-xl text-xs font-semibold border bg-teal-600 text-white border-teal-600 transition-all cursor-pointer'
+        : 'min-h-[42px] py-2 px-3 rounded-xl text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all cursor-pointer';
+
+      document.getElementById('s4-compound-controls').classList.toggle('hidden', s4State.mode !== 'compound');
+      document.getElementById('s4-nature-controls').classList.toggle('hidden', s4State.mode !== 'nature');
+      renderStep4();
+    }
+
+    function setS4SliceIdx(idx) {
+      const clamped = Math.max(0, Math.min(s4Slices.length - 1, Number(idx)));
+      document.getElementById('s4-n-slider').value = String(clamped);
+      renderStep4();
+    }
+
+    function renderStep4() {
+      const idx = Number(document.getElementById('s4-n-slider').value || 3);
+      const slice = s4Slices[idx] || s4Slices[3];
+      const n = slice.n;
+      const val = Math.pow(1 + 1 / n, n);
+
+      document.getElementById('s4-n-badge').textContent = slice.label;
+      document.getElementById('s4-result-val').textContent = `$${val.toFixed(4)}`;
+
+      // Quarter-by-quarter breakdown cards for n = 4
+      const qCardsEl = document.getElementById('s4-period-cards');
+      if (qCardsEl) {
+        let bal = 1;
+        const cards = [];
+        for (let q = 1; q <= 4; q++) {
+          bal *= 1.25;
+          cards.push(`
+            <div class="p-2.5 rounded-xl bg-white border border-slate-200 text-xs">
+              <div class="font-mono-code text-[10px] font-bold text-blue-700">Q${q} (+25%)</div>
+              <div class="font-mono-code font-bold text-slate-900 mt-0.5">$${bal.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')}</div>
+            </div>
+          `);
+        }
+        qCardsEl.innerHTML = cards.join('');
+      }
+
+      const pctLeft = Number(document.getElementById('s4-decay-slider').value || 50);
+      document.getElementById('s4-decay-badge').textContent = `${pctLeft}% left`;
+      const frac = pctLeft / 100;
+      const elapsed = -Math.log(frac);
+      document.getElementById('s4-ln-time').textContent = `t = -ln(${frac.toFixed(2)}) = ${elapsed.toFixed(3)}`;
+
+      const canvas = document.getElementById('s4-e-canvas');
+      const setup = setupCanvas(canvas);
+      if (!setup) return;
+      const { ctx, width, height } = setup;
+      ctx.clearRect(0, 0, width, height);
+
+      const pad = Math.max(32, Math.min(48, Math.round(width * 0.07)));
+      const plotW = Math.max(120, width - pad * 2);
+      const plotH = Math.max(110, height - pad * 2);
+
+      // Horizontal asymptote at e ≈ 2.71828
+      const maxY = 3.2;
+      const eY = pad + plotH - (Math.E / maxY) * plotH;
+
+      ctx.save();
+      ctx.setLineDash([6, 5]);
+      ctx.strokeStyle = '#D97706';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(pad, eY);
+      ctx.lineTo(pad + plotW, eY);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.font = '700 10px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#B45309';
+      ctx.textAlign = 'right';
+      ctx.fillText(`e ≈ ${Math.E.toFixed(5)}`, pad + plotW, eY - 6);
+
+      const pts = s4Slices.map((s, i) => {
+        const v = Math.pow(1 + 1 / s.n, s.n);
+        const px = pad + (i / (s4Slices.length - 1)) * plotW;
+        const py = pad + plotH - (v / maxY) * plotH;
+        return { px, py, v, i };
+      });
+
+      ctx.strokeStyle = '#2563EB';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      pts.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.px, p.py);
+        else ctx.lineTo(p.px, p.py);
+      });
+      ctx.stroke();
+
+      pts.forEach((p) => {
+        const active = p.i === idx;
+        ctx.fillStyle = active ? '#0D9488' : '#2563EB';
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, active ? 6.5 : 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 5: LOG SUPERPOWER (LAWS / DUAL SLIDE-RULE)
+    // -----------------------------------------------------------------------
+    const s5State = {
+      law: 'mul',
+    };
+
+    function setS5Law(law) {
+      s5State.law = law;
+      ['mul', 'div', 'pow'].forEach((l) => {
+        const btn = document.getElementById(`s5-law-${l}`);
+        if (!btn) return;
+        btn.className = l === law
+          ? 'min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border text-center leading-snug bg-blue-600 text-white border-blue-600 transition-all cursor-pointer'
+          : 'min-h-[42px] py-2 px-2.5 rounded-xl text-xs font-semibold border text-center leading-snug bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all cursor-pointer';
+      });
+      document.getElementById('s5-b-group').classList.toggle('hidden', law === 'pow');
+      document.getElementById('s5-k-group').classList.toggle('hidden', law !== 'pow');
+      renderStep5();
+    }
+
+    function renderStep5() {
+      const a = Number(document.getElementById('s5-a-slider').value || 4);
+      const b = Number(document.getElementById('s5-b-slider').value || 8);
+      const k = Number(document.getElementById('s5-k-slider').value || 3);
+
+      document.getElementById('s5-a-badge').textContent = String(a);
+      document.getElementById('s5-b-badge').textContent = String(b);
+      document.getElementById('s5-k-badge').textContent = String(k);
+
+      const log2A = Math.log2(a);
+      const log2B = Math.log2(b);
+      const proofBox = document.getElementById('s5-proof-box');
+
+      if (s5State.law === 'mul') {
+        const prod = a * b;
+        proofBox.innerHTML = `
+          <div>log<sub>2</sub>(${a} × ${b}) = log<sub>2</sub>(${prod}) ≈ ${Math.log2(prod).toFixed(3)}</div>
+          <div>log<sub>2</sub>(${a}) + log<sub>2</sub>(${b}) ≈ ${log2A.toFixed(3)} + ${log2B.toFixed(3)} = ${(log2A + log2B).toFixed(3)}</div>
+        `;
+      } else if (s5State.law === 'div') {
+        const quot = a / b;
+        proofBox.innerHTML = `
+          <div>log<sub>2</sub>(${a} / ${b}) ≈ ${Math.log2(quot).toFixed(3)}</div>
+          <div>log<sub>2</sub>(${a}) − log<sub>2</sub>(${b}) ≈ ${log2A.toFixed(3)} − ${log2B.toFixed(3)} = ${(log2A - log2B).toFixed(3)}</div>
+        `;
+      } else {
+        const powVal = Math.pow(a, k);
+        proofBox.innerHTML = `
+          <div>log<sub>2</sub>(${a}<sup>${k}</sup>) = log<sub>2</sub>(${powVal.toLocaleString()}) ≈ ${Math.log2(powVal).toFixed(3)}</div>
+          <div>${k} × log<sub>2</sub>(${a}) ≈ ${k} × ${log2A.toFixed(3)} = ${(k * log2A).toFixed(3)}</div>
+        `;
+      }
+
+      const canvas = document.getElementById('s5-sliderule-canvas');
+      const setup = setupCanvas(canvas);
+      if (!setup) return;
+      const { ctx, width, height } = setup;
+      ctx.clearRect(0, 0, width, height);
+
+      const pad = Math.max(24, Math.min(44, Math.round(width * 0.06)));
+      const rulerW = Math.max(120, width - pad * 2);
+      const maxExp = 8; // values from 2^0 = 1 up to 2^8 = 256
+
+      const drawRule = (y, label, accent) => {
+        ctx.fillStyle = '#475569';
+        ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, pad, y - 16);
+
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(pad + rulerW, y);
+        ctx.stroke();
+
+        for (let e = 0; e <= maxExp; e++) {
+          const x = pad + (e / maxExp) * rulerW;
+          ctx.strokeStyle = '#94A3B8';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(x, y - 6);
+          ctx.lineTo(x, y + 6);
+          ctx.stroke();
+
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#334155';
+          ctx.textAlign = 'center';
+          ctx.fillText(String(Math.pow(2, e)), x, y - 9);
+          ctx.fillStyle = '#64748B';
+          ctx.fillText(`u=${e}`, x, y + 17);
+        }
+      };
+
+      drawRule(Math.round(height * 0.34), 'FIXED SCALE (2^u above · offset u below)', '#2563EB');
+      drawRule(Math.round(height * 0.72), 'SLIDING SCALE (Aligns log2(A) with log2(B))', '#0D9488');
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 6: CONFIDENCE CHECK QUIZ
+    // -----------------------------------------------------------------------
+    const quizQuestions = [
+      {
+        id: 'q1',
+        prompt: 'If you start with 1 and multiply by 2 repeatedly, how many steps does it take to reach 8?',
+        options: ['2 steps', '3 steps', '4 steps', '8 steps'],
+        correct: 1,
+        hint: '2 × 2 = 4 (2 steps), and 4 × 2 = 8 (3 steps), so log2(8) = 3.',
+      },
+      {
+        id: 'q2',
+        prompt: 'Why do we use a logarithmic scale for sound intensity or earthquake wave amplitude?',
+        options: [
+          'Because negative numbers cannot be plotted otherwise',
+          'Because 10× jumps get equal spacing instead of squishing smaller values near zero',
+          'Because logarithms make every number equal to 1',
+          'Because exponents only work for whole numbers',
+        ],
+        correct: 1,
+        hint: 'Logarithmic scales turn multiplicative 10× changes into equal additive steps.',
+      },
+      {
+        id: 'q3',
+        prompt: 'Which pair of points shows reflection across the line y = x for base b = 2?',
+        options: [
+          '(0, 1) and (1, 0)',
+          '(0, 0) and (2, 2)',
+          '(1, 1) and (4, 4)',
+          '(0, 2) and (2, 0)',
+        ],
+        correct: 0,
+        hint: 'Since 2^0 = 1 gives (0, 1) on 2^x, swapping coordinates gives (1, 0) on log2(x).',
+      },
+      {
+        id: 'q4',
+        prompt: 'As n grows larger in (1 + 1/n)^n, what number does it approach?',
+        options: ['1', '2', 'e ≈ 2.71828', '10'],
+        correct: 2,
+        hint: 'Increasing compounding frequency approaches Euler’s number e ≈ 2.71828.',
+      },
+      {
+        id: 'q5',
+        prompt: 'By the product rule for logarithms (for positive A, B), log_b(A · B) equals:',
+        options: [
+          'log_b(A) · log_b(B)',
+          'log_b(A) + log_b(B)',
+          'log_b(A) − log_b(B)',
+          'log_b(A + B)',
+        ],
+        correct: 1,
+        hint: 'Multiplying powers adds their exponents, so the log of a product is the sum of logs.',
+      },
+    ];
+
+    const quizAnswers = {};
+
+    function selectQuizOption(qId, optIdx) {
+      quizAnswers[qId] = optIdx;
+      renderQuiz();
+    }
+
+    function resetQuiz() {
+      Object.keys(quizAnswers).forEach((k) => delete quizAnswers[k]);
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      if (!container) return;
+
+      let correctCount = 0;
+      container.innerHTML = quizQuestions.map((q, idx) => {
+        const chosen = quizAnswers[q.id];
+        const hasChosen = chosen !== undefined;
+        const isCorrect = hasChosen && chosen === q.correct;
+        if (isCorrect) correctCount += 1;
+
+        return `
+          <div class="py-4 space-y-2.5">
+            <div class="text-xs sm:text-sm font-semibold text-slate-900">
+              ${idx + 1}. ${q.prompt}
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${q.options.map((opt, oIdx) => {
+                let cls = 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50';
+                if (hasChosen && oIdx === chosen) {
+                  cls = oIdx === q.correct
+                    ? 'bg-teal-50 border-teal-500 text-teal-950 font-semibold'
+                    : 'bg-rose-50 border-rose-400 text-rose-950 font-semibold';
+                }
+                return `
+                  <button type="button" onclick="selectQuizOption('${q.id}', ${oIdx})"
+                    class="min-h-[40px] px-3 py-2 rounded-xl border text-left text-xs transition-all cursor-pointer ${cls}">
+                    ${opt}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+            ${hasChosen ? `
+              <p class="text-xs leading-relaxed ${isCorrect ? 'text-teal-800' : 'text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2'}">
+                ${isCorrect ? '✓ Spot on!' : `Hint: ${q.hint}`}
+              </p>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      const badge = document.getElementById('quiz-score-badge');
+      if (badge) badge.textContent = `Completed: ${correctCount} / ${quizQuestions.length}`;
+    }
+
+    // -----------------------------------------------------------------------
+    // RESPONSIVE RESIZE & INITIALIZATION (with ResizeObserver for crisp layout transitions)
+    // -----------------------------------------------------------------------
+    function renderCurrentStepCanvas() {
+      if (currentStep === 1) renderStep1();
+      if (currentStep === 2) renderStep2();
+      if (currentStep === 3) renderStep3();
+      if (currentStep === 4) renderStep4();
+      if (currentStep === 5) renderStep5();
+    }
+
+    window.addEventListener('resize', renderCurrentStepCanvas);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const resizeObs = new ResizeObserver(() => {
+        requestAnimationFrame(renderCurrentStepCanvas);
+      });
+      window.addEventListener('DOMContentLoaded', () => {
+        resizeObs.observe(document.querySelector('main'));
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setS1Preset('size');
+      setS2Multiplier(2);
+      setS4Mode('compound');
+      setS5Law('mul');
+      renderQuiz();
+      goToStep(1);
+      typesetMath(document.body);
+    });
+  </script>
+</body>
+</html>
