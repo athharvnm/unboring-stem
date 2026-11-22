@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unboring STEM — Interactive Math & Science Explorations</title>
-  <meta name="description" content="Interactive STEM modules covering Optics, Mensuration, Trigonometry, Projectiles, and Polynomials. Visual, hands-on learning—with more modules on the way." />
+  <meta name="description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, and Logarithms." />
 
   <!-- Open Graph / Social Media Meta Tags -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Unboring STEM" />
   <meta property="og:url" content="https://unboringstem.pages.dev/" />
   <meta property="og:title" content="Unboring STEM — Interactive Math & Science Explorations" />
-  <meta property="og:description" content="Explore Optics, Mensuration, Trigonometry, Projectiles, and Polynomials through hands-on, visual simulations. More modules on the way." />
+  <meta property="og:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, and Logarithms." />
   <meta property="og:image" content="https://unboringstem.pages.dev/social.png" />
   <meta property="og:image:alt" content="Unboring STEM — Interactive STEM Modules Preview" />
 
@@ -20,13 +20,13 @@
   <meta name="twitter:creator" content="@nikhilnarayanan" />
   <meta name="twitter:url" content="https://unboringstem.pages.dev/" />
   <meta name="twitter:title" content="Unboring STEM — Interactive Math & Science Explorations" />
-  <meta name="twitter:description" content="Explore Optics, Mensuration, Trigonometry, Projectiles, and Polynomials through hands-on, visual simulations. More modules on the way." />
+  <meta name="twitter:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, and Logarithms." />
   <meta name="twitter:image" content="https://unboringstem.pages.dev/social.png" />
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <!-- Fonts: Instrument Serif, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -35,267 +35,395 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
+            serif: ['Instrument Serif', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+          keyframes: {
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-3px)' },
+            },
+          },
+          animation: {
+            'float-slow': 'floatSlow 5s ease-in-out infinite',
           },
         },
       },
     };
   </script>
-</head>
-<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased selection:bg-indigo-600 selection:text-white relative">
 
-  <!-- Subtle Geometric Graph-Paper Background Pattern -->
+  <style>
+    .lab-grid {
+      background-size: 32px 32px;
+      background-image:
+        linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    }
+
+    .module-card {
+      transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 240ms ease;
+    }
+
+    .module-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .module-card[data-hidden="true"] {
+      display: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#FAF9F6] text-slate-900 antialiased selection:bg-slate-900 selection:text-[#FAF9F6] relative lab-grid">
+
+  <!-- Top Ambient Glow -->
   <div
-    class="fixed inset-0 -z-10 pointer-events-none opacity-60"
-    style="
-      background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-      background-size: 24px 24px;
-    "
+    class="pointer-events-none fixed inset-x-0 top-0 h-80 -z-10 opacity-70"
+    style="background: radial-gradient(65% 75% at 50% 0%, rgba(99, 102, 241, 0.09), rgba(250, 249, 246, 0) 75%);"
     aria-hidden="true"
   ></div>
 
-  <!-- Top Header / Brand Bar -->
-  <header class="w-full max-w-5xl mx-auto px-6 pt-12 pb-8 sm:pt-16 sm:pb-12">
-    <div class="flex flex-col items-start gap-4">
-      <!-- Status Badge -->
-      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-xs">
-        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
-        5 Modules Live · More on the way
-      </span>
+  <!-- Header -->
+  <header class="w-full max-w-6xl mx-auto px-6 sm:px-8 pt-12 sm:pt-16 pb-8">
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-slate-200/80">
+      <div class="max-w-2xl space-y-4">
+        <div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/90 border border-slate-200/90 shadow-2xs">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="font-mono text-[11px] uppercase tracking-wider text-slate-600">
+            Interactive Workbench · 06 Modules Live
+          </span>
+        </div>
 
-      <!-- Main Title -->
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950">
-        Unboring <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">STEM</span>
-      </h1>
+        <h1 class="text-5xl sm:text-6xl font-normal tracking-tight text-slate-950 leading-[1.03]">
+          Unboring <span class="font-serif italic text-indigo-600 pr-1">STEM</span>
+        </h1>
 
-      <!-- Subtitle / Tagline -->
-      <p class="max-w-2xl text-base sm:text-lg text-slate-600 leading-relaxed">
-        Hands-on, visual explorations of math and physics concepts—built to make intuition click. Pick a module below to start experimenting.
-      </p>
+        <p class="text-base sm:text-[17px] text-slate-600 leading-relaxed max-w-xl">
+          Visual, hands-on laboratories built to turn formulas into intuition. Drag parameters, flip axes, and see what changes in real time.
+        </p>
+      </div>
+
+      <!-- Subtle Domain Filter -->
+      <div class="flex flex-wrap items-center gap-1.5 bg-white/80 backdrop-blur-xs p-1.5 rounded-xl border border-slate-200/80 shadow-2xs self-start lg:self-auto" role="tablist" aria-label="Filter modules by topic">
+        <button
+          type="button"
+          data-filter="all"
+          role="tab"
+          aria-selected="true"
+          class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-slate-900 text-white transition-colors"
+        >
+          All (6)
+        </button>
+        <button
+          type="button"
+          data-filter="physics"
+          role="tab"
+          aria-selected="false"
+          class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors"
+        >
+          Physics
+        </button>
+        <button
+          type="button"
+          data-filter="geometry"
+          role="tab"
+          aria-selected="false"
+          class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors"
+        >
+          Geometry
+        </button>
+        <button
+          type="button"
+          data-filter="algebra"
+          role="tab"
+          aria-selected="false"
+          class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors"
+        >
+          Algebra & Log
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Main Content: Scalable Module Grid -->
-  <main class="flex-1 w-full max-w-5xl mx-auto px-6 pb-16">
-    <!--
-      ========================================================================
-      MODULE CARDS GRID
-      To add a new module in the future:
-      1. Copy one of the <a href="..."> card blocks below.
-      2. Update the href URL, badge label, title, description, and SVG icon.
-      3. Place it right before the "More modules coming soon" card.
-      ========================================================================
-    -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Main Grid -->
+  <main class="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-8 pb-20">
+    <div id="modules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      <!-- Module 1: Optics -->
+      <!-- 01 · Optics -->
       <a
         href="https://unboringstem.pages.dev/optics"
-        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-amber-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+        data-domain="physics"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-amber-950/5 hover:border-amber-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
       >
         <div>
-          <div class="flex items-center justify-between gap-4 mb-5">
-            <!-- Icon -->
-            <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200/70 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-              </svg>
-            </div>
-            <!-- Subject Tag -->
-            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
-              Physics · 01
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-amber-600 transition-colors">01</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200/70">
+              Ray Optics
             </span>
           </div>
 
-          <h2 class="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors mb-2">
-            Optics
-          </h2>
-          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Bend rays of light, experiment with reflection and refraction, and see how lenses and mirrors shape images in real time.
-          </p>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-amber-600">
-          <span>Launch module</span>
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-          </svg>
-        </div>
-      </a>
-
-      <!-- Module 2: Mensuration -->
-      <a
-        href="https://unboringstem.pages.dev/mensuration"
-        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-      >
-        <div>
-          <div class="flex items-center justify-between gap-4 mb-5">
-            <!-- Icon -->
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200/70 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-              </svg>
-            </div>
-            <!-- Subject Tag -->
-            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
-              Geometry · 02
-            </span>
-          </div>
-
-          <h2 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors mb-2">
-            Mensuration
-          </h2>
-          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Unfold 3D solids, stretch dimensions, and build intuition for surface area, perimeter, and volume without memorizing formulas.
-          </p>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-emerald-600">
-          <span>Launch module</span>
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-          </svg>
-        </div>
-      </a>
-
-      <!-- Module 3: Trigonometry -->
-      <a
-        href="https://unboringstem.pages.dev/trigonometry"
-        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-indigo-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-      >
-        <div>
-          <div class="flex items-center justify-between gap-4 mb-5">
-            <!-- Icon -->
-            <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200/70 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12c2.25-6 4.5-6 6.75 0s4.5 6 6.75 0 4.5-6 4.5 0" />
-              </svg>
-            </div>
-            <!-- Subject Tag -->
-            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
-              Mathematics · 03
-            </span>
-          </div>
-
-          <h2 class="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors mb-2">
-            Trigonometry
-          </h2>
-          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Connect triangles to the unit circle and watch sine, cosine, and tangent waves come alive as angles rotate smoothly.
-          </p>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-indigo-600">
-          <span>Launch module</span>
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-          </svg>
-        </div>
-      </a>
-
-      <!-- Module 4: Projectiles -->
-      <a
-        href="https://unboringstem.pages.dev/projectiles"
-        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-rose-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
-      >
-        <div>
-          <div class="flex items-center justify-between gap-4 mb-5">
-            <!-- Icon -->
-            <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200/70 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 18c2.5-10 11.5-10 16-2m0 0-3.5-.5M20 16l-.5-3.5" />
-              </svg>
-            </div>
-            <!-- Subject Tag -->
-            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
-              Mechanics · 04
-            </span>
-          </div>
-
-          <h2 class="text-xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors mb-2">
-            Projectiles
-          </h2>
-          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Tweak launch angles, initial velocity, and gravity to trace parabolic arcs, peak heights, and horizontal range.
-          </p>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-rose-600">
-          <span>Launch module</span>
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-          </svg>
-        </div>
-      </a>
-
-      <!-- Module 5: Polynomials -->
-      <a
-        href="https://unboringstem.pages.dev/polynomials/"
-        class="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-violet-400/80 hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
-      >
-        <div>
-          <div class="flex items-center justify-between gap-4 mb-5">
-            <!-- Icon -->
-            <div class="w-12 h-12 rounded-xl bg-violet-50 border border-violet-200/70 text-violet-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 19C6.5 6 10.5 6 12 12s5.5 6 9-7" />
-              </svg>
-            </div>
-            <!-- Subject Tag -->
-            <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">
-              Algebra · 05
-            </span>
-          </div>
-
-          <h2 class="text-xl font-bold text-slate-900 group-hover:text-violet-600 transition-colors mb-2">
-            Polynomials
-          </h2>
-          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Drag roots, shift curves, and explore real crossings, multiplicity, and complex conjugate pairs across the real and Argand planes.
-          </p>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-semibold text-violet-600">
-          <span>Launch module</span>
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-          </svg>
-        </div>
-      </a>
-
-      <!-- Coming Soon / Future Modules Indicator -->
-      <div class="md:col-span-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl border border-dashed border-slate-300 bg-white/60 text-slate-600">
-        <div class="flex items-center gap-4">
-          <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-amber-50/70 to-orange-50/40 border border-amber-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-amber-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <line x1="90" y1="8" x2="90" y2="72" stroke="currentColor" stroke-opacity="0.25" stroke-dasharray="3 3" />
+              <ellipse cx="90" cy="40" rx="8" ry="26" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.08" />
+              <path d="M16 24 L90 24 L162 56" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="group-hover:stroke-[2.2] transition-all" />
+              <path d="M16 56 L90 56 L162 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7" />
+              <circle cx="126" cy="40" r="3" fill="currentColor" />
             </svg>
           </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">More interactive modules in progress</p>
-            <p class="text-xs sm:text-sm text-slate-500">New simulations across physics, calculus, and geometry are added regularly.</p>
-          </div>
-        </div>
-        <span class="text-xs font-mono text-slate-500 bg-slate-100 px-3 py-1 rounded-full shrink-0">
-          Work in progress
-        </span>
-      </div>
 
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-amber-700 transition-colors mb-2">
+            Optics
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Bend light rays through lenses and mirrors, test reflection and refraction, and watch real or virtual images form live.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-amber-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+      <!-- 02 · Mensuration -->
+      <a
+        href="https://unboringstem.pages.dev/mensuration"
+        data-domain="geometry"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-emerald-950/5 hover:border-emerald-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-emerald-600 transition-colors">02</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+              3D & Solids
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-emerald-50/70 to-teal-50/40 border border-emerald-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-emerald-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <polygon points="90,14 124,33 90,52 56,33" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.1" />
+              <polyline points="56,33 56,57 90,74 124,57 124,33" stroke="currentColor" stroke-width="1.6" fill="none" />
+              <line x1="90" y1="52" x2="90" y2="74" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.5 2.5" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors mb-2">
+            Mensuration
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Stretch dimensions, unfold 3D solids, and build lasting intuition for perimeter, surface area, and volume.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-emerald-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+      <!-- 03 · Trigonometry -->
+      <a
+        href="https://unboringstem.pages.dev/trigonometry"
+        data-domain="geometry"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-indigo-950/5 hover:border-indigo-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-indigo-600 transition-colors">03</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+              Unit Circle & Waves
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-indigo-50/70 to-blue-50/40 border border-indigo-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-indigo-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <circle cx="52" cy="40" r="22" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.35" />
+              <line x1="52" y1="40" x2="70" y2="27" stroke="currentColor" stroke-width="1.8" />
+              <line x1="70" y1="27" x2="70" y2="40" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 2" />
+              <path d="M84 40 C98 14, 112 14, 126 40 S154 66, 168 40" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors mb-2">
+            Trigonometry
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Link right triangles and the unit circle directly to sine, cosine, and tangent waves as angles rotate smoothly.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-indigo-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+      <!-- 04 · Projectiles -->
+      <a
+        href="https://unboringstem.pages.dev/projectiles"
+        data-domain="physics"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-rose-950/5 hover:border-rose-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-rose-600 transition-colors">04</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200/70">
+              Kinematics
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-rose-50/70 to-pink-50/40 border border-rose-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-rose-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <line x1="22" y1="62" x2="158" y2="62" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+              <path d="M28 62 Q88 8 150 62" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />
+              <line x1="28" y1="62" x2="54" y2="36" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.5 2.5" />
+              <circle cx="89" cy="21.5" r="3" fill="currentColor" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-rose-700 transition-colors mb-2">
+            Projectiles
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Adjust launch angle, speed, and gravity to trace parabolic trajectories, apex heights, and horizontal range.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-rose-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+      <!-- 05 · Polynomials -->
+      <a
+        href="https://unboringstem.pages.dev/polynomials/"
+        data-domain="algebra"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-violet-950/5 hover:border-violet-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-violet-600 transition-colors">05</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-violet-50 text-violet-700 border border-violet-200/70">
+              Roots & Argand Plane
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-violet-50/70 to-purple-50/40 border border-violet-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-violet-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <line x1="20" y1="44" x2="160" y2="44" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+              <path d="M26 64 C54 10, 76 16, 90 44 C104 72, 126 70, 154 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />
+              <circle cx="45" cy="44" r="3" fill="currentColor" />
+              <circle cx="90" cy="44" r="3" fill="currentColor" />
+              <circle cx="135" cy="44" r="3" fill="currentColor" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-violet-700 transition-colors mb-2">
+            Polynomials
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Drag real roots, shift curves vertically, and watch crossings, multiplicities, and complex conjugate pairs in tandem.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-violet-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+      <!-- 06 · Logarithms -->
+      <a
+        href="https://unboringstem.pages.dev/log/"
+        data-domain="algebra"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-cyan-950/5 hover:border-cyan-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-cyan-600 transition-colors">06</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-cyan-50 text-cyan-700 border border-cyan-200/70">
+              Scales, e & Slide Rule
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-cyan-50/70 to-sky-50/40 border border-cyan-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-cyan-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <line x1="24" y1="62" x2="156" y2="62" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+              <line x1="24" y1="18" x2="24" y2="62" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+              <path d="M28 60 Q68 38 152 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />
+              <circle cx="76" cy="36" r="3" fill="currentColor" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-cyan-700 transition-colors mb-2">
+            Logarithms
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Compare log scales, count multiplication steps, invert exponentials, and explore continuous growth toward <em>e</em> and slide rules.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-cyan-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Future Lab Strip -->
+    <div class="mt-8 rounded-2xl border border-dashed border-slate-300/90 bg-white/60 px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="space-y-1">
+        <p class="text-sm font-medium text-slate-800">More interactive labs in the pipeline</p>
+        <p class="text-xs text-slate-500">New visual simulations are added steadily across physics, calculus, and number intuition.</p>
+      </div>
+      <span class="font-mono text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 self-start sm:self-auto">
+        6 / ∞ Shipped
+      </span>
     </div>
   </main>
 
   <!-- Footer -->
   <footer class="w-full border-t border-slate-200/80 bg-white/80 backdrop-blur-xs">
-    <div class="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-600">
-      <p class="font-medium text-slate-800">Unboring STEM</p>
-      <p>
-        Being built by
+    <div class="max-w-6xl mx-auto px-6 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-600">
+      <div class="flex items-center gap-2 font-mono text-xs text-slate-500">
+        <span class="text-slate-900 font-semibold">UNBORING STEM</span>
+        <span>·</span>
+        <span>Visual Intuition Workbench</span>
+      </div>
+      <p class="text-xs sm:text-sm">
+        Crafted by
         <a
           href="https://x.com/nikhilnarayanan"
           target="_blank"
           rel="noopener noreferrer"
-          class="font-semibold text-indigo-600 hover:text-indigo-700 underline decoration-indigo-300 underline-offset-4 hover:decoration-indigo-600 transition-colors"
+          class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-indigo-600 hover:text-indigo-600 transition-colors"
         >
           Nikhil Narayanan
         </a>
@@ -303,5 +431,31 @@
     </div>
   </footer>
 
+  <script>
+    (function () {
+      const buttons = document.querySelectorAll('.filter-btn');
+      const cards = document.querySelectorAll('.module-card');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const filter = btn.getAttribute('data-filter');
+
+          buttons.forEach((b) => {
+            const active = b === btn;
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+            b.className = active
+              ? 'filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-slate-900 text-white transition-colors'
+              : 'filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors';
+          });
+
+          cards.forEach((card) => {
+            const domain = card.getAttribute('data-domain');
+            const show = filter === 'all' || domain === filter;
+            card.setAttribute('data-hidden', show ? 'false' : 'true');
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
