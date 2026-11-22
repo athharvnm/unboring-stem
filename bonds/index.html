@@ -2858,7 +2858,8 @@
 
       const handleEnChange = (which, rawVal) => {
         const val = parseFloat(rawVal);
-        setActivePresetId('custom');
+        // Preserve 'h2o' preset identity when adjusting pull sliders on water so both H atoms stay visible
+        setActivePresetId((prev) => (prev === 'h2o' ? 'h2o' : 'custom'));
         const nextEnA = which === 'A' ? val : enA;
         const nextEnB = which === 'B' ? val : enB;
         if (which === 'A') setEnA(val);
@@ -2976,7 +2977,12 @@
                 <BondSimulationCanvas
                   level={level}
                   bondType={bondType}
-                  isWaterMolecule={activePresetId === 'h2o' && bondType === 'polar'}
+                  isWaterMolecule={
+                    (activePresetId === 'h2o' ||
+                      (atomA.symbol === 'H' && atomB.symbol === 'O')) &&
+                    bondType !== 'ionic' &&
+                    bondType !== 'metallic'
+                  }
                   atomA={atomA}
                   atomB={atomB}
                   enA={enA}
@@ -3305,7 +3311,10 @@
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <label htmlFor="slider-en-a" className="font-semibold text-ink">
-                        {activePresetId === 'h2o' && bondType === 'polar'
+                        {(activePresetId === 'h2o' ||
+                          (atomA.symbol === 'H' && atomB.symbol === 'O')) &&
+                        bondType !== 'ionic' &&
+                        bondType !== 'metallic'
                           ? 'Hydrogen Atoms (×2) — Pull (χ)'
                           : `${atomA.name} (${atomA.symbol}) — ${level === 'elementary' ? 'Pull (χ)' : 'χ_A'}`}
                       </label>
@@ -3330,7 +3339,10 @@
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <label htmlFor="slider-en-b" className="font-semibold text-ink">
-                        {activePresetId === 'h2o' && bondType === 'polar'
+                        {(activePresetId === 'h2o' ||
+                          (atomA.symbol === 'H' && atomB.symbol === 'O')) &&
+                        bondType !== 'ionic' &&
+                        bondType !== 'metallic'
                           ? 'Central Oxygen (O) — Pull (χ)'
                           : `${atomB.name} (${atomB.symbol}) — ${level === 'elementary' ? 'Pull (χ)' : 'χ_B'}`}
                       </label>
