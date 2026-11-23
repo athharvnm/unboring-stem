@@ -255,7 +255,7 @@
 
         <div class="flex items-center flex-wrap gap-x-2 sm:gap-x-3 gap-y-0.5 text-[10.5px] sm:text-[11px] font-mono text-muted tabular-nums">
           <span>
-            Crossover <strong class="text-vermilion font-semibold">n* = <span id="readoutNStar">3.563</span></strong>
+            Crossover <strong class="text-vermilion font-semibold"><span id="readoutNStarLabel">n*</span> = <span id="readoutNStar">3.563</span></strong>
           </span>
           <span>·</span>
           <span>
@@ -305,7 +305,7 @@
         <span class="text-[10px] uppercase tracking-wider text-muted">Click to jump</span>
       </div>
       <div class="text-ink">
-        (n*, y*) = (<span id="pinNStar">—</span>, <span id="pinYStar">—</span>)
+        <span id="pinCoordLabel">(n*, y*)</span> = (<span id="pinNStar">—</span>, <span id="pinYStar">—</span>)
       </div>
       <div class="text-muted text-[10.5px]">
         First integer win: <span class="text-ink font-medium">n = <span id="pinIntWin">—</span></span>
@@ -475,9 +475,9 @@
         <thead>
           <tr class="border-b border-hairline text-[10px] uppercase text-muted">
             <th class="py-2 pr-2 font-medium">Degree k</th>
-            <th class="py-2 px-2 font-medium">Exact n*</th>
+            <th class="py-2 px-2 font-medium">Exact <span id="thExactNStar">n*</span></th>
             <th class="py-2 px-2 font-medium">1st Int n</th>
-            <th class="py-2 pl-2 font-medium text-right">Value y*</th>
+            <th class="py-2 pl-2 font-medium text-right">Value <span id="thValueYStar">y*</span></th>
           </tr>
         </thead>
         <tbody id="milestoneTableBody" class="divide-y divide-hairline/70"></tbody>
@@ -581,13 +581,13 @@
       const gammaNoteBar = document.getElementById('gammaNoteBar');
       const gammaNoteTex = document.getElementById('gammaNoteTex');
       const deltaBadge = document.getElementById('deltaBadge');
+      const readoutNStarLabel = document.getElementById('readoutNStarLabel');
       const readoutNStar = document.getElementById('readoutNStar');
       const readoutIntWin = document.getElementById('readoutIntWin');
       const readoutYStar = document.getElementById('readoutYStar');
-
-      const btnScaleLinear = document.getElementById('btnScaleLinear');
-      const btnScaleLog = document.getElementById('btnScaleLog');
-      const btnTopScaleLinear = document.getElementById('btnTopScaleLinear');
+      const pinCoordLabel = document.getElementById('pinCoordLabel');
+      const thExactNStar = document.getElementById('thExactNStar');
+      const thValueYStar = document.getElementById('thValueYStar');
       const btnTopScaleLog = document.getElementById('btnTopScaleLog');
       const readoutScaleMode = document.getElementById('readoutScaleMode');
       const btnLocusToggle = document.getElementById('btnLocusToggle');
@@ -615,6 +615,164 @@
       const pinYStar = document.getElementById('pinYStar');
       const pinIntWin = document.getElementById('pinIntWin');
       const statusBanner = document.getElementById('statusBanner');
+
+      // Lanczos approximation for ln(Gamma(z)) with z > 0
+      function lnGamma(z) {
+        if (z <= 0) return Infinity;
+        const g = 7;
+        const p = [
+          0.99999999999980993,
+          676.5203681218851,
+          -1259.1392167224028,
+          771.32342877765313,
+          -176.61502916214059,
+          12.507343278686905,
+          -0.13857109526572012,
+          9.9843695780195716e-6,
+          1.5056327351493116e-7,
+        ];
+        if (z < 0.5) {
+          return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+        }
+        z -= 1;
+        let x = p[0];
+        for (let i = 1; i < g + 2; i++) {
+          x += p[i] / (z + i);
+        }
+        const t = z + g + 0.5;
+        return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+      }
+
+      // Continuous factorial n! = Gamma(n + 1)
+      function factorialGamma(n) {
+        if (n < 0) return NaN;
+        if (n === 0 || n === 1) return 1;
+        if (n > 170) return Infinity;
+        return Math.exp(lnGamma(n + 1));
+      }
+
+      // Polynomial n^k
+      function polyValue(n, k) {
+        if (n < 0) return NaN;
+        if (n === 0) return k === 0 ? 1 : 0;
+        const logVal = k * Math.log(n);
+        if (logVal > 709) return Infinity;
+        return Math.exp(logVal);
+      }
+
+      // Solve ln(Gamma(n + 1)) - k * ln(n) = 0 for n > 1 via bisection
+      function solveCrossoverN(k) {
+        if (k <= 1.0001) return 1.0;
+        let lo = 1.000001;
+        let hi = Math.max(4, k * Math.E * 1.35);
+        const f = (n) => lnGamma(n + 1) - k * Math.log(n);
+
+        while (f(hi) < 0 && hi < 1e6) {
+          hi *= 1.5;
+        }
+
+        for (let iter = 0; iter < 64; iter++) {
+          const mid = 0.5 * (lo + hi);
+          if (f(mid) < 0) lo = mid;
+          else hi = mid;
+        }
+        return 0.5 * (lo + hi);
+      }
+
+      // First positive integer n where n! > n^k
+      function firstIntegerWin(k) {
+        const nStar = solveCrossoverN(k);
+        let n = Math.max(2, Math.floor(nStar));
+        while (n <= 500) {
+          if (lnGamma(n + 1) > k * Math.log(n) + 1e-12) {
+            return n;
+          }
+          n++;
+        }
+        return Math.ceil(nStar);
+      }
+
+      // Precompute milestones for integer degrees k = 1..15
+      function buildMilestones() {
+        const list = [];
+        for (let deg = 1; deg <= 15; deg++) {
+          const nStar = solveCrossoverN(deg);
+          const yStar = factorialGamma(nStar);
+          const intWin = firstIntegerWin(deg);
+          list.push({ k: deg, nStar, yStar, intWin });
+        }
+        return list;
+      }
+
+      // Convert raw positive value y into plot Y coordinate according to active scale
+      function toPlotY(rawY) {
+        if (state.scale === 'log10') {
+          if (!Number.isFinite(rawY) || rawY <= 0) return -12;
+          return Math.log10(rawY);
+        }
+        return rawY;
+      }
+
+      // Format large or small numbers cleanly; avoid scientific notation in Linear scale
+      function formatNumber(val) {
+        if (!Number.isFinite(val)) return '∞';
+        if (val === 0) return '0';
+        const abs = Math.abs(val);
+
+        if (state.scale === 'linear') {
+          if (abs >= 1000) {
+            return Math.round(val).toLocaleString('en-US');
+          }
+          if (abs >= 10) return val.toFixed(1).replace(/\.0$/, '');
+          if (abs >= 1) return val.toFixed(2).replace(/\.?0+$/, '');
+          if (abs >= 0.001) return val.toFixed(3).replace(/\.?0+$/, '');
+          return val.toFixed(6).replace(/\.?0+$/, '');
+        }
+
+        if (abs >= 1e6 || (abs > 0 && abs < 1e-3)) {
+          return val.toExponential(2).replace('+', '');
+        }
+        if (abs >= 1000) {
+          return Math.round(val).toLocaleString('en-US');
+        }
+        if (abs >= 10) return val.toFixed(1);
+        if (abs >= 1) return val.toFixed(2);
+        return val.toFixed(3);
+      }
+
+      // Update camera framing so the active crossover point stays clearly visible
+      function syncCameraTarget(snapImmediately = false) {
+        if (!state.autoCamera) return;
+        const nStar = solveCrossoverN(state.k);
+        const yStar = factorialGamma(nStar);
+
+        const nextNMin = 0;
+        const nextNMax = Math.max(5.5, nStar * 1.48 + 1.2);
+
+        let nextYMin = 0;
+        let nextYMax = 40;
+
+        if (state.scale === 'log10') {
+          const logY = Math.log10(Math.max(1, yStar));
+          nextYMin = -0.3;
+          nextYMax = Math.max(2.2, logY * 1.48 + 0.9);
+        } else {
+          nextYMin = 0;
+          nextYMax = Math.max(12, yStar * 2.15);
+        }
+
+        state.view.targetNMin = nextNMin;
+        state.view.targetNMax = nextNMax;
+        state.view.targetYMin = nextYMin;
+        state.view.targetYMax = nextYMax;
+
+        if (snapImmediately) {
+          state.view.nMin = nextNMin;
+          state.view.nMax = nextNMax;
+          state.view.yMin = nextYMin;
+          state.view.yMax = nextYMax;
+        }
+      }
 
       // Show a brief non-blocking banner message instead of alert()
       function showBanner(message, durationMs = 2400) {
@@ -660,167 +818,57 @@
         return rounded.toFixed(2).replace(/0$/, '');
       }
 
-      // Lanczos approximation of ln(Gamma(z)) for real z > 0
-      function lnGamma(z) {
-        if (!Number.isFinite(z) || z <= 0) return NaN;
-        const g = 7;
-        const p = [
-          0.99999999999980993,
-          676.5203681218851,
-          -1259.1392167224028,
-          771.32342877765313,
-          -176.61502916214059,
-          12.507343278686905,
-          -0.13857109526572012,
-          9.9843695780195716e-6,
-          1.5056327351493116e-7,
-        ];
-        if (z < 0.5) {
-          return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+      // Draw a base + superscript + suffix label on canvas with true raised typography
+      function drawSuperscriptText(baseStr, supStr, suffixStr, x, y, options = {}) {
+        const baseFont = options.baseFont || '500 10px "JetBrains Mono", monospace';
+        const supFont = options.supFont || '600 8px "JetBrains Mono", monospace';
+        const supOffsetY = options.supOffsetY !== undefined ? options.supOffsetY : -4.2;
+
+        ctx.font = baseFont;
+        const baseW = ctx.measureText(baseStr).width;
+        ctx.fillText(baseStr, x, y);
+
+        ctx.font = supFont;
+        const supW = ctx.measureText(supStr).width;
+        ctx.fillText(supStr, x + baseW, y + supOffsetY);
+
+        ctx.font = baseFont;
+        if (suffixStr) {
+          ctx.fillText(suffixStr, x + baseW + supW + 0.5, y);
         }
-        const zm1 = z - 1;
-        let x = p[0];
-        for (let i = 1; i < p.length; i++) {
-          x += p[i] / (zm1 + i);
-        }
-        const t = zm1 + g + 0.5;
-        return 0.5 * Math.log(2 * Math.PI) + (zm1 + 0.5) * Math.log(t) - t + Math.log(x);
+        return baseW + supW + (suffixStr ? ctx.measureText(suffixStr).width + 0.5 : 0);
       }
 
-      // Continuous factorial extension g(n) = Gamma(n + 1)
-      function factorialGamma(n) {
-        if (!Number.isFinite(n) || n < 0) return NaN;
-        const lg = lnGamma(n + 1);
-        if (!Number.isFinite(lg)) return NaN;
-        if (lg > 709.78) return Infinity;
-        return Math.exp(lg);
+      // Measure total width of a base + superscript + suffix label for collision checks
+      function measureSuperscriptTextWidth(baseStr, supStr, suffixStr, options = {}) {
+        const baseFont = options.baseFont || '500 10px "JetBrains Mono", monospace';
+        const supFont = options.supFont || '600 8px "JetBrains Mono", monospace';
+        ctx.font = baseFont;
+        const baseW = ctx.measureText(baseStr).width;
+        ctx.font = supFont;
+        const supW = ctx.measureText(supStr).width;
+        ctx.font = baseFont;
+        const sufW = suffixStr ? ctx.measureText(suffixStr).width + 0.5 : 0;
+        return baseW + supW + sufW;
       }
 
-      // Polynomial value f(n) = n^k
-      function polyValue(n, k) {
-        if (!Number.isFinite(n) || n < 0) return NaN;
-        if (n === 0) return k === 0 ? 1 : 0;
-        const lp = k * Math.log(n);
-        if (!Number.isFinite(lp)) return NaN;
-        if (lp > 709.78) return Infinity;
-        return Math.exp(lp);
-      }
+      // Draw a base + subscript label on canvas with true lowered typography
+      function drawSubscriptText(baseStr, subStr, suffixStr, x, y, options = {}) {
+        const baseFont = options.baseFont || '500 11px "JetBrains Mono", monospace';
+        const subFont = options.subFont || '600 8.5px "JetBrains Mono", monospace';
+        const subOffsetY = options.subOffsetY !== undefined ? options.subOffsetY : 3.5;
 
-      // Solve n^k = Gamma(n + 1) for n > 1 using bisection in log-space
-      function solveCrossoverN(k) {
-        if (!Number.isFinite(k) || k <= 1) return 1.0;
-        let lo = 1.0;
-        let hi = Math.max(4.0, k * 3.5 + 4.0);
-        while (k * Math.log(hi) - lnGamma(hi + 1) > 0 && hi < 200) {
-          hi *= 1.5;
-        }
-        for (let i = 0; i < 64; i++) {
-          const mid = 0.5 * (lo + hi);
-          const diff = k * Math.log(mid) - lnGamma(mid + 1);
-          if (diff > 0) lo = mid;
-          else hi = mid;
-        }
-        return 0.5 * (lo + hi);
-      }
+        ctx.font = baseFont;
+        const baseW = ctx.measureText(baseStr).width;
+        ctx.fillText(baseStr, x, y);
 
-      // Smallest integer n >= 1 where n! >= n^k
-      function firstIntegerWin(k) {
-        const maxSearch = Math.max(30, Math.ceil(k * 4 + 10));
-        for (let n = 1; n <= maxSearch; n++) {
-          if (lnGamma(n + 1) >= k * Math.log(n)) {
-            return n;
-          }
-        }
-        return maxSearch;
-      }
+        ctx.font = subFont;
+        const subW = ctx.measureText(subStr).width;
+        ctx.fillText(subStr, x + baseW, y + subOffsetY);
 
-      // Build reference milestone rows for integer degrees k = 1..15
-      function buildMilestones() {
-        const list = [];
-        for (let k = 1; k <= 15; k++) {
-          const nStar = solveCrossoverN(k);
-          const yStar = factorialGamma(nStar);
-          const intWin = firstIntegerWin(k);
-          list.push({ k, nStar, yStar, intWin });
-        }
-        return list;
-      }
-
-      // Convert raw positive y value into current Y plotting coordinate (linear or log10)
-      function toPlotY(rawY) {
-        if (state.scale === 'log10') {
-          if (!Number.isFinite(rawY) || rawY <= 0) return -4;
-          return Math.log10(rawY);
-        }
-        return rawY;
-      }
-
-      // Format numbers clearly: plain numbers in Linear scale, compact notation in Log10
-      function formatNumber(val) {
-        if (!Number.isFinite(val)) {
-          return val === Infinity ? '∞' : '—';
-        }
-        const absVal = Math.abs(val);
-        if (absVal === 0) return '0';
-
-        if (state.scale === 'linear') {
-          if (absVal >= 1e6) {
-            return Math.round(val).toLocaleString('en-US');
-          }
-          if (absVal >= 100) {
-            return val.toFixed(1).replace(/\.0$/, '');
-          }
-          if (absVal >= 10) {
-            return val.toFixed(2).replace(/\.?0+$/, '');
-          }
-          if (absVal >= 0.01) {
-            return val.toFixed(3).replace(/\.?0+$/, '');
-          }
-          return val.toFixed(4).replace(/\.?0+$/, '');
-        }
-
-        if (absVal >= 1e6 || absVal < 1e-3) {
-          return val.toExponential(2);
-        }
-        if (absVal >= 1000) {
-          return val.toFixed(0);
-        }
-        if (absVal >= 10) {
-          return val.toFixed(1);
-        }
-        return val.toFixed(2);
-      }
-
-      // Compute comfortable target camera bounds framing the active crossover n*
-      function syncCameraTarget(snapImmediately = false) {
-        if (!state.autoCamera) return;
-
-        const nStar = solveCrossoverN(state.k);
-        const yStar = factorialGamma(nStar);
-
-        if (state.scale === 'log10') {
-          const targetNMax = Math.max(6, Math.min(24, nStar * 1.45 + 1.5));
-          const maxSampleY = Math.max(yStar, polyValue(Math.min(targetNMax, nStar * 1.15), state.k), 10);
-          const topExp = Math.max(1.5, Math.min(18, Math.log10(maxSampleY) + 0.8));
-          state.view.targetNMin = 0;
-          state.view.targetNMax = targetNMax;
-          state.view.targetYMin = -0.5;
-          state.view.targetYMax = topExp;
-        } else {
-          const targetNMax = Math.max(5.5, Math.min(18, nStar * 1.4 + 1.2));
-          const rawPeak = Math.max(yStar * 1.45, polyValue(Math.min(targetNMax, nStar * 1.1), state.k) * 1.15, 12);
-          const targetYMax = Math.min(500000, Math.max(12, rawPeak));
-          state.view.targetNMin = 0;
-          state.view.targetNMax = targetNMax;
-          state.view.targetYMin = 0;
-          state.view.targetYMax = targetYMax;
-        }
-
-        if (snapImmediately) {
-          state.view.nMin = state.view.targetNMin;
-          state.view.nMax = state.view.targetNMax;
-          state.view.yMin = state.view.targetYMin;
-          state.view.yMax = state.view.targetYMax;
+        ctx.font = baseFont;
+        if (suffixStr) {
+          ctx.fillText(suffixStr, x + baseW + subW + 0.5, y);
         }
       }
 
@@ -844,6 +892,10 @@
         renderTex(hoverPolyLabelTex, `f(n) = n^{${kEqVal}}`, `f(n) = n^${kEqVal}`);
         renderTex(hoverFactLabelTex, `g(n) = \\Gamma(n+1)`, `g(n) = Γ(n+1)`);
         renderTex(hoverRatioLabelTex, `\\frac{\\Gamma(n+1)}{n^{${kEqVal}}}`, `Γ(n+1) / n^${kEqVal}`);
+        renderTex(readoutNStarLabel, `n^{*}`, `n*`);
+        renderTex(pinCoordLabel, `(n^{*}, y^{*})`, `(n*, y*)`);
+        renderTex(thExactNStar, `n^{*}`, `n*`);
+        renderTex(thValueYStar, `y^{*}`, `y*`);
         degreeSlider.value = state.k;
 
         // Clarify continuous Gamma values (such as ~0.435 near n = 0.25) when k is near 1
@@ -867,7 +919,7 @@
 
         readoutNStar.textContent = nStar.toFixed(3);
         readoutIntWin.textContent = String(intWin);
-        readoutYStar.textContent = `y* ≈ ${formatNumber(yStar)}`;
+        renderTex(readoutYStar, `y^{*} \\approx ${formatNumber(yStar)}`, `y* ≈ ${formatNumber(yStar)}`);
 
         const rows = milestoneTableBody.querySelectorAll('tr[data-k]');
         rows.forEach((tr) => {
@@ -884,7 +936,11 @@
         if (!Number.isFinite(prevNStar) || !Number.isFinite(nextNStar)) return;
         const delta = nextNStar - prevNStar;
         const sign = delta >= 0 ? '+' : '';
-        deltaBadge.textContent = `Δn* = ${sign}${delta.toFixed(2)}`;
+        renderTex(
+          deltaBadge,
+          `\\Delta n^{*} = ${sign}${delta.toFixed(2)}`,
+          `Δn* = ${sign}${delta.toFixed(2)}`
+        );
         deltaBadge.classList.remove('hidden');
 
         clearTimeout(state.deltaBadgeTimer);
@@ -1142,8 +1198,18 @@
 
             ctx.fillStyle = TOKENS.muted;
             const raw = Math.pow(10, exp);
-            const yLabel = exp >= -2 && exp <= 5 ? String(raw) : `1e${exp}`;
-            ctx.fillText(yLabel, area.left - 8, py);
+            if (exp >= -2 && exp <= 4) {
+              ctx.fillText(String(raw), area.left - 8, py);
+            } else {
+              const expText = String(exp);
+              ctx.font = '600 8.5px "JetBrains Mono", monospace';
+              const supW = ctx.measureText(expText).width;
+              ctx.font = '11px "JetBrains Mono", monospace';
+              ctx.fillText('10', area.left - 8 - supW, py);
+              ctx.font = '600 8.5px "JetBrains Mono", monospace';
+              ctx.fillText(expText, area.left - 8, py - 4.5);
+              ctx.font = '11px "JetBrains Mono", monospace';
+            }
           }
         } else {
           const ySpan = state.view.yMax - state.view.yMin;
@@ -1185,7 +1251,11 @@
         ctx.translate(13, area.top + 6);
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        ctx.fillText(state.scale === 'log10' ? 'y (log₁₀)' : 'y', 0, 0);
+        if (state.scale === 'log10') {
+          drawSubscriptText('y (log', '10', ')', 0, 0);
+        } else {
+          ctx.fillText('y', 0, 0);
+        }
         ctx.restore();
 
         ctx.restore();
@@ -1367,14 +1437,15 @@
         ctx.clip();
 
         const nStart = Math.max(1, Math.ceil(state.view.nMin));
-        const nEnd = Math.min(25, Math.floor(state.view.nMax));
-        const showValueLabels = (nEnd - nStart) <= 10;
+        const nEnd = Math.min(170, Math.floor(state.view.nMax));
+        const visibleCount = nEnd - nStart + 1;
+        const showValueLabels = visibleCount <= 18;
         const kEqVal = formatKValueLabel(state.k);
         const placedLabelBoxes = [];
 
-        function canPlaceLabel(x, y, text) {
-          const width = ctx.measureText(text).width + 6;
-          const height = 12;
+        function canPlaceLabel(x, y, labelWidth) {
+          const width = labelWidth + 6;
+          const height = 13;
           const left = x;
           const right = x + width;
           const top = y - height * 0.5;
@@ -1435,17 +1506,20 @@
             ctx.stroke();
 
             if (showValueLabels) {
-              const pLabel = `${n}^${kEqVal}=${formatNumber(pVal)}`;
+              const pBase = String(n);
+              const pSup = kEqVal;
+              const pSuffix = ` = ${formatNumber(pVal)}`;
+              const pWidth = measureSuperscriptTextWidth(pBase, pSup, pSuffix);
               const candidates = pyP > pyF || !inBoundsF
                 ? [pyP + 11, pyP - 11, pyP + 21, pyP - 21]
                 : [pyP - 11, pyP + 11, pyP - 21, pyP + 21];
 
               for (let c = 0; c < candidates.length; c++) {
                 const candidateY = candidates[c];
-                if (canPlaceLabel(px + 5, candidateY, pLabel)) {
+                if (canPlaceLabel(px + 5, candidateY, pWidth)) {
                   ctx.fillStyle = TOKENS.vermilion;
                   ctx.textAlign = 'left';
-                  ctx.fillText(pLabel, px + 5, candidateY);
+                  drawSuperscriptText(pBase, pSup, pSuffix, px + 5, candidateY);
                   break;
                 }
               }
@@ -1462,14 +1536,16 @@
             ctx.stroke();
 
             if (showValueLabels) {
-              const fLabel = `n=${n}: ${formatNumber(fVal)}`;
+              const fLabel = `${n}! = ${formatNumber(fVal)}`;
+              ctx.font = '500 10px "JetBrains Mono", monospace';
+              const fWidth = ctx.measureText(fLabel).width;
               const candidates = pyF >= pyP || !inBoundsP
                 ? [pyF - 11, pyF + 11, pyF - 21, pyF + 21]
                 : [pyF + 11, pyF - 11, pyF + 21, pyF - 21];
 
               for (let c = 0; c < candidates.length; c++) {
                 const candidateY = candidates[c];
-                if (canPlaceLabel(px + 5, candidateY, fLabel)) {
+                if (canPlaceLabel(px + 5, candidateY, fWidth)) {
                   ctx.fillStyle = TOKENS.ink;
                   ctx.textAlign = 'left';
                   ctx.fillText(fLabel, px + 5, candidateY);
@@ -1946,6 +2022,11 @@
           resizeCanvas();
           bindEvents();
           requestAnimationFrame(loop);
+
+          // Re-render KaTeX expressions once deferred katex.min.js finishes loading
+          window.addEventListener('load', () => {
+            updateReadouts();
+          });
         } catch (err) {
           showBanner(`Initialization error: ${err.message}`, 6000);
         }
