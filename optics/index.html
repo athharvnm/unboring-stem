@@ -67,10 +67,34 @@ html[data-theme=light]{color-scheme:light}
 [data-theme=light] .tb,[data-theme=light] .pb{background:#f8fafc;border-color:#cbd5e1;color:#334155}
 [data-theme=light] .tb:hover{background:#e2e8f0}[data-theme=light] .tb.on{color:#0e7490;border-color:#0891b2}
 [data-theme=light] .tb.red{color:#be123c;border-color:#fda4af}[data-theme=light] .pb:hover{border-color:#0891b2;color:#0f172a}
+
+/* Breadcrumb navigation bar with light/dark theme support */
+.bc-bar{display:flex;align-items:center;gap:.45rem;padding:.32rem .75rem;background:rgba(15,23,42,.92);border-bottom:1px solid rgba(51,65,85,.7);font-size:11px;line-height:1.2;overflow:hidden;white-space:nowrap}
+.bc-link{display:inline-flex;align-items:center;gap:.35rem;color:#94a3b8;text-decoration:none;font-weight:500;flex-shrink:0;transition:color .16s ease,transform .16s ease}
+.bc-link:hover{color:#22d3ee}
+.bc-link:hover .bc-arr{transform:translateX(-2px)}
+.bc-arr{display:inline-block;transition:transform .16s ease;font-family:'Fira Code',monospace}
+.bc-sep{color:#475569;user-select:none;flex-shrink:0}
+.bc-cur{color:#e2e8f0;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+[data-theme=light] .bc-bar{background:rgba(248,250,252,.95);border-bottom-color:#cbd5e1}
+[data-theme=light] .bc-link{color:#475569}
+[data-theme=light] .bc-link:hover{color:#0e7490}
+[data-theme=light] .bc-sep{color:#94a3b8}
+[data-theme=light] .bc-cur{color:#0f172a}
 </style>
 <script>(function(){var t;try{t=localStorage.getItem('optics-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t})()</script>
 </head>
 <body class="flex flex-col">
+<!-- Top Breadcrumb Bar -->
+<nav class="bc-bar shrink-0" aria-label="Breadcrumb">
+  <a href="https://unboringstem.pages.dev/" class="bc-link">
+    <span class="bc-arr" aria-hidden="true">←</span>
+    <span>Unboring STEM</span>
+  </a>
+  <span class="bc-sep" aria-hidden="true">/</span>
+  <span class="bc-cur" aria-current="page">Photonic Optics Lab</span>
+</nav>
+
 <header class="shrink-0 flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-slate-900 border-b border-slate-800 text-xs">
   <h1 class="font-semibold text-base text-cyan-300">Photonic Optics Lab</h1>
   <div class="flex items-center gap-1.5 max-w-full overflow-x-auto md:flex-wrap md:overflow-visible">
@@ -125,6 +149,7 @@ html[data-theme=light]{color-scheme:light}
 </div>
 
 <script>
+try {
 const TAU=Math.PI*2,$=id=>document.getElementById(id);
 const cv=$('cv'),ctx=cv.getContext('2d'),stage=$('stage');
 let W=0,H=0,dpr=1,els=[],sel=null,drag=null,showGrid=true,showN=false,showV=true,density=15,showOR=true,showImg=true,insHidden=false,fc=0,lt=performance.now();
@@ -425,13 +450,17 @@ function drawGrid(){
  ctx.restore();
 }
 function frame(ts){
- fc++;if(ts-lt>=1000){$('s-fps').textContent=fc;fc=0;lt=ts}
- ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);drawGrid();
- els.forEach(e=>{if(e.type==='screen')e.hits=[]});
- const res=els.filter(isSrc).map(traceSource);if(showOR)els.forEach(e=>{if(e.type==='object')res.push(...traceObject(e))});
- els.forEach(drawEl);drawPlane();drawRays(res);const an=analyse();drawVirtExt(an);drawImage(an);showCard(an);drawSel();
- $('s-rays').textContent=res.reduce((a,r)=>a+r.segs.length/4,0);$('s-hits').textContent=res.reduce((a,r)=>a+r.hits,0);
- if(sel&&sel.type==='screen'){const s=document.querySelector('[data-v=spot]');if(s){const h=sel.hits;s.textContent=h.length?`${h.length} rays, spread ${(Math.max(...h)-Math.min(...h)).toFixed(1)} px`:'no light'}}
+ try {
+  fc++;if(ts-lt>=1000){$('s-fps').textContent=fc;fc=0;lt=ts}
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);drawGrid();
+  els.forEach(e=>{if(e.type==='screen')e.hits=[]});
+  const res=els.filter(isSrc).map(traceSource);if(showOR)els.forEach(e=>{if(e.type==='object')res.push(...traceObject(e))});
+  els.forEach(drawEl);drawPlane();drawRays(res);const an=analyse();drawVirtExt(an);drawImage(an);showCard(an);drawSel();
+  $('s-rays').textContent=res.reduce((a,r)=>a+r.segs.length/4,0);$('s-hits').textContent=res.reduce((a,r)=>a+r.hits,0);
+  if(sel&&sel.type==='screen'){const s=document.querySelector('[data-v=spot]');if(s){const h=sel.hits;s.textContent=h.length?`${h.length} rays, spread ${(Math.max(...h)-Math.min(...h)).toFixed(1)} px`:'no light'}}
+ } catch(err) {
+  console.error('Simulation frame error:', err);
+ }
  requestAnimationFrame(frame);
 }
 
@@ -566,8 +595,11 @@ function load(p){
 }
 
 /* ---- Boot ---- */
-function resize(){W=stage.clientWidth;H=stage.clientHeight;dpr=window.devicePixelRatio||1;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px'}
+function resize(){W=stage.clientWidth||window.innerWidth;H=stage.clientHeight||window.innerHeight;dpr=window.devicePixelRatio||1;cv.width=Math.max(1,W*dpr);cv.height=Math.max(1,H*dpr);cv.style.width=W+'px';cv.style.height=H+'px'}
 new ResizeObserver(resize).observe(stage);resize();setTheme(document.documentElement.dataset.theme,false);load('b-lens');requestAnimationFrame(frame);
+} catch (err) {
+ console.error('Initialization failed:', err);
+}
 </script>
 </body>
 </html>
