@@ -1,8 +1,3 @@
-
-
-
-HTML icon
-index
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +5,8 @@ index
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Circle Theorems — Interactive Geometry Lab</title>
 <meta name="description" content="Explore all 12 core circle theorems and extended classical geometry theorems with interactive draggable diagrams, live angle & length measurements, and step-by-step proofs." />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FAF8F4' stroke='%23E6E1D6' stroke-width='2'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%231C1B18' stroke-width='2.4'/%3E%3Cpath d='M16 44 L32 14 L48 44' fill='none' stroke='%232F6F5E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16 44 L32 32 L48 44' fill='none' stroke='%23B84A27' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='32' r='2.6' fill='%23B84A27'/%3E%3Ccircle cx='32' cy='14' r='2.8' fill='%232F6F5E'/%3E%3Ccircle cx='16' cy='44' r='2.5' fill='%231C1B18'/%3E%3Ccircle cx='48' cy='44' r='2.5' fill='%231C1B18'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23FAF8F4' stroke='%23E6E1D6' stroke-width='4'/%3E%3Ccircle cx='90' cy='90' r='56' fill='none' stroke='%231C1B18' stroke-width='6'/%3E%3Cpath d='M45 124 L90 38 L135 124' fill='none' stroke='%232F6F5E' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M45 124 L90 90 L135 124' fill='none' stroke='%23B84A27' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='90' cy='90' r='7' fill='%23B84A27'/%3E%3Ccircle cx='90' cy='38' r='7.5' fill='%232F6F5E'/%3E%3Ccircle cx='45' cy='124' r='6.5' fill='%231C1B18'/%3E%3Ccircle cx='135' cy='124' r='6.5' fill='%231C1B18'/%3E%3C/svg%3E" />
 <link rel="canonical" href="https://unboringstem.pages.dev/circle-theorems" />
 
 <!-- Open Graph / Social Meta -->
@@ -111,6 +108,7 @@ html,body{
 </head>
 <body class="antialiased">
 <div id="app" class="min-h-screen flex flex-col">
+  <!-- Slim single-line breadcrumb bar aligned with max-w-6xl above sticky header -->
   <div class="w-full bg-[#FAF8F4]/95 border-b border-[#E6E1D6]/85">
     <nav aria-label="Breadcrumb" class="max-w-6xl mx-auto px-4 sm:px-6 h-9 flex items-center gap-1.5 text-xs leading-none whitespace-nowrap overflow-hidden">
       <a href="https://unboringstem.pages.dev/" class="group inline-flex items-center gap-1 font-semibold text-[#5E5A51] hover:text-[#B84A27] transition-colors shrink-0">
@@ -124,9 +122,21 @@ html,body{
 
   <header class="border-b border-[#E6E1D6] bg-[#FAF8F4]/95 sticky top-0 z-30 backdrop-blur-sm">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
-      <button id="brandHomeBtn" type="button" class="text-left cursor-pointer flex items-baseline gap-2.5">
-        <span class="font-serif-editorial text-2xl sm:text-3xl">Circle Theorems</span>
-        <span class="text-xs font-mono-tech uppercase tracking-wider text-[#8A8478]">Interactive Lab</span>
+      <button id="brandHomeBtn" type="button" class="text-left cursor-pointer flex items-center gap-2.5 group">
+        <svg class="w-8 h-8 sm:w-9 sm:h-9 shrink-0 transition-transform duration-150 group-hover:scale-105" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1" y="1" width="38" height="38" rx="11" fill="#FFF" stroke="#E6E1D6" stroke-width="1.5" />
+          <circle cx="20" cy="20" r="12.5" stroke="#1C1B18" stroke-width="1.65" />
+          <path d="M10.2 27.5L20 8.5L29.8 27.5" stroke="#2F6F5E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M10.2 27.5L20 20L29.8 27.5" stroke="#B84A27" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="20" cy="20" r="1.9" fill="#B84A27" />
+          <circle cx="20" cy="8.5" r="2" fill="#2F6F5E" />
+          <circle cx="10.2" cy="27.5" r="1.8" fill="#1C1B18" />
+          <circle cx="29.8" cy="27.5" r="1.8" fill="#1C1B18" />
+        </svg>
+        <span class="flex items-baseline gap-2.5">
+          <span class="font-serif-editorial text-2xl sm:text-3xl">Circle Theorems</span>
+          <span class="text-xs font-mono-tech uppercase tracking-wider text-[#8A8478]">Interactive Lab</span>
+        </span>
       </button>
       <div class="flex items-center gap-2 flex-wrap">
         <button id="modeCoreBtn" type="button" class="pill-btn active">12 Core Theorems</button>
@@ -228,14 +238,15 @@ html,body{
 (function () {
 'use strict';
 
+/* ---------- text formatting ---------- */
 function cleanTeX(expr) {
   return String(expr)
-    .replace(/\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-    .replace(/\text\{([^}]+)\}/g, '$1')
-    .replace(/\triangle/g, '△').replace(/\angle/g, '∠').replace(/\perp/g, '⊥')
-    .replace(/\sim/g, '∼').replace(/\cong/g, '≅').replace(/\approx/g, '≈')
-    .replace(/\times/g, '×').replace(/\cdot/g, '·').replace(/\neq/g, '≠')
-    .replace(/\implies/g, '⇒').replace(/\circ/g, '°')
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+    .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\\triangle/g, '△').replace(/\\angle/g, '∠').replace(/\\perp/g, '⊥')
+    .replace(/\\sim/g, '∼').replace(/\\cong/g, '≅').replace(/\\approx/g, '≈')
+    .replace(/\\times/g, '×').replace(/\\cdot/g, '·').replace(/\\neq/g, '≠')
+    .replace(/\\implies/g, '⇒').replace(/\\circ/g, '°')
     .replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>').replace(/\^([0-9a-zA-Z°])/g, '<sup>$1</sup>')
     .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>').replace(/_([0-9a-zA-Z])/g, '<sub>$1</sub>')
     .replace(/[{}]/g, '').trim();
@@ -250,6 +261,7 @@ function escapeHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+/* ---------- geometry helpers ---------- */
 const dist = (p, q) => Math.hypot(p.x - q.x, p.y - q.y);
 function angleDeg(p1, v, p2) {
   const ax = p1.x - v.x, ay = p1.y - v.y, bx = p2.x - v.x, by = p2.y - v.y;
@@ -270,11 +282,13 @@ const fmtAng = (v) => (Number.isFinite(+v) ? (+v).toFixed(1) : '0.0') + '°';
 const fmtLen = (px, g) => (px / Math.max(1, g.scale)).toFixed(2) + ' u';
 const fmtProd = (a, b, g) => ((a / Math.max(1, g.scale)) * (b / Math.max(1, g.scale))).toFixed(2) + ' u²';
 
+// Keep a point on an arc: angle measured from `from` going positively up to `to`
 function clampArc(from, to, ang, margin) {
   const span = normalizeAngle(to - from);
   const n = Math.max(margin, Math.min(span - margin, normalizeAngle(ang - from)));
   return from + n;
 }
+// Cyclic quadrilateral vertices sorted around the circle so A,B,C,D are always in order
 function quadPts(st, g) {
   return ['a', 'b', 'c', 'd'].map((k) => ({ k, th: normalizeAngle(st[k]) }))
     .sort((x, y) => x.th - y.th)
@@ -284,6 +298,7 @@ const QCOL = ['#B84A27', '#5E5A51', '#2F6F5E', '#5E5A51'];
 function quadHandles(st, g, keys) {
   return quadPts(st, g).map((o, i) => ({ id: o.k, label: 'ABCD'[i], pt: o.pt, color: QCOL[i] })).filter((h) => keys.includes(h.id));
 }
+// Tangent external point, kept inside the canvas
 function tPoint(st, g) {
   const c = Math.cos(st.tilt), s = Math.sin(st.tilt), m = 34 * g.dpr;
   let lim = 1e9;
@@ -292,6 +307,7 @@ function tPoint(st, g) {
   const d = Math.max(g.r * 1.25, Math.min(g.r * st.distFactor, lim));
   return { x: g.cx + d * c, y: g.cy + d * s };
 }
+// Secant from P with direction = (towards centre) + delta; returns near and far hits
 function secantHits(P, g, delta) {
   const th = Math.atan2(g.cy - P.y, g.cx - P.x) + delta;
   const u = { x: Math.cos(th), y: Math.sin(th) };
@@ -311,6 +327,7 @@ function secDrag(key) {
     st[key] = Math.max(-0.45, Math.min(0.45, wrapPi(Math.atan2(pt.y - P.y, pt.x - P.x) - base)));
   };
 }
+// Chord handles p1 (start) and p2 (end) – shared by c10 and b3
 function chordDrag(st, k, ang) {
   if (k === 'p1') {
     const end = st.rot + st.span / 2;
@@ -329,6 +346,7 @@ function chordHandles(st, g) {
   ];
 }
 
+/* ---------- drawing helpers ---------- */
 function drawSegment(ctx, p1, p2, color, width, dashed) {
   ctx.save(); ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
   ctx.strokeStyle = color; ctx.lineWidth = width || 2;
@@ -396,16 +414,17 @@ function drawBadge(ctx, pt, text, bg, fg) {
 }
 const RB = '#F9ECE7', SB = '#EAF3F0', AC = '#B84A27', SG = '#2F6F5E', IK = '#1C1B18';
 
+/* ---------- 12 core theorems ---------- */
 const CORE_THEOREMS = [
 {
   id: 'c1', num: '01', title: 'Angle at the Center Theorem',
   statement: 'The angle subtended by an arc at the center $O$ is twice the angle it subtends at any point on the remaining part of the circle.',
   invariantFormula: '∠AOB = 2 × ∠ACB  (measured on the same subtended arc AB)',
-  intuition: 'Both $\angle AOB$ and $\angle ACB$ must subtend the **same highlighted arc $AB$**. As $A$, $B$, or $C$ move around the circle, the subtended arc $AB$ is whichever arc lies opposite $C$. When $C$ enters the minor arc, the subtended arc becomes the major arc, so $\angle AOB$ is the reflex angle ($> 180^\circ$) and $\angle ACB$ is obtuse ($> 90^\circ$).',
+  intuition: 'Both $\\angle AOB$ and $\\angle ACB$ must subtend the **same highlighted arc $AB$**. As $A$, $B$, or $C$ move around the circle, the subtended arc $AB$ is whichever arc lies opposite $C$. When $C$ enters the minor arc, the subtended arc becomes the major arc, so $\\angle AOB$ is the reflex angle ($> 180^\\circ$) and $\\angle ACB$ is obtuse ($> 90^\\circ$).',
   proofSteps: [
-    'Draw radius $CO$ and extend it past $O$ to form exterior angles on $\triangle AOC$ and $\triangle BOC$.',
-    'Since $OA = OC = OB$ (radii), $\triangle AOC$ and $\triangle BOC$ are isosceles with equal base angles.',
-    'Each exterior angle equals the sum of its two opposite interior angles, so $\angle AOB = 2\angle ACB$ on the same arc.'
+    'Draw radius $CO$ and extend it past $O$ to form exterior angles on $\\triangle AOC$ and $\\triangle BOC$.',
+    'Since $OA = OC = OB$ (radii), $\\triangle AOC$ and $\\triangle BOC$ are isosceles with equal base angles.',
+    'Each exterior angle equals the sum of its two opposite interior angles, so $\\angle AOB = 2\\angle ACB$ on the same arc.'
   ],
   defaultState: { a: 2.35, b: 0.78, c: -1.35 },
   stepDemo(st, dt) { st.c += dt * 0.5; st.a += dt * 0.25; st.b -= dt * 0.22; },
@@ -418,15 +437,18 @@ const CORE_THEOREMS = [
   render(ctx, st, g, hl) {
     const o = { x: g.cx, y: g.cy };
     const A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b), C = circlePt(g.cx, g.cy, g.r, st.c);
+    // Exact directed arc from A to B in positive angle direction, and check if C lies on it
     const thA = normalizeAngle(st.a), thB = normalizeAngle(st.b), thC = normalizeAngle(st.c);
-    const spanAB = normalizeAngle(thB - thA);
+    const spanAB = normalizeAngle(thB - thA); // arc going A -> B in positive direction
     const posC = normalizeAngle(thC - thA);
+    // If C is on the positive A->B arc, then the subtended arc (opposite C) is the negative A->B arc (anticlockwise = true)
     const cOnPosArc = posC < spanAB;
     const subtendedSpan = cOnPosArc ? (Math.PI * 2 - spanAB) : spanAB;
     const cen = subtendedSpan * 180 / Math.PI;
     const insc = cen / 2;
     const reflex = cen > 180;
 
+    // Highlight the exact subtended arc AB and shade both angles so the correspondence is unambiguous
     drawArcHighlight(ctx, g.cx, g.cy, g.r, thA, thB, cOnPosArc, 'rgba(184,74,39,0.45)', 6);
     drawAngleSector(ctx, o, A, B, 26, 'rgba(184,74,39,0.16)', AC, reflex);
     drawAngleSector(ctx, C, A, B, 24, 'rgba(47,111,94,0.16)', SG, false);
@@ -442,17 +464,17 @@ const CORE_THEOREMS = [
       { label: '2 × ∠ACB', value: fmtAng(2 * insc) },
       { label: 'Chord AB', value: fmtLen(dist(A, B), g) }];
   },
-  check: { q: 'If $\angle AOB = 114^\circ$ at the center $O$, what is $\angle ACB$ on the major arc?', options: ['57°', '114°', '228°'], answerIndex: 0, explain: 'The inscribed angle is half the central angle: $114^\circ / 2 = 57^\circ$.' }
+  check: { q: 'If $\\angle AOB = 114^\\circ$ at the center $O$, what is $\\angle ACB$ on the major arc?', options: ['57°', '114°', '228°'], answerIndex: 0, explain: 'The inscribed angle is half the central angle: $114^\\circ / 2 = 57^\\circ$.' }
 },
 {
   id: 'c2', num: '02', title: 'Angle in a Semicircle',
-  statement: 'An angle inscribed in a semicircle (subtended by a diameter $AB$) is always a right angle ($90^\circ$).',
+  statement: 'An angle inscribed in a semicircle (subtended by a diameter $AB$) is always a right angle ($90^\\circ$).',
   invariantFormula: '∠ACB = 90°',
-  intuition: 'Because diameter $AB$ subtends a $180^\circ$ central angle, any point $C$ on the circle sees half of $180^\circ$, which is $90^\circ$.',
+  intuition: 'Because diameter $AB$ subtends a $180^\\circ$ central angle, any point $C$ on the circle sees half of $180^\\circ$, which is $90^\\circ$.',
   proofSteps: [
-    'Let $AB$ pass through center $O$, so $\angle AOB = 180^\circ$.',
-    'By the Angle at the Center Theorem, $\angle ACB = \frac{1}{2}\angle AOB$.',
-    'Thus $\angle ACB = \frac{1}{2}(180^\circ) = 90^\circ$.'
+    'Let $AB$ pass through center $O$, so $\\angle AOB = 180^\\circ$.',
+    'By the Angle at the Center Theorem, $\\angle ACB = \\frac{1}{2}\\angle AOB$.',
+    'Thus $\\angle ACB = \\frac{1}{2}(180^\\circ) = 90^\\circ$.'
   ],
   defaultState: { c: -0.9 },
   stepDemo(st, dt) { st.c += dt * 0.85; },
@@ -465,23 +487,23 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: C.x, y: C.y < g.cy ? C.y - 22 : C.y + 24 }, '∠ACB = ' + fmtAng(aC), SB, SG);
     return [{ label: '∠ACB', value: fmtAng(aC) }, { label: '∠BAC', value: fmtAng(aA) }, { label: '∠ABC', value: fmtAng(aB) }, { label: 'Diameter AB', value: fmtLen(dist(A, B), g) }];
   },
-  check: { q: 'Points $A$ and $B$ form a diameter, and $C$ lies on the circle. If $\angle BAC = 34^\circ$, what is $\angle ABC$?', options: ['56°', '34°', '90°'], answerIndex: 0, explain: 'Since $\angle ACB = 90^\circ$, the acute angles of right $\triangle ABC$ sum to $90^\circ$, giving $90^\circ - 34^\circ = 56^\circ$.' }
+  check: { q: 'Points $A$ and $B$ form a diameter, and $C$ lies on the circle. If $\\angle BAC = 34^\\circ$, what is $\\angle ABC$?', options: ['56°', '34°', '90°'], answerIndex: 0, explain: 'Since $\\angle ACB = 90^\\circ$, the acute angles of right $\\triangle ABC$ sum to $90^\\circ$, giving $90^\\circ - 34^\\circ = 56^\\circ$.' }
 },
 {
   id: 'c3', num: '03', title: 'Angles in the Same Segment',
   statement: 'Angles subtended by the same arc in the same segment of a circle are equal.',
   invariantFormula: '∠ACB = ∠ADB  (and ∠ACB + ∠ACB_opposite = 180°)',
-  intuition: 'Vertices $C$ and $D$ form their angles on the **upper arc** above chord $AB$ so labels stay clear and easy to read. Switch between **Upper Segment** and **Lower Segment** or drag $A$, $B$, $C$, and $D$.',
+  intuition: 'Chord $AB$ divides the circle into two segments. Switch between **Segment 1 (Arc B→A)** and **Segment 2 (Arc A→B)** to see both equal angles in each segment—and notice that angles in opposite segments are supplementary ($180^\\circ - \\theta$).',
   proofSteps: [
-    'Both $\angle ACB$ and $\angle ADB$ lie in the same segment and subtend the same arc of chord $AB$.',
-    'Each equals $\frac{1}{2}$ of the central angle of that subtended arc.',
-    'Therefore $\angle ACB = \angle ADB$ for any $C$ and $D$ in that segment, while moving to the opposite segment gives $180^\circ - \angle ACB$.'
+    'Both $\\angle ACB$ and $\\angle ADB$ lie in the same segment and subtend the same arc of chord $AB$.',
+    'Each equals $\\frac{1}{2}$ of the central angle of that subtended arc.',
+    'Therefore $\\angle ACB = \\angle ADB$ for any $C$ and $D$ in that segment, while moving to the opposite segment gives $180^\\circ - \\angle ACB$.'
   ],
-  defaultState: { a: 2.52, b: 0.62, c: -2.05, d: -1.08, seg: 'seg1', t: 0 },
+  defaultState: { a: 2.35, b: 0.78, c: -1.65, d: -1.15, seg: 'seg1', t: 0 },
   _segBounds(st) {
     const thA = normalizeAngle(st.a), thB = normalizeAngle(st.b);
-    const spanAB = normalizeAngle(thB - thA);
-    const spanBA = Math.PI * 2 - spanAB;
+    const spanAB = normalizeAngle(thB - thA); // arc A -> B in +theta
+    const spanBA = Math.PI * 2 - spanAB;        // arc B -> A in +theta
     if (st.seg === 'seg2') {
       return { start: thA, end: thA + spanAB, span: spanAB };
     }
@@ -489,17 +511,17 @@ const CORE_THEOREMS = [
   },
   _placeOnSeg(st, phase) {
     const bnd = this._segBounds(st);
-    const pad = Math.min(0.16, bnd.span * 0.16);
+    const pad = Math.min(0.14, bnd.span * 0.15);
     const usable = Math.max(0.08, bnd.span - pad * 2);
-    const frac = 0.5 + Math.sin(phase) * 0.34;
+    const frac = 0.5 + Math.sin(phase) * 0.36;
     return bnd.start + pad + frac * usable;
   },
   stepDemo(st, dt) {
     st.t += dt;
-    st.a = 2.52 + Math.sin(st.t * 0.42) * 0.18;
-    st.b = 0.62 + Math.cos(st.t * 0.38) * 0.18;
-    st.c = this._placeOnSeg(st, st.t * 1.1);
-    st.d = this._placeOnSeg(st, st.t * 1.0 + 1.25);
+    st.a = 2.35 + Math.sin(st.t * 0.45) * 0.25;
+    st.b = 0.78 + Math.cos(st.t * 0.4) * 0.25;
+    st.c = this._placeOnSeg(st, st.t * 1.15);
+    st.d = this._placeOnSeg(st, st.t * 1.05 + 1.1);
   },
   clamp(st, ang) {
     const bnd = this._segBounds(st);
@@ -516,8 +538,8 @@ const CORE_THEOREMS = [
     const btns = document.createElement('div');
     btns.className = 'flex items-center gap-1.5 flex-wrap';
     [
-      { id: 'seg1', text: 'Upper Segment (Arc B→A)' },
-      { id: 'seg2', text: 'Lower Segment (Arc A→B)' }
+      { id: 'seg1', text: 'Segment 1 (Arc B→A)' },
+      { id: 'seg2', text: 'Segment 2 (Arc A→B)' }
     ].forEach((opt) => {
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -527,9 +549,9 @@ const CORE_THEOREMS = [
       btn.addEventListener('click', () => {
         st.seg = opt.id;
         const bnd = this._segBounds(st);
-        const pad = Math.min(0.16, bnd.span * 0.16);
-        st.c = bnd.start + pad + (bnd.span - pad * 2) * 0.32;
-        st.d = bnd.start + pad + (bnd.span - pad * 2) * 0.68;
+        const pad = Math.min(0.14, bnd.span * 0.15);
+        st.c = bnd.start + pad + (bnd.span - pad * 2) * 0.35;
+        st.d = bnd.start + pad + (bnd.span - pad * 2) * 0.65;
         redraw();
       });
       btns.appendChild(btn);
@@ -552,18 +574,13 @@ const CORE_THEOREMS = [
     drawSegment(ctx, A, B, '#8A8478', 1.4, true);
     drawSegment(ctx, A, C, AC, hl ? 2.4 : 1.8); drawSegment(ctx, B, C, AC, hl ? 2.4 : 1.8);
     drawSegment(ctx, A, D, SG, hl ? 2.4 : 1.8); drawSegment(ctx, B, D, SG, hl ? 2.4 : 1.8);
-    drawAngleSector(ctx, C, A, B, 24, 'rgba(184,74,39,0.16)', AC, false);
-    drawAngleSector(ctx, D, A, B, 24, 'rgba(47,111,94,0.16)', SG, false);
+    drawAngleSector(ctx, C, A, B, 22, 'rgba(184,74,39,0.14)', AC, false);
+    drawAngleSector(ctx, D, A, B, 22, 'rgba(47,111,94,0.14)', SG, false);
     const aC = angleDeg(A, C, B), aD = angleDeg(A, D, B);
-    const badgePos = (pt, idx) => {
-      const dx = pt.x - g.cx, dy = pt.y - g.cy;
-      const n = Math.hypot(dx, dy) || 1;
-      const push = pt.y < g.cy ? 28 : 26;
-      const xShift = (idx === 0 ? -12 : 12);
-      return { x: pt.x + (dx / n) * push + xShift, y: pt.y + (dy / n) * push };
-    };
-    drawBadge(ctx, badgePos(C, 0), '∠ACB = ' + fmtAng(aC), RB, AC);
-    drawBadge(ctx, badgePos(D, 1), '∠ADB = ' + fmtAng(aD), SB, SG);
+    const yOffC = C.y < g.cy ? -22 : 24;
+    const yOffD = D.y < g.cy ? -22 : 24;
+    drawBadge(ctx, { x: C.x, y: C.y + yOffC }, '∠ACB = ' + fmtAng(aC), RB, AC);
+    drawBadge(ctx, { x: D.x, y: D.y + yOffD }, '∠ADB = ' + fmtAng(aD), SB, SG);
     return [
       { label: '∠ACB', value: fmtAng(aC) },
       { label: '∠ADB', value: fmtAng(aD) },
@@ -571,17 +588,17 @@ const CORE_THEOREMS = [
       { label: 'Chord AB', value: fmtLen(dist(A, B), g) }
     ];
   },
-  check: { q: 'If $\angle ACB = 43^\circ$ and $D$ lies on the same arc as $C$, what is $\angle ADB$?', options: ['43°', '137°', '86°'], answerIndex: 0, explain: 'Angles in the same segment subtended by the same arc are equal, so $\angle ADB = 43^\circ$ (while a point in the opposite segment forms $180^\circ - 43^\circ = 137^\circ$).' }
+  check: { q: 'If $\\angle ACB = 43^\\circ$ and $D$ lies on the same arc as $C$, what is $\\angle ADB$?', options: ['43°', '137°', '86°'], answerIndex: 0, explain: 'Angles in the same segment subtended by the same arc are equal, so $\\angle ADB = 43^\\circ$ (while a point in the opposite segment forms $180^\\circ - 43^\\circ = 137^\\circ$).' }
 },
 {
   id: 'c4', num: '04', title: 'Opposite Angles of a Cyclic Quadrilateral',
-  statement: 'Opposite angles of a cyclic quadrilateral (four vertices on a circle) add up to $180^\circ$.',
+  statement: 'Opposite angles of a cyclic quadrilateral (four vertices on a circle) add up to $180^\\circ$.',
   invariantFormula: '∠A + ∠C = 180°  and  ∠B + ∠D = 180°',
-  intuition: 'Opposite angles each stand on one of two arcs that together make the whole circle, so their halves always sum to half of $360^\circ$, which is $180^\circ$.',
+  intuition: 'Opposite angles each stand on one of two arcs that together make the whole circle, so their halves always sum to half of $360^\\circ$, which is $180^\\circ$.',
   proofSteps: [
     'Vertices $A, B, C, D$ lie in order on a circle, splitting it into two arcs for each opposite pair.',
     'Vertex $A$ subtends arc $BCD$ (the arc not containing $A$) and vertex $C$ subtends arc $BAD$ (the arc not containing $C$).',
-    'Each angle is half its arc and the two arcs make $360^\circ$, so $\angle A + \angle C = 180^\circ$.'
+    'Each angle is half its arc and the two arcs make $360^\\circ$, so $\\angle A + \\angle C = 180^\\circ$.'
   ],
   defaultState: { a: -2.4, b: -0.5, c: 0.9, d: 2.35 },
   stepDemo(st, dt) { st.a += dt * 0.35; st.b += dt * 0.42; st.c += dt * 0.31; st.d += dt * 0.38; },
@@ -597,17 +614,17 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: C.x * 0.72 + g.cx * 0.28, y: C.y * 0.72 + g.cy * 0.28 }, 'C:' + fmtAng(aC), SB, SG);
     return [{ label: '∠A', value: fmtAng(aA) }, { label: '∠C', value: fmtAng(aC) }, { label: '∠A + ∠C', value: fmtAng(aA + aC) }, { label: '∠B + ∠D', value: fmtAng(aB + aD) }];
   },
-  check: { q: 'In cyclic quadrilateral $PQRS$, $\angle P = 78^\circ$. What is $\angle R$?', options: ['102°', '78°', '12°'], answerIndex: 0, explain: 'Opposite angles of a cyclic quadrilateral are supplementary: $180^\circ - 78^\circ = 102^\circ$.' }
+  check: { q: 'In cyclic quadrilateral $PQRS$, $\\angle P = 78^\\circ$. What is $\\angle R$?', options: ['102°', '78°', '12°'], answerIndex: 0, explain: 'Opposite angles of a cyclic quadrilateral are supplementary: $180^\\circ - 78^\\circ = 102^\\circ$.' }
 },
 {
   id: 'c5', num: '05', title: 'Exterior Angle of a Cyclic Quadrilateral',
   statement: 'An exterior angle of a cyclic quadrilateral is equal to the interior opposite angle.',
   invariantFormula: 'Exterior ∠ at C = Interior ∠A',
-  intuition: 'Both the exterior angle at $C$ and interior $\angle A$ are supplements of interior $\angle C$, forcing them to be equal.',
+  intuition: 'Both the exterior angle at $C$ and interior $\\angle A$ are supplements of interior $\\angle C$, forcing them to be equal.',
   proofSteps: [
-    'Interior $\angle C$ and its adjacent exterior angle form a linear pair ($180^\circ$).',
-    'In cyclic quadrilateral $ABCD$, $\angle A + \angle C = 180^\circ$.',
-    'Both the exterior angle and $\angle A$ equal $180^\circ - \angle C$, so Exterior $\angle C = \angle A$.'
+    'Interior $\\angle C$ and its adjacent exterior angle form a linear pair ($180^\\circ$).',
+    'In cyclic quadrilateral $ABCD$, $\\angle A + \\angle C = 180^\\circ$.',
+    'Both the exterior angle and $\\angle A$ equal $180^\\circ - \\angle C$, so Exterior $\\angle C = \\angle A$.'
   ],
   defaultState: { a: -2.2, b: -0.45, c: 0.85, d: 2.3 },
   stepDemo(st, dt) { st.c += dt * 0.3; st.a += dt * 0.2; },
@@ -626,17 +643,17 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: ext.x, y: ext.y - 16 }, 'Ext = ' + fmtAng(extA), RB, AC);
     return [{ label: 'Interior ∠A', value: fmtAng(aA) }, { label: 'Exterior at C', value: fmtAng(extA) }, { label: 'Interior ∠BCD', value: fmtAng(intC) }];
   },
-  check: { q: 'Side $BC$ of cyclic quadrilateral $ABCD$ is extended to $E$. If $\angle BAD = 68^\circ$, what is $\angle DCE$?', options: ['68°', '112°', '22°'], answerIndex: 0, explain: 'The exterior angle $\angle DCE$ equals the interior opposite angle $\angle BAD = 68^\circ$.' }
+  check: { q: 'Side $BC$ of cyclic quadrilateral $ABCD$ is extended to $E$. If $\\angle BAD = 68^\\circ$, what is $\\angle DCE$?', options: ['68°', '112°', '22°'], answerIndex: 0, explain: 'The exterior angle $\\angle DCE$ equals the interior opposite angle $\\angle BAD = 68^\\circ$.' }
 },
 {
   id: 'c6', num: '06', title: 'Tangent–Radius Perpendicularity',
-  statement: 'The tangent at any point on a circle is perpendicular ($90^\circ$) to the radius drawn to the point of contact.',
+  statement: 'The tangent at any point on a circle is perpendicular ($90^\\circ$) to the radius drawn to the point of contact.',
   invariantFormula: 'Radius OP ⊥ Tangent at P',
   intuition: 'Among all segments from center $O$ to the tangent line, radius $OP$ is the shortest distance, making it perpendicular.',
   proofSteps: [
-    'Take any point $Q \neq P$ on the tangent line.',
+    'Take any point $Q \\neq P$ on the tangent line.',
     'Because $Q$ lies outside the circle, $OQ > OP$ (radius).',
-    'Since the shortest segment from a point to a line is perpendicular to the line, $OP \perp$ tangent.'
+    'Since the shortest segment from a point to a line is perpendicular to the line, $OP \\perp$ tangent.'
   ],
   defaultState: { p: 0.45 },
   stepDemo(st, dt) { st.p += dt * 0.65; },
@@ -652,17 +669,17 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: P.x + Math.cos(st.p) * 34, y: P.y + Math.sin(st.p) * 34 }, fmtAng(pa), RB, AC);
     return [{ label: '∠(OP, Tangent)', value: fmtAng(pa) }, { label: 'Radius OP', value: rl }];
   },
-  check: { q: 'Line $PT$ is tangent to a circle with center $O$ at $P$. If $\angle OPT$ is measured, what is it?', options: ['90°', '45°', '180°'], answerIndex: 0, explain: 'A tangent to a circle is always perpendicular ($90^\circ$) to the radius at the point of tangency.' }
+  check: { q: 'Line $PT$ is tangent to a circle with center $O$ at $P$. If $\\angle OPT$ is measured, what is it?', options: ['90°', '45°', '180°'], answerIndex: 0, explain: 'A tangent to a circle is always perpendicular ($90^\\circ$) to the radius at the point of tangency.' }
 },
 {
   id: 'c7', num: '07', title: 'Two Tangents from an External Point',
   statement: 'Tangents drawn from an external point $T$ to a circle are equal in length and equally inclined to the line joining $T$ to the center $O$.',
   invariantFormula: 'TA = TB  and  ∠ATO = ∠BTO',
-  intuition: 'Right triangles $\triangle OAT$ and $\triangle OBT$ share hypotenuse $OT$ and have equal radii $OA = OB$, making them congruent.',
+  intuition: 'Right triangles $\\triangle OAT$ and $\\triangle OBT$ share hypotenuse $OT$ and have equal radii $OA = OB$, making them congruent.',
   proofSteps: [
-    'Draw radii $OA$ and $OB$ to the points of tangency; $\angle OAT = \angle OBT = 90^\circ$.',
-    'In right triangles $\triangle OAT$ and $\triangle OBT$, $OA = OB$ and $OT$ is common.',
-    'By RHS congruence, $\triangle OAT \cong \triangle OBT$, so $TA = TB$ and $\angle ATO = \angle BTO$.'
+    'Draw radii $OA$ and $OB$ to the points of tangency; $\\angle OAT = \\angle OBT = 90^\\circ$.',
+    'In right triangles $\\triangle OAT$ and $\\triangle OBT$, $OA = OB$ and $OT$ is common.',
+    'By RHS congruence, $\\triangle OAT \\cong \\triangle OBT$, so $TA = TB$ and $\\angle ATO = \\angle BTO$.'
   ],
   defaultState: { distFactor: 2.05, tilt: -0.35, t: 0 },
   stepDemo(st, dt) { st.t += dt; st.tilt += dt * 0.55; st.distFactor = 1.9 + Math.sin(st.t * 0.9) * 0.25; },
@@ -683,17 +700,17 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: (T.x + B.x) / 2, y: (T.y + B.y) / 2 + 16 }, 'TB=' + lB, SB, SG);
     return [{ label: 'Length TA', value: lA }, { label: 'Length TB', value: lB }, { label: '∠ATO', value: fmtAng(angleDeg(A, T, O)) }, { label: '∠BTO', value: fmtAng(angleDeg(B, T, O)) }];
   },
-  check: { q: 'From external point $T$, tangents $TA$ and $TB$ touch a circle. If $TA = 13\text{ cm}$, what is $TB$?', options: ['13 cm', '6.5 cm', '26 cm'], answerIndex: 0, explain: 'Two tangents from the same external point to a circle have equal length, so $TB = 13\text{ cm}$.' }
+  check: { q: 'From external point $T$, tangents $TA$ and $TB$ touch a circle. If $TA = 13\\text{ cm}$, what is $TB$?', options: ['13 cm', '6.5 cm', '26 cm'], answerIndex: 0, explain: 'Two tangents from the same external point to a circle have equal length, so $TB = 13\\text{ cm}$.' }
 },
 {
   id: 'c8', num: '08', title: 'Alternate Segment Theorem',
   statement: 'The angle between a tangent and a chord through the point of contact equals the angle in the alternate segment.',
   invariantFormula: '∠TPB = ∠PAB',
-  intuition: 'As point $A$ moves along the alternate arc, inscribed angle $\angle PAB$ stays constant and matches tangent-chord angle $\angle TPB$. $A$ is kept on that alternate arc.',
+  intuition: 'As point $A$ moves along the alternate arc, inscribed angle $\\angle PAB$ stays constant and matches tangent-chord angle $\\angle TPB$. $A$ is kept on that alternate arc.',
   proofSteps: [
-    'Draw diameter $PD$ from point of contact $P$, so $\angle PBD = 90^\circ$ and $\angle TPD = 90^\circ$.',
-    'Angles $\angle PDB$ and $\angle PAB$ subtend the same arc $PB$, so $\angle PAB = \angle PDB$.',
-    'In right triangle $PBD$, $\angle PDB = 90^\circ - \angle BPD$, and $\angle TPB = 90^\circ - \angle BPD$ as well, so $\angle TPB = \angle PAB$.'
+    'Draw diameter $PD$ from point of contact $P$, so $\\angle PBD = 90^\\circ$ and $\\angle TPD = 90^\\circ$.',
+    'Angles $\\angle PDB$ and $\\angle PAB$ subtend the same arc $PB$, so $\\angle PAB = \\angle PDB$.',
+    'In right triangle $PBD$, $\\angle PDB = 90^\\circ - \\angle BPD$, and $\\angle TPB = 90^\\circ - \\angle BPD$ as well, so $\\angle TPB = \\angle PAB$.'
   ],
   defaultState: { p: Math.PI * 0.5, a: -2.2, b: -0.45, t: 0 },
   stepDemo(st, dt) { st.t += dt; st.a = -1.6 + Math.sin(st.t * 1.2) * 0.7; },
@@ -709,17 +726,17 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: A.x, y: A.y - 20 }, '∠PAB = ' + fmtAng(alt), SB, SG);
     return [{ label: 'Tangent-Chord ∠TPB', value: fmtAng(tan) }, { label: 'Alternate ∠PAB', value: fmtAng(alt) }, { label: 'Chord PB', value: fmtLen(dist(P, B), g) }];
   },
-  check: { q: 'Chord $PB$ meets tangent $PT$ at $P$ with $\angle TPB = 64^\circ$. What is the inscribed angle in the alternate segment?', options: ['64°', '116°', '32°'], answerIndex: 0, explain: 'By the Alternate Segment Theorem, the angle in the alternate segment equals $\angle TPB = 64^\circ$.' }
+  check: { q: 'Chord $PB$ meets tangent $PT$ at $P$ with $\\angle TPB = 64^\\circ$. What is the inscribed angle in the alternate segment?', options: ['64°', '116°', '32°'], answerIndex: 0, explain: 'By the Alternate Segment Theorem, the angle in the alternate segment equals $\\angle TPB = 64^\\circ$.' }
 },
 {
   id: 'c9', num: '09', title: 'Perpendicular from Center to Chord',
   statement: 'A perpendicular drawn from the center $O$ of a circle to a chord bisects the chord.',
   invariantFormula: 'OM ⊥ AB  ⇒  AM = MB',
-  intuition: 'Here $M$ is the foot of the perpendicular from $O$ (computed by projection, not by taking the midpoint). Right triangles $\triangle OMA$ and $\triangle OMB$ share $OM$ and have equal radii $OA = OB$, forcing $AM = MB$.',
+  intuition: 'Here $M$ is the foot of the perpendicular from $O$ (computed by projection, not by taking the midpoint). Right triangles $\\triangle OMA$ and $\\triangle OMB$ share $OM$ and have equal radii $OA = OB$, forcing $AM = MB$.',
   proofSteps: [
-    'Drop perpendicular $OM$ from center $O$ to chord $AB$, so $\angle OMA = \angle OMB = 90^\circ$.',
-    'In right triangles $\triangle OMA$ and $\triangle OMB$, $OA = OB$ (radii) and $OM$ is common.',
-    'By RHS congruence, $\triangle OMA \cong \triangle OMB$, hence $AM = MB$.'
+    'Drop perpendicular $OM$ from center $O$ to chord $AB$, so $\\angle OMA = \\angle OMB = 90^\\circ$.',
+    'In right triangles $\\triangle OMA$ and $\\triangle OMB$, $OA = OB$ (radii) and $OM$ is common.',
+    'By RHS congruence, $\\triangle OMA \\cong \\triangle OMB$, hence $AM = MB$.'
   ],
   defaultState: { a: -2.35, b: -0.65, t: 0 },
   stepDemo(st, dt) { st.t += dt; st.a = -2.25 + Math.sin(st.t * 1.2) * 0.45; st.b = -0.65 + Math.cos(st.t * 1.2) * 0.45; },
@@ -741,7 +758,7 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: (M.x + B.x) / 2, y: (M.y + B.y) / 2 + 18 }, 'MB=' + mb, SB, SG);
     return [{ label: '∠OMA', value: fmtAng(angleDeg(O, M, A)) }, { label: 'AM', value: am }, { label: 'MB', value: mb }, { label: 'Total AB', value: fmtLen(dist(A, B), g) }, { label: 'Distance OM', value: fmtLen(dist(O, M), g) }];
   },
-  check: { q: 'A perpendicular from the center of a circle to a chord of length $18\text{ cm}$ meets it at $M$. What is $AM$?', options: ['9 cm', '18 cm', '4.5 cm'], answerIndex: 0, explain: 'The perpendicular from the center bisects the chord: $18\text{ cm} / 2 = 9\text{ cm}$.' }
+  check: { q: 'A perpendicular from the center of a circle to a chord of length $18\\text{ cm}$ meets it at $M$. What is $AM$?', options: ['9 cm', '18 cm', '4.5 cm'], answerIndex: 0, explain: 'The perpendicular from the center bisects the chord: $18\\text{ cm} / 2 = 9\\text{ cm}$.' }
 },
 {
   id: 'c10', num: '10', title: 'Equal Chords & Distance from Center',
@@ -749,9 +766,9 @@ const CORE_THEOREMS = [
   invariantFormula: 'AB = CD  ⇔  OM = ON',
   intuition: 'Chords of equal length form congruent central triangles with the center, so their perpendicular distances $OM$ and $ON$ match. Drag $A$ or $B$ to change the chord length; $CD$ is always kept equal to $AB$.',
   proofSteps: [
-    'Draw perpendiculars $OM \perp AB$ and $ON \perp CD$, bisecting both chords.',
+    'Draw perpendiculars $OM \\perp AB$ and $ON \\perp CD$, bisecting both chords.',
     'If $AB = CD$, then $AM = CN$ and radii $OA = OC$.',
-    'By RHS congruence on $\triangle OMA$ and $\triangle ONC$, $OM = ON$.'
+    'By RHS congruence on $\\triangle OMA$ and $\\triangle ONC$, $OM = ON$.'
   ],
   defaultState: { span: 1.35, rot: 0.4 },
   stepDemo(st, dt) { st.rot += dt * 0.65; },
@@ -770,17 +787,17 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: (O.x + N.x) / 2, y: (O.y + N.y) / 2 + 12 }, 'ON=' + dON, SB, SG);
     return [{ label: 'Chord AB', value: fmtLen(dist(A, B), g) }, { label: 'Chord CD', value: fmtLen(dist(C, D), g) }, { label: 'Distance OM', value: dOM }, { label: 'Distance ON', value: dON }];
   },
-  check: { q: 'Two equal chords $AB$ and $CD$ lie in a circle. If $AB$ is $5\text{ cm}$ from the center, how far is $CD$ from the center?', options: ['5 cm', '10 cm', '2.5 cm'], answerIndex: 0, explain: 'Equal chords are always equidistant from the center of the circle, so $CD$ is also $5\text{ cm}$ away.' }
+  check: { q: 'Two equal chords $AB$ and $CD$ lie in a circle. If $AB$ is $5\\text{ cm}$ from the center, how far is $CD$ from the center?', options: ['5 cm', '10 cm', '2.5 cm'], answerIndex: 0, explain: 'Equal chords are always equidistant from the center of the circle, so $CD$ is also $5\\text{ cm}$ away.' }
 },
 {
   id: 'c11', num: '11', title: 'Intersecting Chords Theorem',
   statement: 'When two chords $AB$ and $CD$ intersect at point $P$ inside a circle, the products of their segments are equal.',
   invariantFormula: 'AP × PB = CP × PD',
-  intuition: 'Triangles $\triangle APC$ and $\triangle DPB$ share equal inscribed angles, making them similar so $\frac{AP}{PD} = \frac{CP}{PB}$.',
+  intuition: 'Triangles $\\triangle APC$ and $\\triangle DPB$ share equal inscribed angles, making them similar so $\\frac{AP}{PD} = \\frac{CP}{PB}$.',
   proofSteps: [
-    'In $\triangle APC$ and $\triangle DPB$, $\angle ACP = \angle DBP$ (same arc $AD$).',
-    'Also $\angle CAP = \angle BDP$ (same arc $BC$), so $\triangle APC \sim \triangle DPB$.',
-    'Matching ratios give $\frac{AP}{PD} = \frac{CP}{PB}$, hence $AP \cdot PB = CP \cdot PD$.'
+    'In $\\triangle APC$ and $\\triangle DPB$, $\\angle ACP = \\angle DBP$ (same arc $AD$).',
+    'Also $\\angle CAP = \\angle BDP$ (same arc $BC$), so $\\triangle APC \\sim \\triangle DPB$.',
+    'Matching ratios give $\\frac{AP}{PD} = \\frac{CP}{PB}$, hence $AP \\cdot PB = CP \\cdot PD$.'
   ],
   defaultState: { a: -2.5, b: 0.55, c: -0.9, d: 2.2 },
   stepDemo(st, dt) { st.a += dt * 0.25; st.b -= dt * 0.22; st.c += dt * 0.28; st.d -= dt * 0.24; },
@@ -800,17 +817,17 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: P.x, y: P.y + 24 }, 'CP·PD = ' + p2, SB, SG);
     return [{ label: 'AP × PB', value: p1 }, { label: 'CP × PD', value: p2 }, { label: 'AP, PB', value: fmtLen(ap, g) + ', ' + fmtLen(pb, g) }, { label: 'CP, PD', value: fmtLen(cp, g) + ', ' + fmtLen(pd, g) }];
   },
-  check: { q: 'Chords $AB$ and $CD$ intersect at $P$ inside a circle. If $AP = 4$, $PB = 6$, and $CP = 3$, what is $PD$?', options: ['8', '6', '12'], answerIndex: 0, explain: '$4 \times 6 = 3 \times PD \implies 24 = 3 \cdot PD \implies PD = 8$.' }
+  check: { q: 'Chords $AB$ and $CD$ intersect at $P$ inside a circle. If $AP = 4$, $PB = 6$, and $CP = 3$, what is $PD$?', options: ['8', '6', '12'], answerIndex: 0, explain: '$4 \\times 6 = 3 \\times PD \\implies 24 = 3 \\cdot PD \\implies PD = 8$.' }
 },
 {
   id: 'c12', num: '12', title: 'Tangent–Secant Power Theorem',
   statement: 'If a tangent $PT$ and a secant $PAB$ are drawn from an external point $P$, the square of the tangent equals the product of the secant segments.',
   invariantFormula: 'PT² = PA × PB',
-  intuition: 'Triangles $\triangle PTA$ and $\triangle PBT$ share $\angle P$ and have $\angle PTA = \angle PBT$ by the alternate segment rule. Drag $A$ to swing the secant; $A$, $B$ and $P$ stay collinear.',
+  intuition: 'Triangles $\\triangle PTA$ and $\\triangle PBT$ share $\\angle P$ and have $\\angle PTA = \\angle PBT$ by the alternate segment rule. Drag $A$ to swing the secant; $A$, $B$ and $P$ stay collinear.',
   proofSteps: [
-    'In $\triangle PTA$ and $\triangle PBT$, $\angle TPA = \angle TPB$ (the same angle at $P$, since $A$ lies on $PB$).',
-    'By the Alternate Segment Theorem, $\angle PTA = \angle PBT$.',
-    'Thus $\triangle PTA \sim \triangle PBT$, giving $\frac{PT}{PB} = \frac{PA}{PT}$, so $PT^2 = PA \cdot PB$.'
+    'In $\\triangle PTA$ and $\\triangle PBT$, $\\angle TPA = \\angle TPB$ (the same angle at $P$, since $A$ lies on $PB$).',
+    'By the Alternate Segment Theorem, $\\angle PTA = \\angle PBT$.',
+    'Thus $\\triangle PTA \\sim \\triangle PBT$, giving $\\frac{PT}{PB} = \\frac{PA}{PT}$, so $PT^2 = PA \\cdot PB$.'
   ],
   defaultState: { pAng: 0.35, pDist: 2.0, delta: -0.25, t: 0 },
   stepDemo(st, dt) { st.t += dt; st.delta = Math.sin(st.t * 0.9) * 0.3; },
@@ -828,20 +845,21 @@ const CORE_THEOREMS = [
     drawBadge(ctx, { x: (P.x + B.x) / 2, y: (P.y + B.y) / 2 + 18 }, 'PA·PB = ' + pp, SB, SG);
     return [{ label: 'PT²', value: sq }, { label: 'PA × PB', value: pp }, { label: 'Tangent PT', value: fmtLen(pt, g) }, { label: 'PA, PB', value: fmtLen(pa, g) + ', ' + fmtLen(pb, g) }];
   },
-  check: { q: 'Tangent $PT$ has length $6$, and secant $PAB$ has outer segment $PA = 4$. What is the full length $PB$?', options: ['9', '6', '12'], answerIndex: 0, explain: '$PT^2 = PA \cdot PB \implies 6^2 = 4 \cdot PB \implies 36 = 4 \cdot PB \implies PB = 9$.' }
+  check: { q: 'Tangent $PT$ has length $6$, and secant $PAB$ has outer segment $PA = 4$. What is the full length $PB$?', options: ['9', '6', '12'], answerIndex: 0, explain: '$PT^2 = PA \\cdot PB \\implies 6^2 = 4 \\cdot PB \\implies 36 = 4 \\cdot PB \\implies PB = 9$.' }
 }
 ];
 
+/* ---------- beyond the 12 ---------- */
 const BEYOND_THEOREMS = [
 {
   id: 'b1', num: 'E1', title: 'Ptolemy’s Theorem',
   statement: 'For any cyclic quadrilateral $ABCD$, the sum of the products of opposite sides equals the product of its diagonals.',
   invariantFormula: 'AC × BD = AB × CD + BC × AD',
-  intuition: 'Splitting $\triangle ABC$ with a carefully chosen angle creates two similar triangle pairs whose products add to $AC \cdot BD$.',
+  intuition: 'Splitting $\\triangle ABC$ with a carefully chosen angle creates two similar triangle pairs whose products add to $AC \\cdot BD$.',
   proofSteps: [
-    'Choose $E$ on $AC$ so that $\angle ABE = \angle DBC$.',
-    'Since $\angle BAE = \angle BDC$ (same arc $BC$), $\triangle ABE \sim \triangle DBC$, giving $AE \cdot BD = AB \cdot CD$.',
-    'Also $\triangle EBC \sim \triangle ABD$, giving $EC \cdot BD = BC \cdot AD$; adding both yields $(AE + EC) \cdot BD = AB \cdot CD + BC \cdot AD$.'
+    'Choose $E$ on $AC$ so that $\\angle ABE = \\angle DBC$.',
+    'Since $\\angle BAE = \\angle BDC$ (same arc $BC$), $\\triangle ABE \\sim \\triangle DBC$, giving $AE \\cdot BD = AB \\cdot CD$.',
+    'Also $\\triangle EBC \\sim \\triangle ABD$, giving $EC \\cdot BD = BC \\cdot AD$; adding both yields $(AE + EC) \\cdot BD = AB \\cdot CD + BC \\cdot AD$.'
   ],
   defaultState: { a: -2.3, b: -0.65, c: 0.85, d: 2.35 },
   stepDemo(st, dt) { st.a += dt * 0.28; st.b += dt * 0.34; st.c -= dt * 0.25; st.d += dt * 0.3; },
@@ -856,17 +874,17 @@ const BEYOND_THEOREMS = [
     drawBadge(ctx, { x: g.cx, y: g.cy + 20 }, 'Sum = ' + sides.toFixed(2) + ' u²', SB, SG);
     return [{ label: 'AC × BD', value: diag.toFixed(2) + ' u²' }, { label: 'AB·CD + BC·AD', value: sides.toFixed(2) + ' u²' }, { label: 'Diagonals AC, BD', value: fmtLen(dist(A, C), g) + ', ' + fmtLen(dist(B, D), g) }];
   },
-  check: { q: 'In cyclic quadrilateral $ABCD$, $AC = BD = 10$, $AB = CD = 6$. What is $BC \cdot AD$?', options: ['64', '36', '100'], answerIndex: 0, explain: 'By Ptolemy’s Theorem, $10 \times 10 = (6 \times 6) + BC \cdot AD \implies 100 = 36 + BC \cdot AD \implies BC \cdot AD = 64$ (a $6 \times 8$ rectangle).' }
+  check: { q: 'In cyclic quadrilateral $ABCD$, $AC = BD = 10$, $AB = CD = 6$. What is $BC \\cdot AD$?', options: ['64', '36', '100'], answerIndex: 0, explain: 'By Ptolemy’s Theorem, $10 \\times 10 = (6 \\times 6) + BC \\cdot AD \\implies 100 = 36 + BC \\cdot AD \\implies BC \\cdot AD = 64$ (a $6 \\times 8$ rectangle).' }
 },
 {
   id: 'b2', num: 'E2', title: 'Secant–Secant Power Theorem',
   statement: 'When two secants $PAB$ and $PCD$ intersect at an external point $P$, the product of each secant’s outer and whole lengths is equal.',
   invariantFormula: 'PA × PB = PC × PD',
-  intuition: 'Triangles $\triangle PAC$ and $\triangle PDB$ share $\angle P$ and have equal angles at $A$ and $D$ because $ABDC$ is cyclic. Drag $A$ or $C$ to swing each secant.',
+  intuition: 'Triangles $\\triangle PAC$ and $\\triangle PDB$ share $\\angle P$ and have equal angles at $A$ and $D$ because $ABDC$ is cyclic. Drag $A$ or $C$ to swing each secant.',
   proofSteps: [
-    'In cyclic quadrilateral $ABDC$, the exterior angle $\angle PAC$ at $A$ equals the interior opposite angle $\angle PDB$ at $D$.',
-    'Angle $\angle APC$ is common to $\triangle PAC$ and $\triangle PDB$, so $\triangle PAC \sim \triangle PDB$.',
-    'Matching sides gives $\frac{PA}{PD} = \frac{PC}{PB}$, hence $PA \cdot PB = PC \cdot PD$.'
+    'In cyclic quadrilateral $ABDC$, the exterior angle $\\angle PAC$ at $A$ equals the interior opposite angle $\\angle PDB$ at $D$.',
+    'Angle $\\angle APC$ is common to $\\triangle PAC$ and $\\triangle PDB$, so $\\triangle PAC \\sim \\triangle PDB$.',
+    'Matching sides gives $\\frac{PA}{PD} = \\frac{PC}{PB}$, hence $PA \\cdot PB = PC \\cdot PD$.'
   ],
   defaultState: { pAng: 0.25, pDist: 1.95, delta1: -0.3, delta2: 0.25, t: 0 },
   stepDemo(st, dt) { st.t += dt; st.delta1 = -0.3 + Math.sin(st.t) * 0.12; st.delta2 = 0.25 + Math.sin(st.t * 1.3 + 1) * 0.12; },
@@ -888,17 +906,17 @@ const BEYOND_THEOREMS = [
     drawBadge(ctx, { x: (P.x + D.x) / 2, y: (P.y + D.y) / 2 + 20 }, 'PC·PD = ' + p2, SB, SG);
     return [{ label: 'PA × PB', value: p1 }, { label: 'PC × PD', value: p2 }, { label: 'PA, PB', value: fmtLen(pa, g) + ', ' + fmtLen(pb, g) }, { label: 'PC, PD', value: fmtLen(pc, g) + ', ' + fmtLen(pd, g) }];
   },
-  check: { q: 'Secants $PAB$ and $PCD$ meet at $P$ outside a circle. If $PA = 5$, $PB = 12$, and $PC = 6$, what is $PD$?', options: ['10', '8', '15'], answerIndex: 0, explain: '$5 \times 12 = 6 \times PD \implies 60 = 6 \cdot PD \implies PD = 10$.' }
+  check: { q: 'Secants $PAB$ and $PCD$ meet at $P$ outside a circle. If $PA = 5$, $PB = 12$, and $PC = 6$, what is $PD$?', options: ['10', '8', '15'], answerIndex: 0, explain: '$5 \\times 12 = 6 \\times PD \\implies 60 = 6 \\cdot PD \\implies PD = 10$.' }
 },
 {
   id: 'b3', num: 'E3', title: 'Equal Chords Subtend Equal Central Angles',
   statement: 'In congruent circles or the same circle, equal chords subtend equal angles at the center.',
   invariantFormula: 'AB = CD  ⇔  ∠AOB = ∠COD',
-  intuition: 'Triangles $\triangle AOB$ and $\triangle COD$ have three equal sides (two radii and the equal chord), making them congruent by SSS. Drag $A$ or $B$; $CD$ is kept equal to $AB$.',
+  intuition: 'Triangles $\\triangle AOB$ and $\\triangle COD$ have three equal sides (two radii and the equal chord), making them congruent by SSS. Drag $A$ or $B$; $CD$ is kept equal to $AB$.',
   proofSteps: [
-    'In $\triangle AOB$ and $\triangle COD$, $OA = OC = r$ and $OB = OD = r$.',
+    'In $\\triangle AOB$ and $\\triangle COD$, $OA = OC = r$ and $OB = OD = r$.',
     'Since chord $AB = CD$, all three corresponding sides are equal.',
-    'By SSS congruence, $\triangle AOB \cong \triangle COD$, so $\angle AOB = \angle COD$.'
+    'By SSS congruence, $\\triangle AOB \\cong \\triangle COD$, so $\\angle AOB = \\angle COD$.'
   ],
   defaultState: { span: 1.25, rot: 0.3 },
   stepDemo(st, dt) { st.rot += dt * 0.6; },
@@ -917,7 +935,7 @@ const BEYOND_THEOREMS = [
     drawBadge(ctx, { x: (C.x + D.x) / 2, y: (C.y + D.y) / 2 + 16 }, '∠COD=' + fmtAng(a2), SB, SG);
     return [{ label: '∠AOB', value: fmtAng(a1) }, { label: '∠COD', value: fmtAng(a2) }, { label: 'Chord AB', value: fmtLen(dist(A, B), g) }, { label: 'Chord CD', value: fmtLen(dist(C, D), g) }];
   },
-  check: { q: 'If chord $AB$ equals chord $CD$ and $\angle AOB = 68^\circ$, what is $\angle COD$?', options: ['68°', '34°', '136°'], answerIndex: 0, explain: 'Equal chords subtend equal central angles, so $\angle COD = 68^\circ$.' }
+  check: { q: 'If chord $AB$ equals chord $CD$ and $\\angle AOB = 68^\\circ$, what is $\\angle COD$?', options: ['68°', '34°', '136°'], answerIndex: 0, explain: 'Equal chords subtend equal central angles, so $\\angle COD = 68^\\circ$.' }
 },
 {
   id: 'b4', num: 'E4', title: 'Butterfly Theorem (Chord Midpoint)',
@@ -959,10 +977,11 @@ const BEYOND_THEOREMS = [
     drawBadge(ctx, { x: Y.x, y: Y.y + 20 }, 'MY=' + my, SB, SG);
     return [{ label: 'MX', value: mx }, { label: 'MY', value: my }, { label: 'Chord PQ', value: fmtLen(dist(P, Q), g) }];
   },
-  check: { q: 'In the Butterfly Theorem setup with midpoint $M$ of chord $PQ$, if $MX = 4.5\text{ cm}$, what is $MY$?', options: ['4.5 cm', '9 cm', '2.25 cm'], answerIndex: 0, explain: 'The Butterfly Theorem states that $M$ bisects segment $XY$, so $MY = MX = 4.5\text{ cm}$.' }
+  check: { q: 'In the Butterfly Theorem setup with midpoint $M$ of chord $PQ$, if $MX = 4.5\\text{ cm}$, what is $MY$?', options: ['4.5 cm', '9 cm', '2.25 cm'], answerIndex: 0, explain: 'The Butterfly Theorem states that $M$ bisects segment $XY$, so $MY = MX = 4.5\\text{ cm}$.' }
 }
 ];
 
+/* ---------- app state ---------- */
 const state = {
   mode: 'core', coreIndex: 0, beyondIndex: 0, autoDemo: true, speed: 1.0, highlightProof: true, draggingId: null,
   sceneStates: {
@@ -1096,6 +1115,7 @@ function renderAll() {
   renderSelectOptions(); renderCheckSection(th); drawSceneFrame();
 }
 
+/* ---------- dragging ---------- */
 function pointerToCanvasPt(evt, canvas) {
   const rect = canvas.getBoundingClientRect(), k = canvas.width / Math.max(1, rect.width);
   return { x: (evt.clientX - rect.left) * k, y: (evt.clientY - rect.top) * k };
@@ -1131,6 +1151,7 @@ function stopDragging(evt) {
 els.geometryCanvas.addEventListener('pointerup', stopDragging);
 els.geometryCanvas.addEventListener('pointercancel', stopDragging);
 
+/* ---------- controls ---------- */
 els.brandHomeBtn.addEventListener('click', () => { state.mode = 'core'; state.coreIndex = 0; renderAll(); });
 els.modeCoreBtn.addEventListener('click', () => { state.mode = 'core'; renderAll(); });
 els.modeBeyondBtn.addEventListener('click', () => { state.mode = 'beyond'; renderAll(); });
@@ -1178,4 +1199,3 @@ requestAnimationFrame(tick);
 </script>
 </body>
 </html>
-Analyzing
