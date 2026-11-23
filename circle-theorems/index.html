@@ -24,28 +24,100 @@
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-:root{--paper:#FAF8F4;--surface:#FFF;--subtle:#F3EFE6;--ink:#1C1B18;--rule:#E6E1D6;--accent:#B84A27;--sage:#2F6F5E;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{
+  --paper:#FAF8F4;
+  --surface:#FFF;
+  --subtle:#F3EFE6;
+  --ink:#1C1B18;
+  --muted:#5E5A51;
+  --rule:#E6E1D6;
+  --accent:#B84A27;
+  --sage:#2F6F5E;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--paper);color:var(--ink);font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  overflow-x:hidden;
+  max-width:100%;
+  -webkit-tap-highlight-color:transparent;
+}
 .font-serif-editorial{font-family:'Instrument Serif',Georgia,serif}
-.font-mono-tech{font-family:'JetBrains Mono',ui-monospace,monospace}
+.font-mono-tech{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .paper-card{background:var(--surface);border:1px solid var(--rule);border-radius:16px}
 .paper-subtle{background:var(--subtle);border:1px solid var(--rule);border-radius:12px}
-.canvas-stage{width:100%;aspect-ratio:4/3;min-height:270px;max-height:460px;display:block;border-radius:12px;background:#FCFBF8;border:1px solid var(--rule);touch-action:none;cursor:grab}
+.canvas-stage{
+  width:100%;
+  aspect-ratio:4/3;
+  min-height:270px;
+  max-height:460px;
+  display:block;
+  border-radius:12px;
+  background:#FCFBF8;
+  border:1px solid var(--rule);
+  touch-action:none;
+  cursor:grab;
+}
 .canvas-stage:active{cursor:grabbing}
-.math-chip{font-family:'JetBrains Mono',monospace;font-size:.98rem;background:var(--subtle);border:1px solid var(--rule);border-radius:10px;padding:.45rem .8rem;display:inline-flex;gap:.4rem;align-items:center}
+.math-chip{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.98rem;
+  background:var(--subtle);
+  border:1px solid var(--rule);
+  border-radius:10px;
+  padding:.45rem .8rem;
+  display:inline-flex;
+  gap:.4rem;
+  align-items:center;
+}
 .math-chip strong{font-size:1.08rem;font-weight:700}
-.pill-btn{border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:.45rem .85rem;font-size:.84rem;font-weight:500;cursor:pointer}
+.pill-btn{
+  border:1px solid var(--rule);
+  background:var(--surface);
+  color:var(--ink);
+  border-radius:999px;
+  padding:.45rem .85rem;
+  font-size:.84rem;
+  font-weight:500;
+  cursor:pointer;
+}
 .pill-btn:hover{background:var(--subtle)}
 .pill-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.accent-btn{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:999px;padding:.48rem .92rem;font-size:.84rem;font-weight:600;cursor:pointer}
+.accent-btn{
+  background:var(--accent);
+  color:#fff;
+  border:1px solid var(--accent);
+  border-radius:999px;
+  padding:.48rem .92rem;
+  font-size:.84rem;
+  font-weight:600;
+  cursor:pointer;
+}
 .accent-btn.is-paused{background:var(--surface);color:var(--accent)}
 </style>
 </head>
-<body>
+<body class="antialiased">
 <div id="app" class="min-h-screen flex flex-col">
+  <!-- Slim single-line breadcrumb bar aligned with max-w-6xl above sticky header -->
+  <div class="w-full bg-[#FAF8F4]/95 border-b border-[#E6E1D6]/85">
+    <nav aria-label="Breadcrumb" class="max-w-6xl mx-auto px-4 sm:px-6 h-9 flex items-center gap-1.5 text-xs leading-none whitespace-nowrap overflow-hidden">
+      <a href="https://unboringstem.pages.dev/" class="group inline-flex items-center gap-1 font-semibold text-[#5E5A51] hover:text-[#B84A27] transition-colors shrink-0">
+        <span class="font-mono-tech transition-transform duration-150 group-hover:-translate-x-0.5" aria-hidden="true">&larr;</span>
+        <span>Unboring STEM</span>
+      </a>
+      <span class="text-[#8A8478] select-none shrink-0" aria-hidden="true">/</span>
+      <span class="font-semibold text-[#1C1B18] truncate" aria-current="page">Circle Theorems</span>
+    </nav>
+  </div>
+
   <header class="border-b border-[#E6E1D6] bg-[#FAF8F4]/95 sticky top-0 z-30 backdrop-blur-sm">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
       <button id="brandHomeBtn" type="button" class="text-left cursor-pointer flex items-baseline gap-2.5">
@@ -68,8 +140,8 @@ html,body{margin:0;background:var(--paper);color:var(--ink);font-family:'Plus Ja
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
     <section class="paper-card p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="flex items-center gap-2 flex-wrap">
-        <button id="prevTheoremBtn" type="button" class="pill-btn">← Prev</button>
-        <button id="nextTheoremBtn" type="button" class="pill-btn">Next →</button>
+        <button id="prevTheoremBtn" type="button" class="pill-btn">&larr; Prev</button>
+        <button id="nextTheoremBtn" type="button" class="pill-btn">Next &rarr;</button>
         <span id="progressCounter" class="text-xs sm:text-sm font-mono-tech text-[#5E5A51] px-2"></span>
       </div>
       <div class="flex items-center gap-2.5 flex-wrap">
@@ -86,7 +158,7 @@ html,body{margin:0;background:var(--paper);color:var(--ink);font-family:'Plus Ja
           </div>
           <div class="flex items-center gap-2 flex-wrap">
             <button id="toggleAnimBtn" type="button" class="accent-btn" aria-label="Pause or play animation">Pause</button>
-            <button id="speedBtn" type="button" class="pill-btn font-mono-tech text-xs">Speed: 1.0×</button>
+            <button id="speedBtn" type="button" class="pill-btn font-mono-tech text-xs">Speed: 1.0&times;</button>
             <button id="resetSceneBtn" type="button" class="pill-btn">Reset</button>
           </div>
         </div>
@@ -318,8 +390,8 @@ const CORE_THEOREMS = [
     drawSegment(ctx, o, A, AC, hl ? 2.5 : 1.8); drawSegment(ctx, o, B, AC, hl ? 2.5 : 1.8);
     drawSegment(ctx, C, A, SG, hl ? 2.4 : 1.8); drawSegment(ctx, C, B, SG, hl ? 2.4 : 1.8);
     const insc = angleDeg(A, C, B);
-    const cm = angleDeg(A, o, B);            // measured independently
-    const reflex = insc > 90;                // C on the minor arc -> central angle (arc not containing C) is reflex
+    const cm = angleDeg(A, o, B);
+    const reflex = insc > 90;
     const cen = reflex ? 360 - cm : cm;
     drawPoint(ctx, o, 'O', IK);
     drawBadge(ctx, { x: o.x, y: o.y + 24 }, '∠AOB = ' + (reflex ? 'reflex ' : '') + fmtAng(cen), RB, AC);
@@ -543,7 +615,7 @@ const CORE_THEOREMS = [
     const O = { x: g.cx, y: g.cy }, A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b);
     const dx = B.x - A.x, dy = B.y - A.y, L2 = dx * dx + dy * dy || 1;
     const tt = ((O.x - A.x) * dx + (O.y - A.y) * dy) / L2;
-    const M = { x: A.x + tt * dx, y: A.y + tt * dy };      // foot of perpendicular
+    const M = { x: A.x + tt * dx, y: A.y + tt * dy };
     drawSegment(ctx, A, B, IK, 2.2); drawSegment(ctx, O, M, AC, hl ? 2.8 : 2.2);
     drawSegment(ctx, O, A, '#8A8478', 1.3, true); drawSegment(ctx, O, B, '#8A8478', 1.3, true);
     const am = fmtLen(dist(A, M), g), mb = fmtLen(dist(M, B), g);
@@ -754,7 +826,7 @@ const BEYOND_THEOREMS = [
     const nx = -Math.sin(st.phi), ny = Math.cos(st.phi);
     const P = { x: M.x + w * nx, y: M.y + w * ny }, Q = { x: M.x - w * nx, y: M.y - w * ny };
     const A = circlePt(g.cx, g.cy, g.r, st.a), C = circlePt(g.cx, g.cy, g.r, st.c);
-    const second = (S) => {                      // second intersection of line S–M with the circle
+    const second = (S) => {
       const L = dist(S, M) || 1, ux = (M.x - S.x) / L, uy = (M.y - S.y) / L;
       const t = -2 * (ux * (S.x - O.x) + uy * (S.y - O.y));
       return { x: S.x + t * ux, y: S.y + t * uy };
