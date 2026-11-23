@@ -27,6 +27,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <script>
@@ -125,6 +127,15 @@
       touch-action: none;
     }
 
+    .katex {
+      font-size: 0.96em;
+      color: inherit;
+    }
+
+    .katex-display {
+      margin: 0;
+    }
+
     @media (max-width: 639px) {
       input[type="range"].editorial-slider {
         height: 36px;
@@ -164,7 +175,7 @@
 
       <span class="hidden lg:inline-block h-3.5 w-px bg-hairline"></span>
       <h1 class="hidden lg:block text-xs font-medium tracking-tight text-muted truncate">
-        Crossover Locus <span class="font-mono text-ink ml-1">nᵏ vs n!</span>
+        Crossover Locus <span id="headerFormulaTex" class="font-mono text-ink ml-1">nᵏ vs n!</span>
       </h1>
     </div>
 
@@ -230,11 +241,14 @@
         <div class="flex items-center flex-wrap gap-x-2.5 sm:gap-x-3 gap-y-1 text-xs sm:text-[13px] font-mono tabular-nums">
           <span class="inline-flex items-center gap-1.5 font-medium text-ink">
             <span class="w-2.5 h-0.5 bg-vermilion inline-block"></span>
-            <span>n<sup id="eqSupK">2.0</sup></span>
+            <span id="eqPolyTex">n<sup id="eqSupK">2.0</sup></span>
           </span>
           <span class="inline-flex items-center gap-1.5 font-medium text-ink">
             <span class="w-2.5 h-0.5 bg-ink inline-block"></span>
-            <span>n!</span>
+            <span id="eqFactTex">n!</span>
+          </span>
+          <span id="eqActiveKBadge" class="px-1.5 py-0.5 rounded bg-paper border border-hairline text-ink text-[11px] font-semibold">
+            k = 2.0
           </span>
           <span id="deltaBadge" class="hidden px-1.5 py-0.5 rounded bg-vermilionSoft text-vermilion text-[10px] font-semibold"></span>
         </div>
@@ -252,6 +266,10 @@
           <span class="hidden md:inline">·</span>
           <span id="readoutScaleMode" class="hidden md:inline text-ink font-medium">Linear</span>
         </div>
+
+        <div id="gammaNoteBar" class="hidden pt-1 border-t border-hairline/80 text-[10.5px] font-mono text-muted">
+          <span id="gammaNoteTex"></span>
+        </div>
       </div>
     </div>
 
@@ -264,15 +282,15 @@
         <span>(n, y) = (<span id="hoverN">0.00</span>, <span id="hoverCoordY">—</span>)</span>
       </div>
       <div class="flex items-center justify-between gap-4 text-vermilion">
-        <span>f(n) = nᵏ</span>
+        <span id="hoverPolyLabelTex">f(n) = nᵏ</span>
         <span id="hoverPoly" class="font-semibold">—</span>
       </div>
       <div class="flex items-center justify-between gap-4 text-ink">
-        <span>g(n) = n!</span>
+        <span id="hoverFactLabelTex">g(n) = n!</span>
         <span id="hoverFact" class="font-semibold">—</span>
       </div>
       <div class="mt-1 pt-1 border-t border-hairline flex items-center justify-between gap-4 text-muted">
-        <span>n! / nᵏ</span>
+        <span id="hoverRatioLabelTex">n! / nᵏ</span>
         <span id="hoverRatio" class="font-medium text-ink">—</span>
       </div>
     </div>
@@ -430,7 +448,7 @@
   <!-- Slide-Over Reference Drawer: Integer Crossover Table (k = 1..15) -->
   <aside
     id="tableDrawer"
-    class="fixed inset-y-0 right-0 w-full max-w-sm bg-surface border-l border-hairline shadow-xl z-40 transform translate-x-full transition-transform duration-200 flex flex-col"
+    class="fixed inset-y-0 right-0 w-full max-w-sm bg-surface border-l border-hairline shadow-xl z-40 transform transition-transform duration-200 flex flex-col"
     aria-label="Crossover Milestones Table"
   >
     <div class="h-12 px-4 border-b border-hairline flex items-center justify-between shrink-0">
@@ -470,7 +488,7 @@
   <!-- Backdrop for Drawer -->
   <div
     id="drawerBackdrop"
-    class="hidden fixed inset-0 bg-ink/20 backdrop-blur-[1px] z-30"
+    class="fixed inset-0 bg-ink/20 backdrop-blur-[1px] z-30"
   ></div>
 
   <script>
@@ -553,6 +571,15 @@
       const degreeSlider = document.getElementById('degreeSlider');
       const dockKVal = document.getElementById('dockKVal');
       const eqSupK = document.getElementById('eqSupK');
+      const eqPolyTex = document.getElementById('eqPolyTex');
+      const eqFactTex = document.getElementById('eqFactTex');
+      const eqActiveKBadge = document.getElementById('eqActiveKBadge');
+      const headerFormulaTex = document.getElementById('headerFormulaTex');
+      const hoverPolyLabelTex = document.getElementById('hoverPolyLabelTex');
+      const hoverFactLabelTex = document.getElementById('hoverFactLabelTex');
+      const hoverRatioLabelTex = document.getElementById('hoverRatioLabelTex');
+      const gammaNoteBar = document.getElementById('gammaNoteBar');
+      const gammaNoteTex = document.getElementById('gammaNoteTex');
       const deltaBadge = document.getElementById('deltaBadge');
       const readoutNStar = document.getElementById('readoutNStar');
       const readoutIntWin = document.getElementById('readoutIntWin');
@@ -599,10 +626,45 @@
         }, durationMs);
       }
 
+      // Render a LaTeX string into a target DOM element via KaTeX with graceful fallback
+      function renderTex(el, latexStr, fallbackText) {
+        if (!el) return;
+        try {
+          if (window.katex && typeof window.katex.render === 'function') {
+            window.katex.render(latexStr, el, {
+              throwOnError: false,
+              displayMode: false,
+            });
+          } else if (fallbackText !== undefined) {
+            el.textContent = fallbackText;
+          }
+        } catch (_err) {
+          if (fallbackText !== undefined) {
+            el.textContent = fallbackText;
+          }
+        }
+      }
+
+      // Format a numeric exponent cleanly for KaTeX (e.g., 2 -> "2", 2.5 -> "2.5")
+      function formatExponentTex(kVal) {
+        const rounded = Math.round(kVal * 100) / 100;
+        if (Math.abs(rounded - 2) < 1e-6) return '2';
+        if (Number.isInteger(rounded)) return String(rounded);
+        return rounded.toFixed(2).replace(/0$/, '');
+      }
+
+      // Format active k value cleanly for plain canvas/readout equations (e.g., "2", "2.5", "3.25")
+      function formatKValueLabel(kVal) {
+        const rounded = Math.round(kVal * 100) / 100;
+        if (Number.isInteger(rounded)) return String(rounded);
+        return rounded.toFixed(2).replace(/0$/, '');
+      }
+
       // Lanczos approximation of ln(Gamma(z)) for real z > 0
-      function logGamma(z) {
-        if (z <= 0) return NaN;
-        const coeff = [
+      function lnGamma(z) {
+        if (!Number.isFinite(z) || z <= 0) return NaN;
+        const g = 7;
+        const p = [
           0.99999999999980993,
           676.5203681218851,
           -1259.1392167224028,
@@ -614,207 +676,190 @@
           1.5056327351493116e-7,
         ];
         if (z < 0.5) {
-          return Math.log(Math.PI / Math.sin(Math.PI * z)) - logGamma(1 - z);
+          return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
         }
-        z -= 1;
-        let x = coeff[0];
-        for (let i = 1; i < coeff.length; i++) {
-          x += coeff[i] / (z + i);
+        const zm1 = z - 1;
+        let x = p[0];
+        for (let i = 1; i < p.length; i++) {
+          x += p[i] / (zm1 + i);
         }
-        const t = z + coeff.length - 0.5;
-        return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+        const t = zm1 + g + 0.5;
+        return 0.5 * Math.log(2 * Math.PI) + (zm1 + 0.5) * Math.log(t) - t + Math.log(x);
       }
 
-      // Continuous factorial g(n) = Gamma(n + 1) for n >= 0
+      // Continuous factorial extension g(n) = Gamma(n + 1)
       function factorialGamma(n) {
-        if (n < 0) return NaN;
-        const lg = logGamma(n + 1);
-        return lg > 708 ? Infinity : Math.exp(lg);
+        if (!Number.isFinite(n) || n < 0) return NaN;
+        const lg = lnGamma(n + 1);
+        if (!Number.isFinite(lg)) return NaN;
+        if (lg > 709.78) return Infinity;
+        return Math.exp(lg);
       }
 
-      // Continuous polynomial f(n) = n^k for n >= 0, k >= 1
+      // Polynomial value f(n) = n^k
       function polyValue(n, k) {
-        if (n <= 0) return 0;
-        const val = Math.pow(n, k);
-        return Number.isFinite(val) ? val : Infinity;
+        if (!Number.isFinite(n) || n < 0) return NaN;
+        if (n === 0) return k === 0 ? 1 : 0;
+        const lp = k * Math.log(n);
+        if (!Number.isFinite(lp)) return NaN;
+        if (lp > 709.78) return Infinity;
+        return Math.exp(lp);
       }
 
-      // Solve n^k = n! (equivalently k * ln(n) - ln(Gamma(n + 1)) = 0) for n > 1
+      // Solve n^k = Gamma(n + 1) for n > 1 using bisection in log-space
       function solveCrossoverN(k) {
-        // Difference function d(n) = k * ln(n) - lnGamma(n + 1)
-        // For n >= 1 and k >= 1, d(1) = 0, initially positive for larger k, then strictly decreasing to -inf.
-        const diff = (n) => {
-          if (n <= 1e-9) return -1;
-          return k * Math.log(n) - logGamma(n + 1);
-        };
-
-        // Bracket root by stepping n outward
-        let lo = 1.0001;
-        let hi = Math.max(2.0, k * 1.4 + 2.0);
-        let fLo = diff(lo);
-        let fHi = diff(hi);
-
-        // Ensure lo has diff >= 0 if possible, or expand hi until diff(hi) <= 0
-        let guard = 0;
-        while (fHi > 0 && guard < 80) {
-          lo = hi;
-          fLo = fHi;
-          hi = hi * 1.5 + 1.0;
-          fHi = diff(hi);
-          guard++;
+        if (!Number.isFinite(k) || k <= 1) return 1.0;
+        let lo = 1.0;
+        let hi = Math.max(4.0, k * 3.5 + 4.0);
+        while (k * Math.log(hi) - lnGamma(hi + 1) > 0 && hi < 200) {
+          hi *= 1.5;
         }
-
-        // If even at lo=1.0001 diff is <= 0 (e.g., k = 1), root is n* = 1.0
-        if (fLo <= 0) {
-          return 1.0;
-        }
-
-        // Bisection refinement to high precision
-        for (let iter = 0; iter < 64; iter++) {
+        for (let i = 0; i < 64; i++) {
           const mid = 0.5 * (lo + hi);
-          const fMid = diff(mid);
-          if (fMid > 0) {
-            lo = mid;
-          } else {
-            hi = mid;
-          }
+          const diff = k * Math.log(mid) - lnGamma(mid + 1);
+          if (diff > 0) lo = mid;
+          else hi = mid;
         }
         return 0.5 * (lo + hi);
       }
 
-      // Compute first integer n >= 1 where n! > n^k
+      // Smallest integer n >= 1 where n! >= n^k
       function firstIntegerWin(k) {
-        for (let n = 1; n <= 60; n++) {
-          const lhs = k * Math.log(n);
-          const rhs = logGamma(n + 1);
-          if (rhs > lhs + 1e-12) {
+        const maxSearch = Math.max(30, Math.ceil(k * 4 + 10));
+        for (let n = 1; n <= maxSearch; n++) {
+          if (lnGamma(n + 1) >= k * Math.log(n)) {
             return n;
           }
         }
-        return 60;
+        return maxSearch;
       }
 
-      // Precompute integer milestones k = 1..15
+      // Build reference milestone rows for integer degrees k = 1..15
       function buildMilestones() {
         const list = [];
-        for (let deg = 1; deg <= 15; deg++) {
-          const nStar = solveCrossoverN(deg);
+        for (let k = 1; k <= 15; k++) {
+          const nStar = solveCrossoverN(k);
           const yStar = factorialGamma(nStar);
-          const intWin = firstIntegerWin(deg);
-          list.push({
-            k: deg,
-            nStar,
-            yStar,
-            log10YStar: Math.log10(Math.max(1e-12, yStar)),
-            intWin,
-          });
+          const intWin = firstIntegerWin(k);
+          list.push({ k, nStar, yStar, intWin });
         }
         return list;
       }
 
-      // Format large numbers cleanly in compact scientific or standard notation
-      function formatNumber(val) {
-        if (!Number.isFinite(val)) return '∞';
-        if (val === 0) return '0';
-        const abs = Math.abs(val);
-
-        // In Linear scale, always render plain numbers rather than scientific notation
-        if (state.scale === 'linear') {
-          if (abs >= 1e15) {
-            return Math.round(val).toLocaleString('en-US');
-          }
-          if (abs >= 100) {
-            return val.toLocaleString('en-US', { maximumFractionDigits: 0 });
-          }
-          if (abs >= 10) {
-            return val.toLocaleString('en-US', { maximumFractionDigits: 2 });
-          }
-          return val.toLocaleString('en-US', { maximumFractionDigits: 3 });
-        }
-
-        if (abs >= 1e6 || (abs > 0 && abs < 1e-3)) {
-          return val.toExponential(2);
-        }
-        if (abs >= 1000) {
-          return val.toLocaleString('en-US', { maximumFractionDigits: 1 });
-        }
-        if (abs >= 10) {
-          return val.toFixed(2);
-        }
-        return val.toFixed(3);
-      }
-
-      // Convert data Y value (or log10(Y) when in log10 mode) into plotted coordinate
+      // Convert raw positive y value into current Y plotting coordinate (linear or log10)
       function toPlotY(rawY) {
         if (state.scale === 'log10') {
-          return Math.log10(Math.max(1e-6, rawY));
+          if (!Number.isFinite(rawY) || rawY <= 0) return -4;
+          return Math.log10(rawY);
         }
         return rawY;
       }
 
-      // Compute ideal camera bounds around current degree k's crossover point so curves & pins always fit cleanly
-      function computeTargetView(k) {
-        const nStar = solveCrossoverN(k);
-        const yStar = factorialGamma(nStar);
-        const maxDisplayedK = Math.min(15, Math.max(1, Math.floor(k + 0.01)));
-        const lastMilestone = state.milestones[Math.max(0, maxDisplayedK - 1)];
+      // Format numbers clearly: plain numbers in Linear scale, compact notation in Log10
+      function formatNumber(val) {
+        if (!Number.isFinite(val)) {
+          return val === Infinity ? '∞' : '—';
+        }
+        const absVal = Math.abs(val);
+        if (absVal === 0) return '0';
 
-        if (state.scale === 'log10') {
-          const locusMaxN = lastMilestone ? lastMilestone.nStar : nStar;
-          const nSpan = Math.max(6.5, Math.max(nStar * 1.45 + 2.5, locusMaxN * 1.2 + 1.5));
-          const nMin = 0;
-          const nMax = nSpan;
-
-          const peakLogY = Math.max(
-            Math.log10(Math.max(10, yStar)),
-            lastMilestone ? lastMilestone.log10YStar : 0
-          );
-          const topPlotY = Math.max(2.4, Math.min(24, peakLogY + 1.5));
-          const yMin = -0.35;
-          const yMax = topPlotY;
-          return { nMin, nMax, yMin, yMax };
+        if (state.scale === 'linear') {
+          if (absVal >= 1e6) {
+            return Math.round(val).toLocaleString('en-US');
+          }
+          if (absVal >= 100) {
+            return val.toFixed(1).replace(/\.0$/, '');
+          }
+          if (absVal >= 10) {
+            return val.toFixed(2).replace(/\.?0+$/, '');
+          }
+          if (absVal >= 0.01) {
+            return val.toFixed(3).replace(/\.?0+$/, '');
+          }
+          return val.toFixed(4).replace(/\.?0+$/, '');
         }
 
-        // Linear scale: frame both active crossover and visible locus pins within generous margins
-        const locusMaxN = lastMilestone ? lastMilestone.nStar : nStar;
-        const locusMaxY = lastMilestone ? lastMilestone.yStar : yStar;
-        const nMax = Math.max(5.5, Math.min(26, Math.max(nStar * 1.55 + 1.2, locusMaxN * 1.25 + 1.0)));
-        const yMax = Math.max(12, Math.min(1e9, Math.max(yStar * 2.35 + 4, locusMaxY * 1.65 + 4)));
-        return {
-          nMin: 0,
-          nMax,
-          yMin: 0,
-          yMax,
-        };
+        if (absVal >= 1e6 || absVal < 1e-3) {
+          return val.toExponential(2);
+        }
+        if (absVal >= 1000) {
+          return val.toFixed(0);
+        }
+        if (absVal >= 10) {
+          return val.toFixed(1);
+        }
+        return val.toFixed(2);
       }
 
-      // Sync camera target if autoCamera is enabled
+      // Compute comfortable target camera bounds framing the active crossover n*
       function syncCameraTarget(snapImmediately = false) {
         if (!state.autoCamera) return;
-        const target = computeTargetView(state.k);
-        state.view.targetNMin = target.nMin;
-        state.view.targetNMax = target.nMax;
-        state.view.targetYMin = target.yMin;
-        state.view.targetYMax = target.yMax;
+
+        const nStar = solveCrossoverN(state.k);
+        const yStar = factorialGamma(nStar);
+
+        if (state.scale === 'log10') {
+          const targetNMax = Math.max(6, Math.min(24, nStar * 1.45 + 1.5));
+          const maxSampleY = Math.max(yStar, polyValue(Math.min(targetNMax, nStar * 1.15), state.k), 10);
+          const topExp = Math.max(1.5, Math.min(18, Math.log10(maxSampleY) + 0.8));
+          state.view.targetNMin = 0;
+          state.view.targetNMax = targetNMax;
+          state.view.targetYMin = -0.5;
+          state.view.targetYMax = topExp;
+        } else {
+          const targetNMax = Math.max(5.5, Math.min(18, nStar * 1.4 + 1.2));
+          const rawPeak = Math.max(yStar * 1.45, polyValue(Math.min(targetNMax, nStar * 1.1), state.k) * 1.15, 12);
+          const targetYMax = Math.min(500000, Math.max(12, rawPeak));
+          state.view.targetNMin = 0;
+          state.view.targetNMax = targetNMax;
+          state.view.targetYMin = 0;
+          state.view.targetYMax = targetYMax;
+        }
 
         if (snapImmediately) {
-          state.view.nMin = target.nMin;
-          state.view.nMax = target.nMax;
-          state.view.yMin = target.yMin;
-          state.view.yMax = target.yMax;
+          state.view.nMin = state.view.targetNMin;
+          state.view.nMax = state.view.targetNMax;
+          state.view.yMin = state.view.targetYMin;
+          state.view.yMax = state.view.targetYMax;
         }
       }
 
-      // Update numeric readouts and active table row highlight
+      // Update numeric readouts, KaTeX labels, and active table row highlight
       function updateReadouts() {
         const kRounded = Math.round(state.k * 100) / 100;
         const formattedK = Number.isInteger(kRounded)
           ? kRounded.toFixed(1)
           : kRounded.toFixed(2).replace(/0$/, '');
+        const expTex = formatExponentTex(state.k);
+        const kEqVal = formatKValueLabel(state.k);
 
         dockKVal.textContent = formattedK;
-        eqSupK.textContent = formattedK;
+        if (eqSupK) eqSupK.textContent = kEqVal;
+        if (eqActiveKBadge) {
+          renderTex(eqActiveKBadge, `k = ${formattedK}`, `k = ${formattedK}`);
+        }
+        renderTex(eqPolyTex, `n^{${kEqVal}}`, `n^${kEqVal}`);
+        renderTex(eqFactTex, `n! = \\Gamma(n+1)`, `n! = Γ(n+1)`);
+        renderTex(headerFormulaTex, `n^{${kEqVal}} \\text{ vs } n!`, `n^${kEqVal} vs n!`);
+        renderTex(hoverPolyLabelTex, `f(n) = n^{${kEqVal}}`, `f(n) = n^${kEqVal}`);
+        renderTex(hoverFactLabelTex, `g(n) = \\Gamma(n+1)`, `g(n) = Γ(n+1)`);
+        renderTex(hoverRatioLabelTex, `\\frac{\\Gamma(n+1)}{n^{${kEqVal}}}`, `Γ(n+1) / n^${kEqVal}`);
         degreeSlider.value = state.k;
+
+        // Clarify continuous Gamma values (such as ~0.435 near n = 0.25) when k is near 1
+        if (gammaNoteBar && gammaNoteTex) {
+          if (state.k <= 1.35) {
+            const gQuarter = factorialGamma(0.25).toFixed(3);
+            gammaNoteBar.classList.remove('hidden');
+            renderTex(
+              gammaNoteTex,
+              `\\text{Continuous } n! = \\Gamma(n+1) \\text{ dip: } \\Gamma(1.25) \\approx ${gQuarter} \\text{ at } n=0.25`,
+              `Continuous Gamma dip: Γ(1.25) ≈ ${gQuarter} at n = 0.25`
+            );
+          } else {
+            gammaNoteBar.classList.add('hidden');
+          }
+        }
 
         const nStar = solveCrossoverN(state.k);
         const yStar = factorialGamma(nStar);
@@ -824,18 +869,6 @@
         readoutIntWin.textContent = String(intWin);
         readoutYStar.textContent = `y* ≈ ${formatNumber(yStar)}`;
 
-        // Announce when passing an integer milestone during sweep/step
-        const nearestInt = Math.round(state.k);
-        if (
-          Math.abs(state.k - nearestInt) < 0.06 &&
-          nearestInt >= 1 &&
-          nearestInt <= 15 &&
-          nearestInt !== state.lastIntegerAnnounced
-        ) {
-          state.lastIntegerAnnounced = nearestInt;
-        }
-
-        // Highlight closest row in milestones drawer
         const rows = milestoneTableBody.querySelectorAll('tr[data-k]');
         rows.forEach((tr) => {
           const rowK = Number(tr.getAttribute('data-k'));
@@ -860,12 +893,12 @@
         }, 2200);
       }
 
-      // Trigger a subtle responsive resize & pulse on the canvas stage when k changes
+      // Trigger a subtle responsive resize on the canvas stage when k changes
       function readjustCanvasForDegree() {
         resizeCanvas();
       }
 
-      // Set degree k and optionally animate smoothly to a target
+      // Set degree k immediately
       function setDegreeImmediate(newK, trackDelta = false) {
         const clamped = Math.max(1, Math.min(15, newK));
         const prevNStar = trackDelta ? solveCrossoverN(state.k) : null;
@@ -1062,11 +1095,9 @@
       function drawGridAndAxes(width, height, area) {
         ctx.save();
 
-        // Plot background tint
         ctx.fillStyle = TOKENS.surface;
         ctx.fillRect(area.left, area.top, area.width, area.height);
 
-        // X-axis ticks (n)
         const nSpan = state.view.nMax - state.view.nMin;
         const nStep = niceStep(nSpan, width < 640 ? 5 : 8);
         const firstN = Math.ceil(state.view.nMin / nStep) * nStep;
@@ -1092,7 +1123,6 @@
           ctx.fillText(label, px, area.bottom + 8);
         }
 
-        // Y-axis ticks (linear or log10)
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
 
@@ -1137,7 +1167,6 @@
           }
         }
 
-        // Axis border lines
         ctx.strokeStyle = TOKENS.ink;
         ctx.lineWidth = 1.1;
         ctx.beginPath();
@@ -1146,7 +1175,6 @@
         ctx.lineTo(area.right, area.bottom);
         ctx.stroke();
 
-        // Axis titles
         ctx.fillStyle = TOKENS.muted;
         ctx.font = '11px "JetBrains Mono", monospace';
         ctx.textAlign = 'right';
@@ -1205,7 +1233,6 @@
           const px = nToPx(n, area);
           const py = plotYToPy(plotY, area);
 
-          // Clamp extreme offscreen segments so strokes stay clean
           const clampedPy = Math.max(area.top - 80, Math.min(area.bottom + 80, py));
           if (!started) {
             ctx.moveTo(px, clampedPy);
@@ -1230,7 +1257,6 @@
         ctx.rect(area.left - 12, area.top - 12, area.width + 24, area.height + 24);
         ctx.clip();
 
-        // Collect trajectory points from k = 1 up to state.k
         const locusPoints = [];
         const samples = 120;
         const maxDeg = Math.max(1, state.k);
@@ -1246,7 +1272,6 @@
           });
         }
 
-        // Draw dashed vermilion locus path
         if (locusPoints.length > 1) {
           ctx.strokeStyle = TOKENS.vermilion;
           ctx.lineWidth = 1.6;
@@ -1261,7 +1286,6 @@
           ctx.setLineDash([]);
         }
 
-        // Draw integer milestone pins for k <= Math.floor(state.k + 0.01)
         const reachedIntMax = Math.min(15, Math.floor(state.k + 0.01));
         for (let i = 0; i < reachedIntMax; i++) {
           const m = state.milestones[i];
@@ -1276,7 +1300,6 @@
           const isSelected = state.selectedPinK === m.k;
           const radius = isHovered || isSelected ? 5.5 : 4;
 
-          // Subtle pulse ring on newly reached milestone
           if (Math.abs(state.k - m.k) < 0.35) {
             const pulse = ((nowSec * 1.6) % 1);
             ctx.strokeStyle = `rgba(224, 79, 38, ${(1 - pulse) * 0.65})`;
@@ -1294,7 +1317,6 @@
           ctx.fill();
           ctx.stroke();
 
-          // Milestone label
           ctx.fillStyle = isHovered || isSelected ? TOKENS.ink : TOKENS.muted;
           ctx.font = '600 10px "JetBrains Mono", monospace';
           ctx.textAlign = 'left';
@@ -1309,7 +1331,6 @@
           });
         }
 
-        // Active live crossover marker at current state.k
         const activeN = solveCrossoverN(state.k);
         const activeY = factorialGamma(activeN);
         const activePx = nToPx(activeN, area);
@@ -1333,6 +1354,130 @@
           ctx.arc(activePx, activePy, 5.5, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      // Mark discrete integer n points and their n^k and n! values directly on the graph
+      function drawIntegerValueMarkers(area) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(area.left, area.top, area.width, area.height);
+        ctx.clip();
+
+        const nStart = Math.max(1, Math.ceil(state.view.nMin));
+        const nEnd = Math.min(25, Math.floor(state.view.nMax));
+        const showValueLabels = (nEnd - nStart) <= 10;
+        const kEqVal = formatKValueLabel(state.k);
+        const placedLabelBoxes = [];
+
+        function canPlaceLabel(x, y, text) {
+          const width = ctx.measureText(text).width + 6;
+          const height = 12;
+          const left = x;
+          const right = x + width;
+          const top = y - height * 0.5;
+          const bottom = y + height * 0.5;
+
+          if (left < area.left + 2 || right > area.right - 2 || top < area.top + 2 || bottom > area.bottom - 2) {
+            return false;
+          }
+
+          for (let i = 0; i < placedLabelBoxes.length; i++) {
+            const b = placedLabelBoxes[i];
+            if (left < b.right && right > b.left && top < b.bottom && bottom > b.top) {
+              return false;
+            }
+          }
+
+          placedLabelBoxes.push({ left, right, top, bottom });
+          return true;
+        }
+
+        ctx.font = '500 10px "JetBrains Mono", monospace';
+        ctx.textBaseline = 'middle';
+
+        for (let n = nStart; n <= nEnd; n++) {
+          const px = nToPx(n, area);
+          if (px < area.left + 4 || px > area.right - 4) continue;
+
+          const pVal = polyValue(n, state.k);
+          const fVal = factorialGamma(n);
+
+          const pVisible = Number.isFinite(pVal) && pVal > 0;
+          const fVisible = Number.isFinite(fVal) && fVal > 0;
+
+          const pyP = pVisible ? plotYToPy(toPlotY(pVal), area) : null;
+          const pyF = fVisible ? plotYToPy(toPlotY(fVal), area) : null;
+
+          const inBoundsP = pyP !== null && pyP >= area.top && pyP <= area.bottom;
+          const inBoundsF = pyF !== null && pyF >= area.top && pyF <= area.bottom;
+
+          if (inBoundsP && inBoundsF && Math.abs(pyP - pyF) > 6) {
+            ctx.strokeStyle = 'rgba(20, 20, 19, 0.12)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            ctx.moveTo(px, pyP);
+            ctx.lineTo(px, pyF);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          if (inBoundsP) {
+            ctx.fillStyle = TOKENS.surface;
+            ctx.strokeStyle = TOKENS.vermilion;
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.arc(px, pyP, 3.6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            if (showValueLabels) {
+              const pLabel = `${n}^${kEqVal}=${formatNumber(pVal)}`;
+              const candidates = pyP > pyF || !inBoundsF
+                ? [pyP + 11, pyP - 11, pyP + 21, pyP - 21]
+                : [pyP - 11, pyP + 11, pyP - 21, pyP + 21];
+
+              for (let c = 0; c < candidates.length; c++) {
+                const candidateY = candidates[c];
+                if (canPlaceLabel(px + 5, candidateY, pLabel)) {
+                  ctx.fillStyle = TOKENS.vermilion;
+                  ctx.textAlign = 'left';
+                  ctx.fillText(pLabel, px + 5, candidateY);
+                  break;
+                }
+              }
+            }
+          }
+
+          if (inBoundsF) {
+            ctx.fillStyle = TOKENS.ink;
+            ctx.strokeStyle = TOKENS.surface;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(px, pyF, 3.6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            if (showValueLabels) {
+              const fLabel = `n=${n}: ${formatNumber(fVal)}`;
+              const candidates = pyF >= pyP || !inBoundsP
+                ? [pyF - 11, pyF + 11, pyF - 21, pyF + 21]
+                : [pyF + 11, pyF - 11, pyF + 21, pyF - 21];
+
+              for (let c = 0; c < candidates.length; c++) {
+                const candidateY = candidates[c];
+                if (canPlaceLabel(px + 5, candidateY, fLabel)) {
+                  ctx.fillStyle = TOKENS.ink;
+                  ctx.textAlign = 'left';
+                  ctx.fillText(fLabel, px + 5, candidateY);
+                  break;
+                }
+              }
+            }
+          }
         }
 
         ctx.restore();
@@ -1383,7 +1528,6 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Coordinate tag along axis borders
         ctx.fillStyle = TOKENS.ink;
         ctx.font = '600 10px "JetBrains Mono", monospace';
         ctx.textAlign = 'center';
@@ -1394,7 +1538,6 @@
         ctx.textBaseline = 'middle';
         ctx.fillText(formatNumber(cursorRawY), area.left - 6, py);
 
-        // Dots on both curves at hovered n
         if (Number.isFinite(pVal) && pVal > 0) {
           const pyP = plotYToPy(toPlotY(pVal), area);
           if (pyP >= area.top && pyP <= area.bottom) {
@@ -1447,7 +1590,6 @@
         const area = getPlotArea(width, height);
         drawGridAndAxes(width, height, area);
 
-        // Optional ghost curves for integer degrees 1..Math.floor(state.k)
         if (state.showGhosts) {
           const maxGhost = Math.min(15, Math.floor(state.k));
           for (let g = 1; g <= maxGhost; g++) {
@@ -1461,7 +1603,6 @@
           }
         }
 
-        // Primary polynomial curve n^k (International Vermilion)
         drawFunctionCurve(
           (n) => polyValue(n, state.k),
           area,
@@ -1469,7 +1610,6 @@
           2.4
         );
 
-        // Primary factorial curve n! (Deep Carbon Ink)
         drawFunctionCurve(
           (n) => factorialGamma(n),
           area,
@@ -1477,10 +1617,8 @@
           2.4
         );
 
-        // Animated crossover locus and integer milestone pins
+        drawIntegerValueMarkers(area);
         drawCrossoverLocus(area, nowSec);
-
-        // Hover crosshair inspection & pin inspector
         drawHoverCrosshair(area);
         drawPinInspector();
       }
@@ -1492,7 +1630,6 @@
           const dt = Math.min(0.08, Math.max(0.001, (nowMs - lastTimeMs) * 0.001));
           lastTimeMs = nowMs;
 
-          // 1. Continuous degree sweep
           if (state.sweeping) {
             const nextK = state.k + state.sweepSpeed * 1.15 * dt;
             if (nextK >= 15) {
@@ -1503,7 +1640,6 @@
               setDegreeImmediate(nextK, false);
             }
           } else if (state.targetK !== null) {
-            // 2. Smooth eased step transition (e.g. Step +1 or clicking a milestone pin)
             const diff = state.targetK - state.k;
             if (Math.abs(diff) < 0.015) {
               state.k = state.targetK;
@@ -1519,7 +1655,6 @@
             }
           }
 
-          // 3. Smooth camera interpolation when not dragging
           if (!state.drag.active) {
             const lerpAlpha = Math.min(1, dt * 6.5);
             state.view.nMin += (state.view.targetNMin - state.view.nMin) * lerpAlpha;
@@ -1535,7 +1670,6 @@
         requestAnimationFrame(loop);
       }
 
-      // Hit-test milestone pins near pointer position
       function findPinAt(px, py) {
         for (let i = state.pinHitBoxes.length - 1; i >= 0; i--) {
           const box = state.pinHitBoxes[i];
@@ -1548,7 +1682,6 @@
         return null;
       }
 
-      // Attach UI and Canvas Event Listeners
       function bindEvents() {
         window.addEventListener('resize', () => {
           resizeCanvas();
@@ -1670,7 +1803,6 @@
         btnCloseTable.addEventListener('click', closeDrawer);
         drawerBackdrop.addEventListener('click', closeDrawer);
 
-        // Pointer drag (pan) and click (select milestone pin)
         canvas.addEventListener('pointerdown', (e) => {
           const rect = canvas.getBoundingClientRect();
           const px = e.clientX - rect.left;
@@ -1722,7 +1854,6 @@
             return;
           }
 
-          // Hover pin & crosshair detection
           const hoveredPin = findPinAt(px, py);
           state.hoveredPinK = hoveredPin;
           canvas.style.cursor = hoveredPin !== null ? 'pointer' : 'crosshair';
@@ -1767,7 +1898,6 @@
           state.hoveredPinK = null;
         });
 
-        // Mouse wheel zoom around pointer position
         canvas.addEventListener(
           'wheel',
           (e) => {
@@ -1802,12 +1932,12 @@
         );
       }
 
-      // Initialize application
       function init() {
         try {
           state.scale = 'linear';
           state.milestones = buildMilestones();
           renderMilestoneTable();
+          openDrawer();
           updatePlayButtonUI();
           updateScaleButtonUI();
           updateToggleButtonsUI();
