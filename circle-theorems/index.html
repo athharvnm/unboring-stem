@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Circle Theorems — Interactive Geometry Lab</title>
+<meta name="description" content="Explore all 12 core circle theorems and extended classical geometry theorems with interactive draggable diagrams, live angle & length measurements, and step-by-step proofs." />
+<link rel="canonical" href="https://unboringstem.pages.dev/circle-theorems" />
+
+<!-- Open Graph / Social Meta -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Unboring STEM" />
+<meta property="og:title" content="Circle Theorems — Interactive Geometry Lab" />
+<meta property="og:description" content="Explore all 12 core circle theorems and extended classical geometry theorems with interactive draggable diagrams, live angle & length measurements, and step-by-step proofs." />
+<meta property="og:url" content="https://unboringstem.pages.dev/circle-theorems" />
+<meta property="og:image" content="https://unboringstem.pages.dev/social.png" />
+
+<!-- Twitter Card Meta -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Circle Theorems — Interactive Geometry Lab" />
+<meta name="twitter:description" content="Explore all 12 core circle theorems and extended classical geometry theorems with interactive draggable diagrams, live angle & length measurements, and step-by-step proofs." />
+<meta name="twitter:image" content="https://unboringstem.pages.dev/social.png" />
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--paper:#FAF8F4;--surface:#FFF;--subtle:#F3EFE6;--ink:#1C1B18;--rule:#E6E1D6;--accent:#B84A27;--sage:#2F6F5E;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+.font-serif-editorial{font-family:'Instrument Serif',Georgia,serif}
+.font-mono-tech{font-family:'JetBrains Mono',ui-monospace,monospace}
+.paper-card{background:var(--surface);border:1px solid var(--rule);border-radius:16px}
+.paper-subtle{background:var(--subtle);border:1px solid var(--rule);border-radius:12px}
+.canvas-stage{width:100%;aspect-ratio:4/3;min-height:270px;max-height:460px;display:block;border-radius:12px;background:#FCFBF8;border:1px solid var(--rule);touch-action:none;cursor:grab}
+.canvas-stage:active{cursor:grabbing}
+.math-chip{font-family:'JetBrains Mono',monospace;font-size:.98rem;background:var(--subtle);border:1px solid var(--rule);border-radius:10px;padding:.45rem .8rem;display:inline-flex;gap:.4rem;align-items:center}
+.math-chip strong{font-size:1.08rem;font-weight:700}
+.pill-btn{border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:.45rem .85rem;font-size:.84rem;font-weight:500;cursor:pointer}
+.pill-btn:hover{background:var(--subtle)}
+.pill-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.accent-btn{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:999px;padding:.48rem .92rem;font-size:.84rem;font-weight:600;cursor:pointer}
+.accent-btn.is-paused{background:var(--surface);color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="app" class="min-h-screen flex flex-col">
+  <header class="border-b border-[#E6E1D6] bg-[#FAF8F4]/95 sticky top-0 z-30 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <button id="brandHomeBtn" type="button" class="text-left cursor-pointer flex items-baseline gap-2.5">
+        <span class="font-serif-editorial text-2xl sm:text-3xl">Circle Theorems</span>
+        <span class="text-xs font-mono-tech uppercase tracking-wider text-[#8A8478]">Interactive Lab</span>
+      </button>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button id="modeCoreBtn" type="button" class="pill-btn active">12 Core Theorems</button>
+        <button id="modeBeyondBtn" type="button" class="pill-btn">Beyond the 12</button>
+        <button id="openIndexBtn" type="button" class="pill-btn">All Theorems</button>
+      </div>
+    </div>
+  </header>
+  <div id="statusBanner" class="hidden max-w-6xl w-full mx-auto px-4 sm:px-6 pt-3">
+    <div class="paper-subtle px-4 py-2.5 flex items-center justify-between gap-3 text-xs sm:text-sm text-[#5E5A51]">
+      <span id="statusBannerText"></span>
+      <button id="closeBannerBtn" type="button" class="font-mono-tech text-xs underline cursor-pointer">Dismiss</button>
+    </div>
+  </div>
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <section class="paper-card p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-2 flex-wrap">
+        <button id="prevTheoremBtn" type="button" class="pill-btn">← Prev</button>
+        <button id="nextTheoremBtn" type="button" class="pill-btn">Next →</button>
+        <span id="progressCounter" class="text-xs sm:text-sm font-mono-tech text-[#5E5A51] px-2"></span>
+      </div>
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <label for="theoremSelect" class="text-xs font-mono-tech uppercase tracking-wider text-[#8A8478]">Jump</label>
+        <select id="theoremSelect" class="bg-[#FAF8F4] border border-[#E6E1D6] rounded-lg px-3 py-1.5 text-sm font-medium max-w-full"></select>
+      </div>
+    </section>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <section class="lg:col-span-7 paper-card p-4 sm:p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div id="theoremKicker" class="text-xs font-mono-tech uppercase tracking-wider text-[#B84A27]"></div>
+            <h1 id="theoremTitle" class="font-serif-editorial text-2xl sm:text-3xl leading-tight mt-0.5"></h1>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button id="toggleAnimBtn" type="button" class="accent-btn" aria-label="Pause or play animation">Pause</button>
+            <button id="speedBtn" type="button" class="pill-btn font-mono-tech text-xs">Speed: 1.0×</button>
+            <button id="resetSceneBtn" type="button" class="pill-btn">Reset</button>
+          </div>
+        </div>
+        <canvas id="geometryCanvas" class="canvas-stage"></canvas>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-mono-tech uppercase tracking-wider text-[#8A8478]">Live Measurements</span>
+            <span class="text-xs text-[#8A8478]">Drag the ringed points</span>
+          </div>
+          <div id="readoutsGrid" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div class="paper-subtle p-4 space-y-2">
+          <div id="theoremStatement" class="text-sm sm:text-base leading-relaxed"></div>
+          <div id="theoremInvariant" class="text-xs sm:text-sm font-mono-tech text-[#2F6F5E]"></div>
+        </div>
+      </section>
+      <aside class="lg:col-span-5 space-y-6">
+        <section class="paper-card p-4 sm:p-5 space-y-4">
+          <div class="flex items-center justify-between gap-2 border-b border-[#E6E1D6] pb-3">
+            <h2 class="font-serif-editorial text-2xl">Proof &amp; Intuition</h2>
+            <button id="highlightStepBtn" type="button" class="pill-btn text-xs">Highlight: On</button>
+          </div>
+          <div id="intuitionText" class="text-sm text-[#5E5A51] leading-relaxed"></div>
+          <ol id="proofStepsList" class="space-y-2.5 text-sm pl-5 list-decimal"></ol>
+        </section>
+        <section class="paper-card p-4 sm:p-5 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h2 class="font-serif-editorial text-2xl">Quick Check</h2>
+            <span id="masteredBadge" class="text-xs font-mono-tech px-2.5 py-1 rounded-full bg-[#F3EFE6] text-[#5E5A51]">Unchecked</span>
+          </div>
+          <div id="checkQuestion" class="text-sm font-medium leading-relaxed"></div>
+          <div id="checkOptions" class="space-y-2"></div>
+          <div id="checkFeedback" class="hidden text-xs sm:text-sm p-3 rounded-xl leading-relaxed"></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+  <div id="indexModal" class="hidden fixed inset-0 z-50 bg-[#1C1B18]/45 p-4 sm:p-6 overflow-y-auto">
+    <div class="max-w-4xl mx-auto paper-card p-5 sm:p-6 space-y-5">
+      <div class="flex items-center justify-between gap-3 border-b border-[#E6E1D6] pb-3.5">
+        <div>
+          <div class="text-xs font-mono-tech uppercase tracking-wider text-[#8A8478]">Complete Directory</div>
+          <h2 class="font-serif-editorial text-3xl">All Circle Theorems</h2>
+        </div>
+        <button id="closeIndexBtn" type="button" class="pill-btn">Close</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2.5">
+          <h3 class="text-xs font-mono-tech uppercase tracking-wider text-[#B84A27]">12 Core Circle Theorems</h3>
+          <div id="coreIndexList" class="space-y-1.5"></div>
+        </div>
+        <div class="space-y-2.5">
+          <h3 class="text-xs font-mono-tech uppercase tracking-wider text-[#2F6F5E]">Beyond the 12</h3>
+          <div id="beyondIndexList" class="space-y-1.5"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+/* ---------- text formatting ---------- */
+function cleanTeX(expr) {
+  return String(expr)
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+    .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\\triangle/g, '△').replace(/\\angle/g, '∠').replace(/\\perp/g, '⊥')
+    .replace(/\\sim/g, '∼').replace(/\\cong/g, '≅').replace(/\\approx/g, '≈')
+    .replace(/\\times/g, '×').replace(/\\cdot/g, '·').replace(/\\neq/g, '≠')
+    .replace(/\\implies/g, '⇒').replace(/\\circ/g, '°')
+    .replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>').replace(/\^([0-9a-zA-Z°])/g, '<sup>$1</sup>')
+    .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>').replace(/_([0-9a-zA-Z])/g, '<sub>$1</sub>')
+    .replace(/[{}]/g, '').trim();
+}
+function formatMathText(raw) {
+  if (!raw) return '';
+  return String(raw)
+    .replace(/\$\$([\s\S]*?)\$\$/g, (_, e) => '<span class="inline-block my-1 px-2 py-0.5 rounded bg-[#F3EFE6] font-mono-tech text-sm">' + cleanTeX(e) + '</span>')
+    .replace(/\$([^$]+?)\$/g, (_, e) => '<span class="font-mono-tech text-[0.92em]">' + cleanTeX(e) + '</span>');
+}
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ---------- geometry helpers ---------- */
+const dist = (p, q) => Math.hypot(p.x - q.x, p.y - q.y);
+function angleDeg(p1, v, p2) {
+  const ax = p1.x - v.x, ay = p1.y - v.y, bx = p2.x - v.x, by = p2.y - v.y;
+  const n1 = Math.hypot(ax, ay), n2 = Math.hypot(bx, by);
+  if (n1 < 1e-5 || n2 < 1e-5) return 0;
+  return Math.acos(Math.max(-1, Math.min(1, (ax * bx + ay * by) / (n1 * n2)))) * 180 / Math.PI;
+}
+function normalizeAngle(a) { let r = a % (Math.PI * 2); if (r < 0) r += Math.PI * 2; return r; }
+function wrapPi(a) { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; }
+const circlePt = (cx, cy, r, t) => ({ x: cx + r * Math.cos(t), y: cy + r * Math.sin(t) });
+function lineIntersect(p1, p2, p3, p4) {
+  const d = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+  if (Math.abs(d) < 1e-6) return { x: (p1.x + p3.x) / 2, y: (p1.y + p3.y) / 2 };
+  const t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / d;
+  return { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y) };
+}
+const fmtAng = (v) => (Number.isFinite(+v) ? (+v).toFixed(1) : '0.0') + '°';
+const fmtLen = (px, g) => (px / Math.max(1, g.scale)).toFixed(2) + ' u';
+const fmtProd = (a, b, g) => ((a / Math.max(1, g.scale)) * (b / Math.max(1, g.scale))).toFixed(2) + ' u²';
+
+// Keep a point on an arc: angle measured from `from` going positively up to `to`
+function clampArc(from, to, ang, margin) {
+  const span = normalizeAngle(to - from);
+  const n = Math.max(margin, Math.min(span - margin, normalizeAngle(ang - from)));
+  return from + n;
+}
+// Cyclic quadrilateral vertices sorted around the circle so A,B,C,D are always in order
+function quadPts(st, g) {
+  return ['a', 'b', 'c', 'd'].map((k) => ({ k, th: normalizeAngle(st[k]) }))
+    .sort((x, y) => x.th - y.th)
+    .map((o) => ({ k: o.k, pt: circlePt(g.cx, g.cy, g.r, o.th) }));
+}
+const QCOL = ['#B84A27', '#5E5A51', '#2F6F5E', '#5E5A51'];
+function quadHandles(st, g, keys) {
+  return quadPts(st, g).map((o, i) => ({ id: o.k, label: 'ABCD'[i], pt: o.pt, color: QCOL[i] })).filter((h) => keys.includes(h.id));
+}
+// Tangent external point, kept inside the canvas
+function tPoint(st, g) {
+  const c = Math.cos(st.tilt), s = Math.sin(st.tilt), m = 34 * g.dpr;
+  let lim = 1e9;
+  if (Math.abs(c) > 1e-3) lim = Math.min(lim, (g.cx - m) / Math.abs(c));
+  if (Math.abs(s) > 1e-3) lim = Math.min(lim, (g.cy - m) / Math.abs(s));
+  const d = Math.max(g.r * 1.25, Math.min(g.r * st.distFactor, lim));
+  return { x: g.cx + d * c, y: g.cy + d * s };
+}
+// Secant from P with direction = (towards centre) + delta; returns near and far hits
+function secantHits(P, g, delta) {
+  const th = Math.atan2(g.cy - P.y, g.cx - P.x) + delta;
+  const u = { x: Math.cos(th), y: Math.sin(th) };
+  const w = { x: P.x - g.cx, y: P.y - g.cy };
+  const b = u.x * w.x + u.y * w.y, c = w.x * w.x + w.y * w.y - g.r * g.r;
+  const s = Math.sqrt(Math.max(0, b * b - c));
+  return {
+    near: { x: P.x + (-b - s) * u.x, y: P.y + (-b - s) * u.y },
+    far: { x: P.x + (-b + s) * u.x, y: P.y + (-b + s) * u.y }
+  };
+}
+const extP = (st, g) => circlePt(g.cx, g.cy, g.r * st.pDist, st.pAng);
+function secDrag(key) {
+  return (st, k, ang, g, pt) => {
+    const P = extP(st, g);
+    const base = Math.atan2(g.cy - P.y, g.cx - P.x);
+    st[key] = Math.max(-0.45, Math.min(0.45, wrapPi(Math.atan2(pt.y - P.y, pt.x - P.x) - base)));
+  };
+}
+// Chord handles p1 (start) and p2 (end) – shared by c10 and b3
+function chordDrag(st, k, ang) {
+  if (k === 'p1') {
+    const end = st.rot + st.span / 2;
+    st.span = Math.max(0.3, Math.min(2.8, normalizeAngle(end - ang)));
+    st.rot = end - st.span / 2;
+  } else {
+    const start = st.rot - st.span / 2;
+    st.span = Math.max(0.3, Math.min(2.8, normalizeAngle(ang - start)));
+    st.rot = start + st.span / 2;
+  }
+}
+function chordHandles(st, g) {
+  return [
+    { id: 'p1', label: 'A', pt: circlePt(g.cx, g.cy, g.r, st.rot - st.span / 2), color: '#B84A27' },
+    { id: 'p2', label: 'B', pt: circlePt(g.cx, g.cy, g.r, st.rot + st.span / 2), color: '#B84A27' }
+  ];
+}
+
+/* ---------- drawing helpers ---------- */
+function drawSegment(ctx, p1, p2, color, width, dashed) {
+  ctx.save(); ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+  ctx.strokeStyle = color; ctx.lineWidth = width || 2;
+  if (dashed) ctx.setLineDash([6, 5]);
+  ctx.stroke(); ctx.restore();
+}
+function drawPoint(ctx, pt, label, color) {
+  ctx.save(); ctx.beginPath(); ctx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
+  ctx.fillStyle = color || '#1C1B18'; ctx.fill();
+  if (label) { ctx.font = '600 12px "JetBrains Mono", monospace'; ctx.fillStyle = '#1C1B18'; ctx.fillText(label, pt.x + 7, pt.y - 7); }
+  ctx.restore();
+}
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function drawBadge(ctx, pt, text, bg, fg) {
+  ctx.save();
+  const sc = Math.min(1.35, Math.max(1, ctx.canvas.width / 460));
+  ctx.font = '700 ' + Math.round(14 * sc) + 'px "JetBrains Mono", monospace';
+  const padX = Math.round(10 * sc), w = ctx.measureText(text).width + padX * 2, h = Math.round(28 * sc);
+  const x = Math.max(8, Math.min(ctx.canvas.width - w - 8, pt.x - w / 2));
+  const y = Math.max(8, Math.min(ctx.canvas.height - h - 8, pt.y - h / 2));
+  ctx.fillStyle = bg || '#F9ECE7'; ctx.strokeStyle = fg || '#B84A27'; ctx.lineWidth = 1.5;
+  roundRectPath(ctx, x, y, w, h, 8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = fg || '#B84A27'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, x + w / 2, y + h / 2 + 0.5);
+  ctx.restore();
+}
+const RB = '#F9ECE7', SB = '#EAF3F0', AC = '#B84A27', SG = '#2F6F5E', IK = '#1C1B18';
+
+/* ---------- 12 core theorems ---------- */
+const CORE_THEOREMS = [
+{
+  id: 'c1', num: '01', title: 'Angle at the Center Theorem',
+  statement: 'The angle subtended by an arc at the center $O$ is twice the angle it subtends at any point on the remaining part of the circle.',
+  invariantFormula: '∠AOB = 2 × ∠ACB',
+  intuition: 'Moving $A$ or $B$ changes both angles together, and the central angle stays locked at double the inscribed one. Moving $C$ along the same arc does not change $\\angle ACB$ at all. If $C$ crosses onto the minor arc, the arc it faces becomes the major arc, so the central angle is the reflex angle.',
+  proofSteps: [
+    'Draw radius $CO$ and extend it past $O$ to form exterior angles on $\\triangle AOC$ and $\\triangle BOC$.',
+    'Since $OA = OC = OB$ (radii), $\\triangle AOC$ and $\\triangle BOC$ are isosceles with equal base angles.',
+    'Each exterior angle equals the sum of its two opposite interior angles, so $\\angle AOB = 2\\angle ACB$.'
+  ],
+  defaultState: { a: 2.35, b: 0.78, c: -1.35 },
+  stepDemo(st, dt) { st.c += dt * 0.5; st.a += dt * 0.25; st.b -= dt * 0.22; },
+  handles(st, g) {
+    return [
+      { id: 'a', label: 'A', pt: circlePt(g.cx, g.cy, g.r, st.a), color: AC },
+      { id: 'b', label: 'B', pt: circlePt(g.cx, g.cy, g.r, st.b), color: AC },
+      { id: 'c', label: 'C', pt: circlePt(g.cx, g.cy, g.r, st.c), color: SG }];
+  },
+  render(ctx, st, g, hl) {
+    const o = { x: g.cx, y: g.cy };
+    const A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b), C = circlePt(g.cx, g.cy, g.r, st.c);
+    drawSegment(ctx, o, A, AC, hl ? 2.5 : 1.8); drawSegment(ctx, o, B, AC, hl ? 2.5 : 1.8);
+    drawSegment(ctx, C, A, SG, hl ? 2.4 : 1.8); drawSegment(ctx, C, B, SG, hl ? 2.4 : 1.8);
+    const insc = angleDeg(A, C, B);
+    const cm = angleDeg(A, o, B);            // measured independently
+    const reflex = insc > 90;                // C on the minor arc -> central angle (arc not containing C) is reflex
+    const cen = reflex ? 360 - cm : cm;
+    drawPoint(ctx, o, 'O', IK);
+    drawBadge(ctx, { x: o.x, y: o.y + 24 }, '∠AOB = ' + (reflex ? 'reflex ' : '') + fmtAng(cen), RB, AC);
+    drawBadge(ctx, { x: C.x, y: C.y - 22 }, '∠ACB = ' + fmtAng(insc), SB, SG);
+    return [
+      { label: reflex ? '∠AOB (reflex)' : '∠AOB (Center)', value: fmtAng(cen) },
+      { label: '∠ACB (Circle)', value: fmtAng(insc) },
+      { label: '2 × ∠ACB', value: fmtAng(2 * insc) },
+      { label: 'Chord AB', value: fmtLen(dist(A, B), g) }];
+  },
+  check: { q: 'If $\\angle AOB = 114^\\circ$ at the center $O$, what is $\\angle ACB$ on the major arc?', options: ['57°', '114°', '228°'], answerIndex: 0, explain: 'The inscribed angle is half the central angle: $114^\\circ / 2 = 57^\\circ$.' }
+},
+{
+  id: 'c2', num: '02', title: 'Angle in a Semicircle',
+  statement: 'An angle inscribed in a semicircle (subtended by a diameter $AB$) is always a right angle ($90^\\circ$).',
+  invariantFormula: '∠ACB = 90°',
+  intuition: 'Because diameter $AB$ subtends a $180^\\circ$ central angle, any point $C$ on the circle sees half of $180^\\circ$, which is $90^\\circ$.',
+  proofSteps: [
+    'Let $AB$ pass through center $O$, so $\\angle AOB = 180^\\circ$.',
+    'By the Angle at the Center Theorem, $\\angle ACB = \\frac{1}{2}\\angle AOB$.',
+    'Thus $\\angle ACB = \\frac{1}{2}(180^\\circ) = 90^\\circ$.'
+  ],
+  defaultState: { c: -0.9 },
+  stepDemo(st, dt) { st.c += dt * 0.85; },
+  handles(st, g) { return [{ id: 'c', label: 'C', pt: circlePt(g.cx, g.cy, g.r, st.c), color: SG }]; },
+  render(ctx, st, g, hl) {
+    const A = { x: g.cx - g.r, y: g.cy }, B = { x: g.cx + g.r, y: g.cy }, C = circlePt(g.cx, g.cy, g.r, st.c);
+    drawSegment(ctx, A, B, AC, hl ? 2.6 : 2); drawSegment(ctx, A, C, SG, 2); drawSegment(ctx, B, C, SG, 2);
+    const aC = angleDeg(A, C, B), aA = angleDeg(B, A, C), aB = angleDeg(A, B, C);
+    drawPoint(ctx, A, 'A', IK); drawPoint(ctx, B, 'B', IK); drawPoint(ctx, { x: g.cx, y: g.cy }, 'O', '#5E5A51');
+    drawBadge(ctx, { x: C.x, y: C.y < g.cy ? C.y - 22 : C.y + 24 }, '∠ACB = ' + fmtAng(aC), SB, SG);
+    return [{ label: '∠ACB', value: fmtAng(aC) }, { label: '∠BAC', value: fmtAng(aA) }, { label: '∠ABC', value: fmtAng(aB) }, { label: 'Diameter AB', value: fmtLen(dist(A, B), g) }];
+  },
+  check: { q: 'Points $A$ and $B$ form a diameter, and $C$ lies on the circle. If $\\angle BAC = 34^\\circ$, what is $\\angle ABC$?', options: ['56°', '34°', '90°'], answerIndex: 0, explain: 'Since $\\angle ACB = 90^\\circ$, the acute angles of right $\\triangle ABC$ sum to $90^\\circ$, giving $90^\\circ - 34^\\circ = 56^\\circ$.' }
+},
+{
+  id: 'c3', num: '03', title: 'Angles in the Same Segment',
+  statement: 'Angles subtended by the same arc in the same segment of a circle are equal.',
+  invariantFormula: '∠ACB = ∠ADB',
+  intuition: 'Both $C$ and $D$ sit on the same arc above chord $AB$, so both equal half of the central angle. They are kept on that arc; on the opposite arc the angle would be $180^\\circ$ minus this value.',
+  proofSteps: [
+    'Both $\\angle ACB$ and $\\angle ADB$ subtend the same arc $AB$.',
+    'Each equals $\\frac{1}{2}\\angle AOB$ by the central-inscribed angle relation.',
+    'Therefore $\\angle ACB = \\angle ADB$ for any valid positions of $C$ and $D$.'
+  ],
+  defaultState: { a: 2.45, b: 0.69, c: -2.15, d: -0.95, t: 0 },
+  stepDemo(st, dt) { st.t += dt; st.c = -1.65 + Math.sin(st.t * 1.1) * 0.65; st.d = -1.15 + Math.cos(st.t * 1.2) * 0.65; },
+  clamp(st, ang) { return clampArc(st.a, st.b + 2 * Math.PI, ang, 0.12); },
+  handles(st, g) {
+    return [
+      { id: 'c', label: 'C', pt: circlePt(g.cx, g.cy, g.r, st.c), color: AC },
+      { id: 'd', label: 'D', pt: circlePt(g.cx, g.cy, g.r, st.d), color: SG }];
+  },
+  render(ctx, st, g, hl) {
+    const A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b), C = circlePt(g.cx, g.cy, g.r, st.c), D = circlePt(g.cx, g.cy, g.r, st.d);
+    drawSegment(ctx, A, B, '#8A8478', 1.4, true);
+    drawSegment(ctx, A, C, AC, hl ? 2.4 : 1.8); drawSegment(ctx, B, C, AC, hl ? 2.4 : 1.8);
+    drawSegment(ctx, A, D, SG, hl ? 2.4 : 1.8); drawSegment(ctx, B, D, SG, hl ? 2.4 : 1.8);
+    const aC = angleDeg(A, C, B), aD = angleDeg(A, D, B);
+    drawPoint(ctx, A, 'A', IK); drawPoint(ctx, B, 'B', IK);
+    drawBadge(ctx, { x: C.x, y: C.y - 20 }, '∠ACB = ' + fmtAng(aC), RB, AC);
+    drawBadge(ctx, { x: D.x, y: D.y - 20 }, '∠ADB = ' + fmtAng(aD), SB, SG);
+    return [{ label: '∠ACB', value: fmtAng(aC) }, { label: '∠ADB', value: fmtAng(aD) }, { label: '|∠ACB − ∠ADB|', value: fmtAng(Math.abs(aC - aD)) }, { label: 'Chord AB', value: fmtLen(dist(A, B), g) }];
+  },
+  check: { q: 'If $\\angle ACB = 43^\\circ$ and $D$ lies on the same arc as $C$, what is $\\angle ADB$?', options: ['43°', '137°', '86°'], answerIndex: 0, explain: 'Angles in the same segment subtended by the same arc are equal, so $\\angle ADB = 43^\\circ$.' }
+},
+{
+  id: 'c4', num: '04', title: 'Opposite Angles of a Cyclic Quadrilateral',
+  statement: 'Opposite angles of a cyclic quadrilateral (four vertices on a circle) add up to $180^\\circ$.',
+  invariantFormula: '∠A + ∠C = 180°  and  ∠B + ∠D = 180°',
+  intuition: 'Opposite angles each stand on one of two arcs that together make the whole circle, so their halves always sum to half of $360^\\circ$, which is $180^\\circ$.',
+  proofSteps: [
+    'Vertices $A, B, C, D$ lie in order on a circle, splitting it into two arcs for each opposite pair.',
+    'Vertex $A$ subtends arc $BCD$ (the arc not containing $A$) and vertex $C$ subtends arc $BAD$ (the arc not containing $C$).',
+    'Each angle is half its arc and the two arcs make $360^\\circ$, so $\\angle A + \\angle C = 180^\\circ$.'
+  ],
+  defaultState: { a: -2.4, b: -0.5, c: 0.9, d: 2.35 },
+  stepDemo(st, dt) { st.a += dt * 0.35; st.b += dt * 0.42; st.c += dt * 0.31; st.d += dt * 0.38; },
+  handles(st, g) { return quadHandles(st, g, ['a', 'b', 'c', 'd']); },
+  render(ctx, st, g, hl) {
+    const [A, B, C, D] = quadPts(st, g).map((o) => o.pt);
+    ctx.save(); ctx.beginPath();
+    [A, B, C, D].forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.closePath(); ctx.fillStyle = hl ? 'rgba(184,74,39,0.06)' : 'rgba(28,27,24,0.03)'; ctx.fill();
+    ctx.strokeStyle = IK; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+    const aA = angleDeg(D, A, B), aB = angleDeg(A, B, C), aC = angleDeg(B, C, D), aD = angleDeg(C, D, A);
+    drawBadge(ctx, { x: A.x * 0.72 + g.cx * 0.28, y: A.y * 0.72 + g.cy * 0.28 }, 'A:' + fmtAng(aA), RB, AC);
+    drawBadge(ctx, { x: C.x * 0.72 + g.cx * 0.28, y: C.y * 0.72 + g.cy * 0.28 }, 'C:' + fmtAng(aC), SB, SG);
+    return [{ label: '∠A', value: fmtAng(aA) }, { label: '∠C', value: fmtAng(aC) }, { label: '∠A + ∠C', value: fmtAng(aA + aC) }, { label: '∠B + ∠D', value: fmtAng(aB + aD) }];
+  },
+  check: { q: 'In cyclic quadrilateral $PQRS$, $\\angle P = 78^\\circ$. What is $\\angle R$?', options: ['102°', '78°', '12°'], answerIndex: 0, explain: 'Opposite angles of a cyclic quadrilateral are supplementary: $180^\\circ - 78^\\circ = 102^\\circ$.' }
+},
+{
+  id: 'c5', num: '05', title: 'Exterior Angle of a Cyclic Quadrilateral',
+  statement: 'An exterior angle of a cyclic quadrilateral is equal to the interior opposite angle.',
+  invariantFormula: 'Exterior ∠ at C = Interior ∠A',
+  intuition: 'Both the exterior angle at $C$ and interior $\\angle A$ are supplements of interior $\\angle C$, forcing them to be equal.',
+  proofSteps: [
+    'Interior $\\angle C$ and its adjacent exterior angle form a linear pair ($180^\\circ$).',
+    'In cyclic quadrilateral $ABCD$, $\\angle A + \\angle C = 180^\\circ$.',
+    'Both the exterior angle and $\\angle A$ equal $180^\\circ - \\angle C$, so Exterior $\\angle C = \\angle A$.'
+  ],
+  defaultState: { a: -2.2, b: -0.45, c: 0.85, d: 2.3 },
+  stepDemo(st, dt) { st.c += dt * 0.3; st.a += dt * 0.2; },
+  handles(st, g) { return quadHandles(st, g, ['a', 'c']); },
+  render(ctx, st, g, hl) {
+    const q = quadPts(st, g), [A, B, C, D] = q.map((o) => o.pt);
+    drawSegment(ctx, A, B, IK, 1.8); drawSegment(ctx, B, C, IK, 1.8); drawSegment(ctx, C, D, IK, 1.8); drawSegment(ctx, D, A, IK, 1.8);
+    const dx = C.x - B.x, dy = C.y - B.y, len = Math.hypot(dx, dy) || 1;
+    const ext = { x: C.x + dx / len * 68, y: C.y + dy / len * 68 };
+    drawSegment(ctx, C, ext, AC, hl ? 2.8 : 2.2);
+    q.forEach((o, i) => { if (o.k !== 'a' && o.k !== 'c') drawPoint(ctx, o.pt, 'ABCD'[i], '#5E5A51'); });
+    const aA = angleDeg(D, A, B), intC = angleDeg(B, C, D), extA = 180 - intC;
+    drawBadge(ctx, { x: A.x * 0.72 + g.cx * 0.28, y: A.y * 0.72 + g.cy * 0.28 }, '∠A = ' + fmtAng(aA), SB, SG);
+    drawBadge(ctx, { x: ext.x, y: ext.y - 16 }, 'Ext = ' + fmtAng(extA), RB, AC);
+    return [{ label: 'Interior ∠A', value: fmtAng(aA) }, { label: 'Exterior at C', value: fmtAng(extA) }, { label: 'Interior ∠BCD', value: fmtAng(intC) }];
+  },
+  check: { q: 'Side $BC$ of cyclic quadrilateral $ABCD$ is extended to $E$. If $\\angle BAD = 68^\\circ$, what is $\\angle DCE$?', options: ['68°', '112°', '22°'], answerIndex: 0, explain: 'The exterior angle $\\angle DCE$ equals the interior opposite angle $\\angle BAD = 68^\\circ$.' }
+},
+{
+  id: 'c6', num: '06', title: 'Tangent–Radius Perpendicularity',
+  statement: 'The tangent at any point on a circle is perpendicular ($90^\\circ$) to the radius drawn to the point of contact.',
+  invariantFormula: 'Radius OP ⊥ Tangent at P',
+  intuition: 'Among all segments from center $O$ to the tangent line, radius $OP$ is the shortest distance, making it perpendicular.',
+  proofSteps: [
+    'Take any point $Q \\neq P$ on the tangent line.',
+    'Because $Q$ lies outside the circle, $OQ > OP$ (radius).',
+    'Since the shortest segment from a point to a line is perpendicular to the line, $OP \\perp$ tangent.'
+  ],
+  defaultState: { p: 0.45 },
+  stepDemo(st, dt) { st.p += dt * 0.65; },
+  handles(st, g) { return [{ id: 'p', label: 'P', pt: circlePt(g.cx, g.cy, g.r, st.p), color: AC }]; },
+  render(ctx, st, g, hl) {
+    const O = { x: g.cx, y: g.cy }, P = circlePt(g.cx, g.cy, g.r, st.p);
+    const tx = -Math.sin(st.p), ty = Math.cos(st.p);
+    const T1 = { x: P.x - tx * 115, y: P.y - ty * 115 }, T2 = { x: P.x + tx * 115, y: P.y + ty * 115 };
+    drawSegment(ctx, O, P, SG, hl ? 2.8 : 2.2); drawSegment(ctx, T1, T2, AC, hl ? 2.8 : 2.2);
+    const pa = angleDeg(O, P, T2), rl = fmtLen(dist(O, P), g);
+    drawPoint(ctx, O, 'O', IK);
+    drawBadge(ctx, { x: (O.x + P.x) / 2, y: (O.y + P.y) / 2 - 14 }, 'r = ' + rl, SB, SG);
+    drawBadge(ctx, { x: P.x + Math.cos(st.p) * 34, y: P.y + Math.sin(st.p) * 34 }, fmtAng(pa), RB, AC);
+    return [{ label: '∠(OP, Tangent)', value: fmtAng(pa) }, { label: 'Radius OP', value: rl }];
+  },
+  check: { q: 'Line $PT$ is tangent to a circle with center $O$ at $P$. If $\\angle OPT$ is measured, what is it?', options: ['90°', '45°', '180°'], answerIndex: 0, explain: 'A tangent to a circle is always perpendicular ($90^\\circ$) to the radius at the point of tangency.' }
+},
+{
+  id: 'c7', num: '07', title: 'Two Tangents from an External Point',
+  statement: 'Tangents drawn from an external point $T$ to a circle are equal in length and equally inclined to the line joining $T$ to the center $O$.',
+  invariantFormula: 'TA = TB  and  ∠ATO = ∠BTO',
+  intuition: 'Right triangles $\\triangle OAT$ and $\\triangle OBT$ share hypotenuse $OT$ and have equal radii $OA = OB$, making them congruent.',
+  proofSteps: [
+    'Draw radii $OA$ and $OB$ to the points of tangency; $\\angle OAT = \\angle OBT = 90^\\circ$.',
+    'In right triangles $\\triangle OAT$ and $\\triangle OBT$, $OA = OB$ and $OT$ is common.',
+    'By RHS congruence, $\\triangle OAT \\cong \\triangle OBT$, so $TA = TB$ and $\\angle ATO = \\angle BTO$.'
+  ],
+  defaultState: { distFactor: 2.05, tilt: -0.35, t: 0 },
+  stepDemo(st, dt) { st.t += dt; st.tilt += dt * 0.55; st.distFactor = 1.9 + Math.sin(st.t * 0.9) * 0.25; },
+  drag(st, k, ang, g, pt) {
+    st.tilt = ang;
+    st.distFactor = Math.max(1.25, Math.min(2.65, dist({ x: g.cx, y: g.cy }, pt) / Math.max(20, g.r)));
+  },
+  handles(st, g) { return [{ id: 't', label: 'T', pt: tPoint(st, g), color: AC }]; },
+  render(ctx, st, g, hl) {
+    const O = { x: g.cx, y: g.cy }, T = tPoint(st, g);
+    const base = Math.atan2(T.y - O.y, T.x - O.x), phi = Math.acos(Math.min(0.999, g.r / dist(O, T)));
+    const A = circlePt(g.cx, g.cy, g.r, base + phi), B = circlePt(g.cx, g.cy, g.r, base - phi);
+    drawSegment(ctx, T, A, AC, hl ? 2.6 : 2.1); drawSegment(ctx, T, B, SG, hl ? 2.6 : 2.1);
+    drawSegment(ctx, O, T, '#8A8478', 1.4, true); drawSegment(ctx, O, A, '#5E5A51', 1.3); drawSegment(ctx, O, B, '#5E5A51', 1.3);
+    const lA = fmtLen(dist(T, A), g), lB = fmtLen(dist(T, B), g);
+    drawPoint(ctx, O, 'O', IK); drawPoint(ctx, A, 'A', AC); drawPoint(ctx, B, 'B', SG);
+    drawBadge(ctx, { x: (T.x + A.x) / 2, y: (T.y + A.y) / 2 - 14 }, 'TA=' + lA, RB, AC);
+    drawBadge(ctx, { x: (T.x + B.x) / 2, y: (T.y + B.y) / 2 + 16 }, 'TB=' + lB, SB, SG);
+    return [{ label: 'Length TA', value: lA }, { label: 'Length TB', value: lB }, { label: '∠ATO', value: fmtAng(angleDeg(A, T, O)) }, { label: '∠BTO', value: fmtAng(angleDeg(B, T, O)) }];
+  },
+  check: { q: 'From external point $T$, tangents $TA$ and $TB$ touch a circle. If $TA = 13\\text{ cm}$, what is $TB$?', options: ['13 cm', '6.5 cm', '26 cm'], answerIndex: 0, explain: 'Two tangents from the same external point to a circle have equal length, so $TB = 13\\text{ cm}$.' }
+},
+{
+  id: 'c8', num: '08', title: 'Alternate Segment Theorem',
+  statement: 'The angle between a tangent and a chord through the point of contact equals the angle in the alternate segment.',
+  invariantFormula: '∠TPB = ∠PAB',
+  intuition: 'As point $A$ moves along the alternate arc, inscribed angle $\\angle PAB$ stays constant and matches tangent-chord angle $\\angle TPB$. $A$ is kept on that alternate arc.',
+  proofSteps: [
+    'Draw diameter $PD$ from point of contact $P$, so $\\angle PBD = 90^\\circ$ and $\\angle TPD = 90^\\circ$.',
+    'Angles $\\angle PDB$ and $\\angle PAB$ subtend the same arc $PB$, so $\\angle PAB = \\angle PDB$.',
+    'In right triangle $PBD$, $\\angle PDB = 90^\\circ - \\angle BPD$, and $\\angle TPB = 90^\\circ - \\angle BPD$ as well, so $\\angle TPB = \\angle PAB$.'
+  ],
+  defaultState: { p: Math.PI * 0.5, a: -2.2, b: -0.45, t: 0 },
+  stepDemo(st, dt) { st.t += dt; st.a = -1.6 + Math.sin(st.t * 1.2) * 0.7; },
+  clamp(st, ang) { return clampArc(st.p, st.b + 2 * Math.PI, ang, 0.12); },
+  handles(st, g) { return [{ id: 'a', label: 'A', pt: circlePt(g.cx, g.cy, g.r, st.a), color: SG }]; },
+  render(ctx, st, g, hl) {
+    const P = circlePt(g.cx, g.cy, g.r, st.p), A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b);
+    const Tr = { x: P.x + 110, y: P.y }, Tl = { x: P.x - 110, y: P.y };
+    drawSegment(ctx, Tl, Tr, AC, hl ? 2.6 : 2); drawSegment(ctx, P, B, AC, 2); drawSegment(ctx, P, A, SG, 1.8); drawSegment(ctx, A, B, SG, 1.8);
+    const alt = angleDeg(P, A, B), tan = angleDeg(Tr, P, B);
+    drawPoint(ctx, P, 'P', IK); drawPoint(ctx, B, 'B', IK);
+    drawBadge(ctx, { x: Tr.x - 24, y: P.y - 20 }, '∠TPB = ' + fmtAng(tan), RB, AC);
+    drawBadge(ctx, { x: A.x, y: A.y - 20 }, '∠PAB = ' + fmtAng(alt), SB, SG);
+    return [{ label: 'Tangent-Chord ∠TPB', value: fmtAng(tan) }, { label: 'Alternate ∠PAB', value: fmtAng(alt) }, { label: 'Chord PB', value: fmtLen(dist(P, B), g) }];
+  },
+  check: { q: 'Chord $PB$ meets tangent $PT$ at $P$ with $\\angle TPB = 64^\\circ$. What is the inscribed angle in the alternate segment?', options: ['64°', '116°', '32°'], answerIndex: 0, explain: 'By the Alternate Segment Theorem, the angle in the alternate segment equals $\\angle TPB = 64^\\circ$.' }
+},
+{
+  id: 'c9', num: '09', title: 'Perpendicular from Center to Chord',
+  statement: 'A perpendicular drawn from the center $O$ of a circle to a chord bisects the chord.',
+  invariantFormula: 'OM ⊥ AB  ⇒  AM = MB',
+  intuition: 'Here $M$ is the foot of the perpendicular from $O$ (computed by projection, not by taking the midpoint). Right triangles $\\triangle OMA$ and $\\triangle OMB$ share $OM$ and have equal radii $OA = OB$, forcing $AM = MB$.',
+  proofSteps: [
+    'Drop perpendicular $OM$ from center $O$ to chord $AB$, so $\\angle OMA = \\angle OMB = 90^\\circ$.',
+    'In right triangles $\\triangle OMA$ and $\\triangle OMB$, $OA = OB$ (radii) and $OM$ is common.',
+    'By RHS congruence, $\\triangle OMA \\cong \\triangle OMB$, hence $AM = MB$.'
+  ],
+  defaultState: { a: -2.35, b: -0.65, t: 0 },
+  stepDemo(st, dt) { st.t += dt; st.a = -2.25 + Math.sin(st.t * 1.2) * 0.45; st.b = -0.65 + Math.cos(st.t * 1.2) * 0.45; },
+  handles(st, g) {
+    return [
+      { id: 'a', label: 'A', pt: circlePt(g.cx, g.cy, g.r, st.a), color: AC },
+      { id: 'b', label: 'B', pt: circlePt(g.cx, g.cy, g.r, st.b), color: SG }];
+  },
+  render(ctx, st, g, hl) {
+    const O = { x: g.cx, y: g.cy }, A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b);
+    const dx = B.x - A.x, dy = B.y - A.y, L2 = dx * dx + dy * dy || 1;
+    const tt = ((O.x - A.x) * dx + (O.y - A.y) * dy) / L2;
+    const M = { x: A.x + tt * dx, y: A.y + tt * dy };      // foot of perpendicular
+    drawSegment(ctx, A, B, IK, 2.2); drawSegment(ctx, O, M, AC, hl ? 2.8 : 2.2);
+    drawSegment(ctx, O, A, '#8A8478', 1.3, true); drawSegment(ctx, O, B, '#8A8478', 1.3, true);
+    const am = fmtLen(dist(A, M), g), mb = fmtLen(dist(M, B), g);
+    drawPoint(ctx, O, 'O', IK); drawPoint(ctx, M, 'M', AC);
+    drawBadge(ctx, { x: (A.x + M.x) / 2, y: (A.y + M.y) / 2 + 18 }, 'AM=' + am, RB, AC);
+    drawBadge(ctx, { x: (M.x + B.x) / 2, y: (M.y + B.y) / 2 + 18 }, 'MB=' + mb, SB, SG);
+    return [{ label: '∠OMA', value: fmtAng(angleDeg(O, M, A)) }, { label: 'AM', value: am }, { label: 'MB', value: mb }, { label: 'Total AB', value: fmtLen(dist(A, B), g) }, { label: 'Distance OM', value: fmtLen(dist(O, M), g) }];
+  },
+  check: { q: 'A perpendicular from the center of a circle to a chord of length $18\\text{ cm}$ meets it at $M$. What is $AM$?', options: ['9 cm', '18 cm', '4.5 cm'], answerIndex: 0, explain: 'The perpendicular from the center bisects the chord: $18\\text{ cm} / 2 = 9\\text{ cm}$.' }
+},
+{
+  id: 'c10', num: '10', title: 'Equal Chords & Distance from Center',
+  statement: 'Equal chords of a circle are equidistant from the center $O$.',
+  invariantFormula: 'AB = CD  ⇔  OM = ON',
+  intuition: 'Chords of equal length form congruent central triangles with the center, so their perpendicular distances $OM$ and $ON$ match. Drag $A$ or $B$ to change the chord length; $CD$ is always kept equal to $AB$.',
+  proofSteps: [
+    'Draw perpendiculars $OM \\perp AB$ and $ON \\perp CD$, bisecting both chords.',
+    'If $AB = CD$, then $AM = CN$ and radii $OA = OC$.',
+    'By RHS congruence on $\\triangle OMA$ and $\\triangle ONC$, $OM = ON$.'
+  ],
+  defaultState: { span: 1.35, rot: 0.4 },
+  stepDemo(st, dt) { st.rot += dt * 0.65; },
+  drag: chordDrag,
+  handles: chordHandles,
+  render(ctx, st, g, hl) {
+    const O = { x: g.cx, y: g.cy };
+    const A = circlePt(g.cx, g.cy, g.r, st.rot - st.span / 2), B = circlePt(g.cx, g.cy, g.r, st.rot + st.span / 2);
+    const C = circlePt(g.cx, g.cy, g.r, st.rot + Math.PI - st.span / 2), D = circlePt(g.cx, g.cy, g.r, st.rot + Math.PI + st.span / 2);
+    const M = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 }, N = { x: (C.x + D.x) / 2, y: (C.y + D.y) / 2 };
+    drawSegment(ctx, A, B, AC, 2.4); drawSegment(ctx, C, D, SG, 2.4);
+    drawSegment(ctx, O, M, AC, hl ? 2.6 : 1.8, true); drawSegment(ctx, O, N, SG, hl ? 2.6 : 1.8, true);
+    const dOM = fmtLen(dist(O, M), g), dON = fmtLen(dist(O, N), g);
+    drawPoint(ctx, O, 'O', IK); drawPoint(ctx, C, 'C', SG); drawPoint(ctx, D, 'D', SG);
+    drawBadge(ctx, { x: (O.x + M.x) / 2, y: (O.y + M.y) / 2 - 12 }, 'OM=' + dOM, RB, AC);
+    drawBadge(ctx, { x: (O.x + N.x) / 2, y: (O.y + N.y) / 2 + 12 }, 'ON=' + dON, SB, SG);
+    return [{ label: 'Chord AB', value: fmtLen(dist(A, B), g) }, { label: 'Chord CD', value: fmtLen(dist(C, D), g) }, { label: 'Distance OM', value: dOM }, { label: 'Distance ON', value: dON }];
+  },
+  check: { q: 'Two equal chords $AB$ and $CD$ lie in a circle. If $AB$ is $5\\text{ cm}$ from the center, how far is $CD$ from the center?', options: ['5 cm', '10 cm', '2.5 cm'], answerIndex: 0, explain: 'Equal chords are always equidistant from the center of the circle, so $CD$ is also $5\\text{ cm}$ away.' }
+},
+{
+  id: 'c11', num: '11', title: 'Intersecting Chords Theorem',
+  statement: 'When two chords $AB$ and $CD$ intersect at point $P$ inside a circle, the products of their segments are equal.',
+  invariantFormula: 'AP × PB = CP × PD',
+  intuition: 'Triangles $\\triangle APC$ and $\\triangle DPB$ share equal inscribed angles, making them similar so $\\frac{AP}{PD} = \\frac{CP}{PB}$.',
+  proofSteps: [
+    'In $\\triangle APC$ and $\\triangle DPB$, $\\angle ACP = \\angle DBP$ (same arc $AD$).',
+    'Also $\\angle CAP = \\angle BDP$ (same arc $BC$), so $\\triangle APC \\sim \\triangle DPB$.',
+    'Matching ratios give $\\frac{AP}{PD} = \\frac{CP}{PB}$, hence $AP \\cdot PB = CP \\cdot PD$.'
+  ],
+  defaultState: { a: -2.5, b: 0.55, c: -0.9, d: 2.2 },
+  stepDemo(st, dt) { st.a += dt * 0.25; st.b -= dt * 0.22; st.c += dt * 0.28; st.d -= dt * 0.24; },
+  handles(st, g) {
+    return [
+      { id: 'a', label: 'A', pt: circlePt(g.cx, g.cy, g.r, st.a), color: AC },
+      { id: 'c', label: 'C', pt: circlePt(g.cx, g.cy, g.r, st.c), color: SG }];
+  },
+  render(ctx, st, g, hl) {
+    const A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b), C = circlePt(g.cx, g.cy, g.r, st.c), D = circlePt(g.cx, g.cy, g.r, st.d);
+    const P = lineIntersect(A, B, C, D);
+    drawSegment(ctx, A, B, AC, hl ? 2.6 : 2.1); drawSegment(ctx, C, D, SG, hl ? 2.6 : 2.1);
+    const ap = dist(A, P), pb = dist(P, B), cp = dist(C, P), pd = dist(P, D);
+    const p1 = fmtProd(ap, pb, g), p2 = fmtProd(cp, pd, g);
+    drawPoint(ctx, B, 'B', AC); drawPoint(ctx, D, 'D', SG); drawPoint(ctx, P, 'P', IK);
+    drawBadge(ctx, { x: P.x, y: P.y - 20 }, 'AP·PB = ' + p1, RB, AC);
+    drawBadge(ctx, { x: P.x, y: P.y + 24 }, 'CP·PD = ' + p2, SB, SG);
+    return [{ label: 'AP × PB', value: p1 }, { label: 'CP × PD', value: p2 }, { label: 'AP, PB', value: fmtLen(ap, g) + ', ' + fmtLen(pb, g) }, { label: 'CP, PD', value: fmtLen(cp, g) + ', ' + fmtLen(pd, g) }];
+  },
+  check: { q: 'Chords $AB$ and $CD$ intersect at $P$ inside a circle. If $AP = 4$, $PB = 6$, and $CP = 3$, what is $PD$?', options: ['8', '6', '12'], answerIndex: 0, explain: '$4 \\times 6 = 3 \\times PD \\implies 24 = 3 \\cdot PD \\implies PD = 8$.' }
+},
+{
+  id: 'c12', num: '12', title: 'Tangent–Secant Power Theorem',
+  statement: 'If a tangent $PT$ and a secant $PAB$ are drawn from an external point $P$, the square of the tangent equals the product of the secant segments.',
+  invariantFormula: 'PT² = PA × PB',
+  intuition: 'Triangles $\\triangle PTA$ and $\\triangle PBT$ share $\\angle P$ and have $\\angle PTA = \\angle PBT$ by the alternate segment rule. Drag $A$ to swing the secant; $A$, $B$ and $P$ stay collinear.',
+  proofSteps: [
+    'In $\\triangle PTA$ and $\\triangle PBT$, $\\angle TPA = \\angle TPB$ (the same angle at $P$, since $A$ lies on $PB$).',
+    'By the Alternate Segment Theorem, $\\angle PTA = \\angle PBT$.',
+    'Thus $\\triangle PTA \\sim \\triangle PBT$, giving $\\frac{PT}{PB} = \\frac{PA}{PT}$, so $PT^2 = PA \\cdot PB$.'
+  ],
+  defaultState: { pAng: 0.35, pDist: 2.0, delta: -0.25, t: 0 },
+  stepDemo(st, dt) { st.t += dt; st.delta = Math.sin(st.t * 0.9) * 0.3; },
+  drag: secDrag('delta'),
+  handles(st, g) { return [{ id: 'delta', label: 'A', pt: secantHits(extP(st, g), g, st.delta).near, color: SG }]; },
+  render(ctx, st, g, hl) {
+    const P = extP(st, g), { near: A, far: B } = secantHits(P, g, st.delta);
+    const dOP = dist({ x: g.cx, y: g.cy }, P), base = Math.atan2(P.y - g.cy, P.x - g.cx);
+    const T = circlePt(g.cx, g.cy, g.r, base + Math.acos(Math.min(0.999, g.r / dOP)));
+    drawSegment(ctx, P, T, AC, hl ? 2.8 : 2.2); drawSegment(ctx, P, B, SG, hl ? 2.5 : 2.0);
+    const pt = dist(P, T), pa = dist(P, A), pb = dist(P, B);
+    const sq = fmtProd(pt, pt, g), pp = fmtProd(pa, pb, g);
+    drawPoint(ctx, P, 'P', IK); drawPoint(ctx, T, 'T', AC); drawPoint(ctx, B, 'B', SG);
+    drawBadge(ctx, { x: (P.x + T.x) / 2, y: (P.y + T.y) / 2 - 16 }, 'PT² = ' + sq, RB, AC);
+    drawBadge(ctx, { x: (P.x + B.x) / 2, y: (P.y + B.y) / 2 + 18 }, 'PA·PB = ' + pp, SB, SG);
+    return [{ label: 'PT²', value: sq }, { label: 'PA × PB', value: pp }, { label: 'Tangent PT', value: fmtLen(pt, g) }, { label: 'PA, PB', value: fmtLen(pa, g) + ', ' + fmtLen(pb, g) }];
+  },
+  check: { q: 'Tangent $PT$ has length $6$, and secant $PAB$ has outer segment $PA = 4$. What is the full length $PB$?', options: ['9', '6', '12'], answerIndex: 0, explain: '$PT^2 = PA \\cdot PB \\implies 6^2 = 4 \\cdot PB \\implies 36 = 4 \\cdot PB \\implies PB = 9$.' }
+}
+];
+
+/* ---------- beyond the 12 ---------- */
+const BEYOND_THEOREMS = [
+{
+  id: 'b1', num: 'E1', title: 'Ptolemy’s Theorem',
+  statement: 'For any cyclic quadrilateral $ABCD$, the sum of the products of opposite sides equals the product of its diagonals.',
+  invariantFormula: 'AC × BD = AB × CD + BC × AD',
+  intuition: 'Splitting $\\triangle ABC$ with a carefully chosen angle creates two similar triangle pairs whose products add to $AC \\cdot BD$.',
+  proofSteps: [
+    'Choose $E$ on $AC$ so that $\\angle ABE = \\angle DBC$.',
+    'Since $\\angle BAE = \\angle BDC$ (same arc $BC$), $\\triangle ABE \\sim \\triangle DBC$, giving $AE \\cdot BD = AB \\cdot CD$.',
+    'Also $\\triangle EBC \\sim \\triangle ABD$, giving $EC \\cdot BD = BC \\cdot AD$; adding both yields $(AE + EC) \\cdot BD = AB \\cdot CD + BC \\cdot AD$.'
+  ],
+  defaultState: { a: -2.3, b: -0.65, c: 0.85, d: 2.35 },
+  stepDemo(st, dt) { st.a += dt * 0.28; st.b += dt * 0.34; st.c -= dt * 0.25; st.d += dt * 0.3; },
+  handles(st, g) { return quadHandles(st, g, ['a', 'b', 'c', 'd']); },
+  render(ctx, st, g, hl) {
+    const [A, B, C, D] = quadPts(st, g).map((o) => o.pt);
+    [[A, B], [B, C], [C, D], [D, A]].forEach(([p, q]) => drawSegment(ctx, p, q, IK, 1.8));
+    drawSegment(ctx, A, C, AC, hl ? 2.5 : 2.0, true); drawSegment(ctx, B, D, SG, hl ? 2.5 : 2.0, true);
+    const s = Math.max(1, g.scale), u = (p, q) => dist(p, q) / s;
+    const diag = u(A, C) * u(B, D), sides = u(A, B) * u(C, D) + u(B, C) * u(A, D);
+    drawBadge(ctx, { x: g.cx, y: g.cy - 18 }, 'AC·BD = ' + diag.toFixed(2) + ' u²', RB, AC);
+    drawBadge(ctx, { x: g.cx, y: g.cy + 20 }, 'Sum = ' + sides.toFixed(2) + ' u²', SB, SG);
+    return [{ label: 'AC × BD', value: diag.toFixed(2) + ' u²' }, { label: 'AB·CD + BC·AD', value: sides.toFixed(2) + ' u²' }, { label: 'Diagonals AC, BD', value: fmtLen(dist(A, C), g) + ', ' + fmtLen(dist(B, D), g) }];
+  },
+  check: { q: 'In cyclic quadrilateral $ABCD$, $AC = BD = 10$, $AB = CD = 6$. What is $BC \\cdot AD$?', options: ['64', '36', '100'], answerIndex: 0, explain: 'By Ptolemy’s Theorem, $10 \\times 10 = (6 \\times 6) + BC \\cdot AD \\implies 100 = 36 + BC \\cdot AD \\implies BC \\cdot AD = 64$ (a $6 \\times 8$ rectangle).' }
+},
+{
+  id: 'b2', num: 'E2', title: 'Secant–Secant Power Theorem',
+  statement: 'When two secants $PAB$ and $PCD$ intersect at an external point $P$, the product of each secant’s outer and whole lengths is equal.',
+  invariantFormula: 'PA × PB = PC × PD',
+  intuition: 'Triangles $\\triangle PAC$ and $\\triangle PDB$ share $\\angle P$ and have equal angles at $A$ and $D$ because $ABDC$ is cyclic. Drag $A$ or $C$ to swing each secant.',
+  proofSteps: [
+    'In cyclic quadrilateral $ABDC$, the exterior angle $\\angle PAC$ at $A$ equals the interior opposite angle $\\angle PDB$ at $D$.',
+    'Angle $\\angle APC$ is common to $\\triangle PAC$ and $\\triangle PDB$, so $\\triangle PAC \\sim \\triangle PDB$.',
+    'Matching sides gives $\\frac{PA}{PD} = \\frac{PC}{PB}$, hence $PA \\cdot PB = PC \\cdot PD$.'
+  ],
+  defaultState: { pAng: 0.25, pDist: 1.95, delta1: -0.3, delta2: 0.25, t: 0 },
+  stepDemo(st, dt) { st.t += dt; st.delta1 = -0.3 + Math.sin(st.t) * 0.12; st.delta2 = 0.25 + Math.sin(st.t * 1.3 + 1) * 0.12; },
+  drag(st, k, ang, g, pt) { secDrag(k)(st, k, ang, g, pt); },
+  handles(st, g) {
+    const P = extP(st, g);
+    return [
+      { id: 'delta1', label: 'A', pt: secantHits(P, g, st.delta1).near, color: AC },
+      { id: 'delta2', label: 'C', pt: secantHits(P, g, st.delta2).near, color: SG }];
+  },
+  render(ctx, st, g, hl) {
+    const P = extP(st, g), s1 = secantHits(P, g, st.delta1), s2 = secantHits(P, g, st.delta2);
+    const A = s1.near, B = s1.far, C = s2.near, D = s2.far;
+    drawSegment(ctx, P, B, AC, hl ? 2.6 : 2.1); drawSegment(ctx, P, D, SG, hl ? 2.6 : 2.1);
+    const pa = dist(P, A), pb = dist(P, B), pc = dist(P, C), pd = dist(P, D);
+    const p1 = fmtProd(pa, pb, g), p2 = fmtProd(pc, pd, g);
+    drawPoint(ctx, P, 'P', IK); drawPoint(ctx, B, 'B', AC); drawPoint(ctx, D, 'D', SG);
+    drawBadge(ctx, { x: (P.x + B.x) / 2, y: (P.y + B.y) / 2 - 18 }, 'PA·PB = ' + p1, RB, AC);
+    drawBadge(ctx, { x: (P.x + D.x) / 2, y: (P.y + D.y) / 2 + 20 }, 'PC·PD = ' + p2, SB, SG);
+    return [{ label: 'PA × PB', value: p1 }, { label: 'PC × PD', value: p2 }, { label: 'PA, PB', value: fmtLen(pa, g) + ', ' + fmtLen(pb, g) }, { label: 'PC, PD', value: fmtLen(pc, g) + ', ' + fmtLen(pd, g) }];
+  },
+  check: { q: 'Secants $PAB$ and $PCD$ meet at $P$ outside a circle. If $PA = 5$, $PB = 12$, and $PC = 6$, what is $PD$?', options: ['10', '8', '15'], answerIndex: 0, explain: '$5 \\times 12 = 6 \\times PD \\implies 60 = 6 \\cdot PD \\implies PD = 10$.' }
+},
+{
+  id: 'b3', num: 'E3', title: 'Equal Chords Subtend Equal Central Angles',
+  statement: 'In congruent circles or the same circle, equal chords subtend equal angles at the center.',
+  invariantFormula: 'AB = CD  ⇔  ∠AOB = ∠COD',
+  intuition: 'Triangles $\\triangle AOB$ and $\\triangle COD$ have three equal sides (two radii and the equal chord), making them congruent by SSS. Drag $A$ or $B$; $CD$ is kept equal to $AB$.',
+  proofSteps: [
+    'In $\\triangle AOB$ and $\\triangle COD$, $OA = OC = r$ and $OB = OD = r$.',
+    'Since chord $AB = CD$, all three corresponding sides are equal.',
+    'By SSS congruence, $\\triangle AOB \\cong \\triangle COD$, so $\\angle AOB = \\angle COD$.'
+  ],
+  defaultState: { span: 1.25, rot: 0.3 },
+  stepDemo(st, dt) { st.rot += dt * 0.6; },
+  drag: chordDrag,
+  handles: chordHandles,
+  render(ctx, st, g, hl) {
+    const O = { x: g.cx, y: g.cy };
+    const A = circlePt(g.cx, g.cy, g.r, st.rot - st.span / 2), B = circlePt(g.cx, g.cy, g.r, st.rot + st.span / 2);
+    const C = circlePt(g.cx, g.cy, g.r, st.rot + Math.PI - st.span / 2), D = circlePt(g.cx, g.cy, g.r, st.rot + Math.PI + st.span / 2);
+    drawSegment(ctx, A, B, AC, 2.4); drawSegment(ctx, C, D, SG, 2.4);
+    drawSegment(ctx, O, A, AC, hl ? 2.4 : 1.7); drawSegment(ctx, O, B, AC, hl ? 2.4 : 1.7);
+    drawSegment(ctx, O, C, SG, hl ? 2.4 : 1.7); drawSegment(ctx, O, D, SG, hl ? 2.4 : 1.7);
+    const a1 = angleDeg(A, O, B), a2 = angleDeg(C, O, D);
+    drawPoint(ctx, O, 'O', IK); drawPoint(ctx, C, 'C', SG); drawPoint(ctx, D, 'D', SG);
+    drawBadge(ctx, { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 - 14 }, '∠AOB=' + fmtAng(a1), RB, AC);
+    drawBadge(ctx, { x: (C.x + D.x) / 2, y: (C.y + D.y) / 2 + 16 }, '∠COD=' + fmtAng(a2), SB, SG);
+    return [{ label: '∠AOB', value: fmtAng(a1) }, { label: '∠COD', value: fmtAng(a2) }, { label: 'Chord AB', value: fmtLen(dist(A, B), g) }, { label: 'Chord CD', value: fmtLen(dist(C, D), g) }];
+  },
+  check: { q: 'If chord $AB$ equals chord $CD$ and $\\angle AOB = 68^\\circ$, what is $\\angle COD$?', options: ['68°', '34°', '136°'], answerIndex: 0, explain: 'Equal chords subtend equal central angles, so $\\angle COD = 68^\\circ$.' }
+},
+{
+  id: 'b4', num: 'E4', title: 'Butterfly Theorem (Chord Midpoint)',
+  statement: 'Through the midpoint $M$ of a chord $PQ$, draw any two chords $AB$ and $CD$; chords $AD$ and $BC$ meet $PQ$ at $X$ and $Y$ equidistant from $M$.',
+  invariantFormula: 'MX = MY  (when M is midpoint of PQ)',
+  intuition: 'Symmetry about the midpoint $M$ balances the two intercepts $X$ and $Y$ on chord $PQ$. Drag $A$ or $C$; $B$ and $D$ are the second points where lines $AM$ and $CM$ meet the circle.',
+  proofSteps: [
+    'Let $M$ be the midpoint of chord $PQ$, with chords $AB$ and $CD$ passing through $M$.',
+    'Lines $AD$ and $BC$ meet chord $PQ$ at $X$ and $Y$, on opposite sides of $M$.',
+    'By cyclic angle chases and perpendiculars from $X$ and $Y$ to the chords, $XM = YM$.'
+  ],
+  defaultState: { phi: 0.3, a: 2.6, c: 3.68, t: 0 },
+  stepDemo(st, dt) { st.t += dt; st.a = 2.6 + Math.sin(st.t) * 0.35; st.c = 3.68 - Math.sin(st.t * 1.2) * 0.35; },
+  handles(st, g) {
+    return [
+      { id: 'a', label: 'A', pt: circlePt(g.cx, g.cy, g.r, st.a), color: AC },
+      { id: 'c', label: 'C', pt: circlePt(g.cx, g.cy, g.r, st.c), color: SG }];
+  },
+  render(ctx, st, g, hl) {
+    const O = { x: g.cx, y: g.cy }, m = 0.35 * g.r, w = Math.sqrt(g.r * g.r - m * m);
+    const M = { x: g.cx + m * Math.cos(st.phi), y: g.cy + m * Math.sin(st.phi) };
+    const nx = -Math.sin(st.phi), ny = Math.cos(st.phi);
+    const P = { x: M.x + w * nx, y: M.y + w * ny }, Q = { x: M.x - w * nx, y: M.y - w * ny };
+    const A = circlePt(g.cx, g.cy, g.r, st.a), C = circlePt(g.cx, g.cy, g.r, st.c);
+    const second = (S) => {                      // second intersection of line S–M with the circle
+      const L = dist(S, M) || 1, ux = (M.x - S.x) / L, uy = (M.y - S.y) / L;
+      const t = -2 * (ux * (S.x - O.x) + uy * (S.y - O.y));
+      return { x: S.x + t * ux, y: S.y + t * uy };
+    };
+    const B = second(A), D = second(C);
+    const X = lineIntersect(A, D, P, Q), Y = lineIntersect(B, C, P, Q);
+    drawSegment(ctx, P, Q, IK, 2.2);
+    drawSegment(ctx, A, B, '#8A8478', 1.4, true); drawSegment(ctx, C, D, '#8A8478', 1.4, true);
+    drawSegment(ctx, A, D, AC, hl ? 2.4 : 1.8); drawSegment(ctx, B, C, SG, hl ? 2.4 : 1.8);
+    const mx = fmtLen(dist(M, X), g), my = fmtLen(dist(M, Y), g);
+    drawPoint(ctx, B, 'B', SG); drawPoint(ctx, D, 'D', AC); drawPoint(ctx, P, 'P', IK); drawPoint(ctx, Q, 'Q', IK);
+    drawPoint(ctx, M, 'M', IK); drawPoint(ctx, X, 'X', AC); drawPoint(ctx, Y, 'Y', SG);
+    drawBadge(ctx, { x: X.x, y: X.y - 18 }, 'MX=' + mx, RB, AC);
+    drawBadge(ctx, { x: Y.x, y: Y.y + 20 }, 'MY=' + my, SB, SG);
+    return [{ label: 'MX', value: mx }, { label: 'MY', value: my }, { label: 'Chord PQ', value: fmtLen(dist(P, Q), g) }];
+  },
+  check: { q: 'In the Butterfly Theorem setup with midpoint $M$ of chord $PQ$, if $MX = 4.5\\text{ cm}$, what is $MY$?', options: ['4.5 cm', '9 cm', '2.25 cm'], answerIndex: 0, explain: 'The Butterfly Theorem states that $M$ bisects segment $XY$, so $MY = MX = 4.5\\text{ cm}$.' }
+}
+];
+
+/* ---------- app state ---------- */
+const state = {
+  mode: 'core', coreIndex: 0, beyondIndex: 0, autoDemo: true, speed: 1.0, highlightProof: true, draggingId: null,
+  sceneStates: {
+    core: CORE_THEOREMS.map((t) => Object.assign({}, t.defaultState)),
+    beyond: BEYOND_THEOREMS.map((t) => Object.assign({}, t.defaultState))
+  },
+  checkedAnswers: {}
+};
+const $ = (id) => document.getElementById(id);
+const els = {};
+['brandHomeBtn','modeCoreBtn','modeBeyondBtn','openIndexBtn','closeIndexBtn','indexModal','coreIndexList','beyondIndexList','statusBanner','statusBannerText','closeBannerBtn','prevTheoremBtn','nextTheoremBtn','progressCounter','theoremSelect','theoremKicker','theoremTitle','toggleAnimBtn','speedBtn','resetSceneBtn','highlightStepBtn','geometryCanvas','readoutsGrid','theoremStatement','theoremInvariant','intuitionText','proofStepsList','checkQuestion','checkOptions','checkFeedback','masteredBadge'].forEach((k) => (els[k] = $(k)));
+
+function showNotice(msg) { els.statusBannerText.textContent = msg; els.statusBanner.classList.remove('hidden'); }
+const getCurrentList = () => (state.mode === 'core' ? CORE_THEOREMS : BEYOND_THEOREMS);
+const getCurrentIndex = () => (state.mode === 'core' ? state.coreIndex : state.beyondIndex);
+function setCurrentIndex(idx) {
+  const n = getCurrentList().length, w = ((idx % n) + n) % n;
+  if (state.mode === 'core') state.coreIndex = w; else state.beyondIndex = w;
+  renderAll();
+}
+const getCurrentTheorem = () => getCurrentList()[getCurrentIndex()];
+const getCurrentSceneState = () => state.sceneStates[state.mode][getCurrentIndex()];
+
+function getCanvasGeometry(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const cssW = Math.max(260, rect.width || 520), cssH = Math.max(240, rect.height || 360);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  if (canvas.width !== Math.round(cssW * dpr) || canvas.height !== Math.round(cssH * dpr)) {
+    canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
+  }
+  const r = Math.min(canvas.width, canvas.height) * 0.31;
+  return { ctx: canvas.getContext('2d'), width: canvas.width, height: canvas.height, dpr, cx: canvas.width / 2, cy: canvas.height / 2, r, scale: Math.max(12, r / 3.5) };
+}
+
+function getUniqueHandles(theorem, st, g) {
+  const raw = theorem.handles ? theorem.handles(st, g) || [] : [], out = [];
+  raw.forEach((h) => { if (!out.some((u) => Math.hypot(u.pt.x - h.pt.x, u.pt.y - h.pt.y) < 10)) out.push(h); });
+  return out;
+}
+
+function drawSceneFrame() {
+  try {
+    const theorem = getCurrentTheorem(), st = getCurrentSceneState(), g = getCanvasGeometry(els.geometryCanvas), ctx = g.ctx;
+    ctx.clearRect(0, 0, g.width, g.height);
+    ctx.save(); ctx.beginPath(); ctx.arc(g.cx, g.cy, g.r, 0, Math.PI * 2); ctx.strokeStyle = IK; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+    const metrics = theorem.render(ctx, st, g, state.highlightProof) || [];
+    getUniqueHandles(theorem, st, g).forEach((h) => {
+      ctx.save(); ctx.beginPath(); ctx.arc(h.pt.x, h.pt.y, 10, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.92)'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = h.color || AC; ctx.stroke();
+      ctx.font = '700 11px "JetBrains Mono", monospace'; ctx.fillStyle = h.color || AC; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(h.label, h.pt.x, h.pt.y + 0.5); ctx.restore();
+    });
+    els.readoutsGrid.innerHTML = metrics.map((m) => '<div class="math-chip"><span class="text-[#5E5A51]">' + escapeHtml(m.label) + ':</span> <strong>' + escapeHtml(m.value) + '</strong></div>').join('');
+  } catch (err) { showNotice('Diagram rendering notice: ' + err.message); }
+}
+
+function renderSelectOptions() {
+  els.theoremSelect.innerHTML = getCurrentList().map((t, i) => '<option value="' + i + '">' + t.num + ' · ' + escapeHtml(t.title) + '</option>').join('');
+  els.theoremSelect.value = String(getCurrentIndex());
+}
+
+function renderIndexModalLists() {
+  const build = (list, mode, cur, on, label) => list.map((t, i) => {
+    const isCur = state.mode === mode && i === cur;
+    return '<button type="button" data-mode="' + mode + '" data-idx="' + i + '" class="jump-item w-full text-left px-3.5 py-2.5 rounded-xl border text-sm flex items-center justify-between gap-2 cursor-pointer ' +
+      (isCur ? on : 'bg-[#FAF8F4] text-[#1C1B18] border-[#E6E1D6] hover:bg-[#F3EFE6]') + '"><span class="font-medium">' + t.num + ' · ' + escapeHtml(t.title) + '</span><span class="font-mono-tech text-xs opacity-75">' + label + '</span></button>';
+  }).join('');
+  els.coreIndexList.innerHTML = build(CORE_THEOREMS, 'core', state.coreIndex, 'bg-[#1C1B18] text-white border-[#1C1B18]', 'Core');
+  els.beyondIndexList.innerHTML = build(BEYOND_THEOREMS, 'beyond', state.beyondIndex, 'bg-[#2F6F5E] text-white border-[#2F6F5E]', 'Extended');
+  document.querySelectorAll('.jump-item').forEach((btn) => btn.addEventListener('click', () => {
+    state.mode = btn.getAttribute('data-mode');
+    const i = Number(btn.getAttribute('data-idx')) || 0;
+    if (state.mode === 'core') state.coreIndex = i; else state.beyondIndex = i;
+    els.indexModal.classList.add('hidden'); renderAll();
+  }));
+}
+
+function renderCheckSection(theorem) {
+  const key = theorem.id, chosen = state.checkedAnswers[key];
+  els.checkQuestion.innerHTML = formatMathText(theorem.check.q);
+  els.checkOptions.innerHTML = theorem.check.options.map((opt, i) => {
+    const cls = chosen === i ? 'border-[#1C1B18] bg-[#1C1B18] text-white' : 'border-[#E6E1D6] bg-[#FAF8F4] text-[#1C1B18] hover:bg-[#F3EFE6]';
+    return '<button type="button" data-opt="' + i + '" class="check-opt-btn w-full text-left px-3.5 py-2.5 rounded-xl border text-sm font-medium cursor-pointer ' + cls + '">' + escapeHtml(opt) + '</button>';
+  }).join('');
+  document.querySelectorAll('.check-opt-btn').forEach((btn) => btn.addEventListener('click', () => {
+    state.checkedAnswers[key] = Number(btn.getAttribute('data-opt')); renderCheckSection(theorem);
+  }));
+  if (typeof chosen === 'number') {
+    const ok = chosen === theorem.check.answerIndex;
+    els.checkFeedback.className = 'text-xs sm:text-sm p-3 rounded-xl leading-relaxed ' + (ok ? 'bg-[#EAF3F0] text-[#2F6F5E] border border-[#2F6F5E]/25' : 'bg-[#F9ECE7] text-[#B84A27] border border-[#B84A27]/25');
+    els.checkFeedback.innerHTML = '<strong>' + (ok ? 'Accurate: ' : 'Check again: ') + '</strong>' + formatMathText(theorem.check.explain);
+    els.masteredBadge.textContent = ok ? 'Verified' : 'Reviewed';
+    els.masteredBadge.className = 'text-xs font-mono-tech px-2.5 py-1 rounded-full ' + (ok ? 'bg-[#EAF3F0] text-[#2F6F5E]' : 'bg-[#F9ECE7] text-[#B84A27]');
+  } else {
+    els.checkFeedback.className = 'hidden text-xs sm:text-sm p-3 rounded-xl leading-relaxed';
+    els.masteredBadge.textContent = 'Unchecked';
+    els.masteredBadge.className = 'text-xs font-mono-tech px-2.5 py-1 rounded-full bg-[#F3EFE6] text-[#5E5A51]';
+  }
+}
+
+function renderAll() {
+  const list = getCurrentList(), idx = getCurrentIndex(), th = list[idx];
+  els.modeCoreBtn.classList.toggle('active', state.mode === 'core');
+  els.modeBeyondBtn.classList.toggle('active', state.mode === 'beyond');
+  els.progressCounter.textContent = (state.mode === 'core' ? 'Core ' : 'Beyond ') + (idx + 1) + ' / ' + list.length;
+  els.theoremKicker.textContent = (state.mode === 'core' ? 'Core Circle Theorem ' : 'Extended Circle Theorem ') + th.num;
+  els.theoremTitle.textContent = th.title;
+  els.theoremStatement.innerHTML = formatMathText(th.statement);
+  els.theoremInvariant.textContent = 'Invariant: ' + th.invariantFormula;
+  els.intuitionText.innerHTML = formatMathText(th.intuition);
+  els.proofStepsList.innerHTML = th.proofSteps.map((s) => '<li class="leading-relaxed">' + formatMathText(s) + '</li>').join('');
+  els.toggleAnimBtn.textContent = state.autoDemo ? 'Pause' : 'Play';
+  els.toggleAnimBtn.classList.toggle('is-paused', !state.autoDemo);
+  els.speedBtn.textContent = 'Speed: ' + state.speed.toFixed(1) + '×';
+  els.highlightStepBtn.textContent = state.highlightProof ? 'Highlight: On' : 'Highlight: Off';
+  renderSelectOptions(); renderCheckSection(th); drawSceneFrame();
+}
+
+/* ---------- dragging ---------- */
+function pointerToCanvasPt(evt, canvas) {
+  const rect = canvas.getBoundingClientRect(), k = canvas.width / Math.max(1, rect.width);
+  return { x: (evt.clientX - rect.left) * k, y: (evt.clientY - rect.top) * k };
+}
+function applyDrag(th, st, g, pt) {
+  const k = state.draggingId, ang = Math.atan2(pt.y - g.cy, pt.x - g.cx);
+  if (th.drag) th.drag(st, k, ang, g, pt);
+  else st[k] = th.clamp ? th.clamp(st, ang) : ang;
+}
+els.geometryCanvas.addEventListener('pointerdown', (evt) => {
+  const th = getCurrentTheorem(), st = getCurrentSceneState(), g = getCanvasGeometry(els.geometryCanvas);
+  const pt = pointerToCanvasPt(evt, els.geometryCanvas);
+  let hit = null, best = 28 * g.dpr;
+  getUniqueHandles(th, st, g).forEach((h) => { const d = dist(pt, h.pt); if (d <= best) { best = d; hit = h.id; } });
+  if (hit) {
+    state.draggingId = hit; state.autoDemo = false;
+    els.toggleAnimBtn.textContent = 'Play'; els.toggleAnimBtn.classList.add('is-paused');
+    els.geometryCanvas.setPointerCapture(evt.pointerId);
+  }
+});
+els.geometryCanvas.addEventListener('pointermove', (evt) => {
+  if (!state.draggingId) return;
+  const g = getCanvasGeometry(els.geometryCanvas);
+  applyDrag(getCurrentTheorem(), getCurrentSceneState(), g, pointerToCanvasPt(evt, els.geometryCanvas));
+  drawSceneFrame();
+});
+function stopDragging(evt) {
+  if (state.draggingId) {
+    state.draggingId = null;
+    try { if (evt && evt.pointerId) els.geometryCanvas.releasePointerCapture(evt.pointerId); } catch (_) {}
+  }
+}
+els.geometryCanvas.addEventListener('pointerup', stopDragging);
+els.geometryCanvas.addEventListener('pointercancel', stopDragging);
+
+/* ---------- controls ---------- */
+els.brandHomeBtn.addEventListener('click', () => { state.mode = 'core'; state.coreIndex = 0; renderAll(); });
+els.modeCoreBtn.addEventListener('click', () => { state.mode = 'core'; renderAll(); });
+els.modeBeyondBtn.addEventListener('click', () => { state.mode = 'beyond'; renderAll(); });
+els.prevTheoremBtn.addEventListener('click', () => setCurrentIndex(getCurrentIndex() - 1));
+els.nextTheoremBtn.addEventListener('click', () => setCurrentIndex(getCurrentIndex() + 1));
+els.theoremSelect.addEventListener('change', () => setCurrentIndex(Number(els.theoremSelect.value) || 0));
+els.toggleAnimBtn.addEventListener('click', () => {
+  state.autoDemo = !state.autoDemo;
+  els.toggleAnimBtn.textContent = state.autoDemo ? 'Pause' : 'Play';
+  els.toggleAnimBtn.classList.toggle('is-paused', !state.autoDemo);
+});
+els.speedBtn.addEventListener('click', () => {
+  const sp = [0.6, 1.0, 1.8];
+  state.speed = sp[(sp.indexOf(state.speed) + 1) % sp.length];
+  els.speedBtn.textContent = 'Speed: ' + state.speed.toFixed(1) + '×';
+});
+els.resetSceneBtn.addEventListener('click', () => {
+  state.sceneStates[state.mode][getCurrentIndex()] = Object.assign({}, getCurrentTheorem().defaultState);
+  state.autoDemo = true; renderAll();
+});
+els.highlightStepBtn.addEventListener('click', () => {
+  state.highlightProof = !state.highlightProof;
+  els.highlightStepBtn.textContent = state.highlightProof ? 'Highlight: On' : 'Highlight: Off';
+  drawSceneFrame();
+});
+els.openIndexBtn.addEventListener('click', () => { renderIndexModalLists(); els.indexModal.classList.remove('hidden'); });
+els.closeIndexBtn.addEventListener('click', () => els.indexModal.classList.add('hidden'));
+els.indexModal.addEventListener('click', (e) => { if (e.target === els.indexModal) els.indexModal.classList.add('hidden'); });
+els.closeBannerBtn.addEventListener('click', () => els.statusBanner.classList.add('hidden'));
+window.addEventListener('resize', drawSceneFrame);
+
+let lastTime = performance.now();
+function tick(now) {
+  const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) / 1000)) * state.speed;
+  lastTime = now;
+  if (state.autoDemo && !state.draggingId) {
+    const th = getCurrentTheorem();
+    if (th.stepDemo) { th.stepDemo(getCurrentSceneState(), dt); drawSceneFrame(); }
+  }
+  requestAnimationFrame(tick);
+}
+renderAll();
+requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
