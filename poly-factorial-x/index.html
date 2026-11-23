@@ -1,91 +1,1849 @@
-with open("index.html", "r", encoding="utf-8") as f:
-    src = f.read()
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crossover Locus — nᵏ vs n!</title>
+  <meta name="description" content="Interactive mathematical visualization comparing polynomial growth nᵏ against factorial growth n! with animated crossover trajectories and milestone pins." />
+  <link rel="canonical" href="https://unboringstem.pages.dev/poly-factorial-x/" />
 
-# 1. Ensure top-level breadcrumb back link to Unboring STEM is cleanly structured, accessible, and responsive
-old_bc_block = '''  <div class="w-full bg-[#FAF8F4]/95 border-b border-[#E6E1D6]/85">
-    <nav aria-label="Breadcrumb" class="max-w-6xl mx-auto px-4 sm:px-6 h-9 flex items-center gap-1.5 text-xs leading-none whitespace-nowrap overflow-hidden">
-      <a href="https://unboringstem.pages.dev/" class="group inline-flex items-center gap-1 font-semibold text-[#5E5A51] hover:text-[#B84A27] transition-colors shrink-0">
-        <svg class="w-3.5 h-3.5 transition-transform duration-150 group-hover:-translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 8H3.5"/><path d="M7.5 4L3.5 8L7.5 12"/></svg>
-        <span>Unboring STEM</span>
-      </a>
-      <span class="text-[#8A8478] select-none shrink-0" aria-hidden="true">/</span>
-      <span class="font-semibold text-[#1C1B18] truncate" aria-current="page">Circle Theorems</span>
-    </nav>
-  </div>'''
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://unboringstem.pages.dev/poly-factorial-x/" />
+  <meta property="og:title" content="Crossover Locus — nᵏ vs n!" />
+  <meta property="og:description" content="Interactive mathematical visualization comparing polynomial growth nᵏ against factorial growth n! with animated crossover trajectories and milestone pins." />
+  <meta property="og:image" content="https://unboringstem.pages.dev/poly-factorial-x/social.png" />
 
-new_bc_block = '''  <div class="w-full bg-[#F3EFE6]/70 border-b border-[#E6E1D6]">
-    <nav aria-label="Breadcrumb" class="max-w-6xl mx-auto px-3 sm:px-6 py-2 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-[13px] min-w-0">
-      <a href="https://unboringstem.pages.dev/" class="group inline-flex items-center gap-1.5 font-semibold text-[#5E5A51] hover:text-[#B84A27] transition-colors shrink-0 py-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B84A27]/40">
-        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-150 group-hover:-translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 8H3.5"/><path d="M7.5 4L3.5 8L7.5 12"/></svg>
-        <span>Unboring STEM</span>
-      </a>
-      <span class="text-[#8A8478] select-none shrink-0" aria-hidden="true">/</span>
-      <span class="font-semibold text-[#1C1B18] truncate min-w-0" aria-current="page">Circle Theorems</span>
-    </nav>
-  </div>'''
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://unboringstem.pages.dev/poly-factorial-x/" />
+  <meta name="twitter:title" content="Crossover Locus — nᵏ vs n!" />
+  <meta name="twitter:description" content="Interactive mathematical visualization comparing polynomial growth nᵏ against factorial growth n! with animated crossover trajectories and milestone pins." />
+  <meta name="twitter:image" content="https://unboringstem.pages.dev/poly-factorial-x/social.png" />
 
-if old_bc_block in src:
-    src = src.replace(old_bc_block, new_bc_block, 1)
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23FAF9F6' stroke='%23141413' stroke-width='2'/%3E%3Cpath d='M5 26 C13 24, 19 15, 27 5' fill='none' stroke='%23141413' stroke-width='2.2'/%3E%3Cpath d='M5 27 Q17 24 27 11' fill='none' stroke='%23E04F26' stroke-width='2.2'/%3E%3Ccircle cx='18' cy='16' r='3.5' fill='%23E04F26' stroke='%23FAF9F6' stroke-width='1.5'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            paper: '#FAF9F6',
+            surface: '#FFFFFF',
+            hairline: '#E5E4E0',
+            hairlineStrong: '#D2D0CA',
+            ink: '#141413',
+            graphite: '#6E6D68',
+            vermilion: '#E04F26',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-# 2. Enhance multi-screen responsiveness across CSS & layout containers (small phones, tablets, laptops, wide monitors)
-old_css = '''.canvas-stage{
-  width:100%;
-  aspect-ratio:4/3;
-  min-height:270px;
-  max-height:460px;
-  display:block;
-  border-radius:12px;
-  background:#FCFBF8;
-  border:1px solid var(--rule);
-  touch-action:none;
-  cursor:grab;
-}'''
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #FAF9F6;
+      color: #141413;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
 
-new_css = '''.canvas-stage{
-  width:100%;
-  aspect-ratio:4/3;
-  min-height:240px;
-  max-height:480px;
-  display:block;
-  border-radius:12px;
-  background:#FCFBF8;
-  border:1px solid var(--rule);
-  touch-action:none;
-  cursor:grab;
-}
-@media (max-width:480px){
-  .canvas-stage{
-    aspect-ratio:1/1;
-    min-height:245px;
-    max-height:330px;
-  }
-  .math-chip{
-    font-size:.86rem;
-    padding:.38rem .65rem;
-    flex:1 1 calc(50% - 0.5rem);
-    justify-content:space-between;
-  }
-  .math-chip strong{font-size:.94rem}
-  .pill-btn,.accent-btn{
-    padding:.42rem .72rem;
-    font-size:.8rem;
-  }
-}
-@media (min-width:1280px){
-  .canvas-stage{
-    max-height:500px;
-  }
-}'''
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
 
-if old_css in src:
-    src = src.replace(old_css, new_css, 1)
+    /* Dieter Rams Tactile Precision Slider */
+    input[type="range"].rams-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 2px;
+      background: #D2D0CA;
+      outline: none;
+      cursor: pointer;
+    }
 
-# Make main container & header scale comfortably on ultra-wide / tablet / phone screens
-src = src.replace('max-w-6xl', 'max-w-7xl')
-src = src.replace('px-4 sm:px-6 py-6 space-y-6', 'px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6')
-src = src.replace('grid grid-cols-1 lg:grid-cols-12 gap-6 items-start', 'grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 xl:gap-8 items-start')
+    input[type="range"].rams-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #E04F26;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 0 0 1px #141413;
+      cursor: grab;
+      transition: transform 0.12s ease;
+    }
 
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(src)
+    input[type="range"].rams-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
 
-print("Updated breadcrumb back link and multi-screen responsiveness.")
+    input[type="range"].rams-slider::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.06);
+    }
+
+    input[type="range"].rams-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #E04F26;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 0 0 1px #141413;
+      cursor: grab;
+      transition: transform 0.12s ease;
+    }
+
+    /* Minimal Hairline Scrollbar for Reference Drawer */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF9F6;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D2D0CA;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6E6D68;
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen w-screen bg-paper text-ink select-none">
+
+  <!-- Minimalist Top Swiss Header (Height: 48px) -->
+  <header class="h-12 shrink-0 w-full bg-surface border-b border-hairline px-4 sm:px-6 flex items-center justify-between z-30">
+    <!-- Left: Studio Title & Formula Legend -->
+    <div class="flex items-center gap-4 sm:gap-6 min-w-0">
+      <div class="flex items-center gap-2.5 truncate">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="21" height="21" rx="4" fill="#FAF9F6" stroke="#141413" stroke-width="1.5" />
+          <path d="M4 19.5C10 18 14.5 11.5 20 4" stroke="#141413" stroke-width="1.75" stroke-linecap="round" />
+          <path d="M4 20C12.5 18 17 13 20 8.5" stroke="#E04F26" stroke-width="1.75" stroke-linecap="round" />
+          <circle cx="13.5" cy="12" r="2.5" fill="#E04F26" stroke="#FFFFFF" stroke-width="1.25" />
+        </svg>
+        <h1 class="text-[13px] font-semibold tracking-tight text-ink truncate">
+          Crossover Locus
+        </h1>
+        <span class="hidden md:inline text-xs text-graphite font-mono">
+          — O(n<sup id="header-k-sup" class="text-vermilion font-semibold">2</sup>) vs O(n!)
+        </span>
+      </div>
+
+      <!-- Inline Hairline Curve Legend -->
+      <div class="hidden sm:flex items-center gap-4 pl-4 border-l border-hairline text-xs font-mono">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-[2px] bg-vermilion inline-block"></span>
+          <span class="text-ink">n<sup id="legend-k-sup" class="text-vermilion font-semibold">2</sup></span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-[2px] bg-ink inline-block"></span>
+          <span class="text-ink">n! = Γ(n+1)</span>
+        </div>
+        <div class="hidden lg:flex items-center gap-1.5">
+          <span class="w-3.5 border-t border-dashed border-vermilion inline-block"></span>
+          <span class="text-graphite">Locus (n*, y*)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Camera Status & Slide-over Table Drawer Trigger -->
+    <div class="flex items-center gap-2">
+      <button id="btn-auto-camera" type="button" aria-pressed="true"
+        class="h-7 px-2.5 rounded border text-[11px] font-mono tracking-tight transition-colors flex items-center gap-1.5 bg-paper border-hairlineStrong text-ink hover:border-ink"
+        title="Automatically track the active crossover point (or double-click canvas)">
+        <span id="auto-cam-dot" class="w-1.5 h-1.5 rounded-full bg-vermilion"></span>
+        <span id="auto-cam-label">Auto-Frame</span>
+      </button>
+
+      <button id="btn-toggle-drawer" type="button" aria-expanded="false"
+        class="h-7 px-3 rounded border border-hairlineStrong bg-surface hover:bg-paper text-ink text-[11px] font-mono font-medium tracking-tight transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-graphite" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18M9 4v16M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z" />
+        </svg>
+        <span>Table</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Primary Full-Bleed Canvas Viewport (Occupies ~85%+ of vertical space) -->
+  <main id="canvas-wrapper" class="relative flex-1 w-full bg-paper overflow-hidden cursor-crosshair">
+    <canvas id="mathCanvas" class="block w-full h-full"></canvas>
+
+    <!-- Quiet Top-Left Live Equation & Jump Readout on Paper -->
+    <div class="pointer-events-none absolute top-4 left-4 sm:left-6 flex flex-col gap-1">
+      <div class="font-mono text-xs sm:text-[13px] text-ink tracking-tight flex items-center gap-2">
+        <span class="text-vermilion font-semibold">f(n) = n<sup id="paper-k-sup">2</sup></span>
+        <span class="text-graphite">vs</span>
+        <span class="text-ink font-semibold">g(n) = n!</span>
+        <span id="paper-delta-badge" class="hidden px-1.5 py-0.5 rounded bg-surface border border-vermilion text-vermilion text-[10.5px] font-semibold tabular-nums">
+          Δn* = +1.56
+        </span>
+      </div>
+      <div id="paper-subtitle" class="font-mono text-[11px] text-graphite tabular-nums">
+        n! overtakes n² for all n &gt; 3.562
+      </div>
+    </div>
+
+    <!-- Subtle Bottom-Right Interaction Micro-Hint -->
+    <div class="pointer-events-none absolute bottom-3 right-4 text-[10px] font-mono text-graphite/80 hidden md:block">
+      Click any milestone pin to jump · Drag to pan · Scroll to zoom
+    </div>
+
+    <!-- Slide-Over Minimalist Reference Drawer (Hidden by default) -->
+    <aside id="reference-drawer" aria-hidden="true"
+      class="fixed top-12 bottom-16 right-0 w-full sm:w-[360px] bg-surface border-l border-hairline z-40 transform translate-x-full transition-transform duration-200 ease-out flex flex-col">
+      <!-- Drawer Header -->
+      <div class="px-5 py-3.5 border-b border-hairline flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-ink">Crossover Reference</h2>
+          <p class="text-[11px] text-graphite mt-0.5">Click any degree <span class="font-mono text-ink">k</span> to animate</p>
+        </div>
+        <button id="btn-close-drawer" type="button" aria-label="Close reference table"
+          class="w-7 h-7 rounded border border-hairline hover:border-ink flex items-center justify-center text-graphite hover:text-ink transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Table Column Headers -->
+      <div class="grid grid-cols-12 gap-2 px-5 py-2 bg-paper border-b border-hairline text-[10px] font-mono font-semibold uppercase tracking-wider text-graphite shrink-0">
+        <div class="col-span-3">Degree</div>
+        <div class="col-span-3 text-right">Exact n*</div>
+        <div class="col-span-2 text-right">Int n</div>
+        <div class="col-span-4 text-right">Value y*</div>
+      </div>
+
+      <!-- Scrollable Integer Degrees 1..15 -->
+      <div id="milestone-table-body" class="flex-1 overflow-y-auto divide-y divide-hairline">
+        <!-- Populated via JS -->
+      </div>
+
+      <!-- Stirling's Law Footnote -->
+      <div class="px-5 py-3 bg-paper border-t border-hairline shrink-0">
+        <div class="font-mono text-[11px] text-ink">
+          n! = nᵏ &nbsp;⟹&nbsp; n* ≈ <span class="text-vermilion font-semibold">e · k</span> + O(ln k)
+        </div>
+        <p class="text-[11px] text-graphite mt-1 leading-relaxed">
+          Each +1 increment in degree <span class="font-mono text-ink">k</span> shifts the crossover right by roughly <span class="font-mono text-ink">e ≈ 2.718</span>.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Single Unified Bottom Dieter Rams Control Dock (Height: 64px) -->
+  <footer class="h-16 shrink-0 w-full bg-surface border-t border-hairline px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-3 z-30 overflow-x-auto">
+
+    <!-- 1. Sweep Play/Pause + Speed + Step +1 + Precision Slider -->
+    <div class="flex items-center gap-1.5 sm:gap-2.5 flex-1 min-w-[300px] max-w-[600px]">
+      <!-- Play / Pause Sweep -->
+      <button id="btn-play-pause" type="button" aria-label="Play or pause degree sweep"
+        title="Sweep k continuously from 1 to 15"
+        class="w-8 h-8 rounded border border-ink bg-ink hover:bg-vermilion hover:border-vermilion text-surface flex items-center justify-center shrink-0 transition-colors">
+        <svg id="icon-play" class="w-3.5 h-3.5 ml-0.5" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4 2.5l9 5.5-9 5.5v-11z" />
+        </svg>
+        <svg id="icon-pause" class="w-3.5 h-3.5 hidden" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4 3h3v10H4V3zm5 0h3v10H9V3z" />
+        </svg>
+      </button>
+
+      <!-- Speed Toggle (1x / 2x) -->
+      <button id="btn-speed" type="button"
+        title="Toggle sweep animation speed (1× or 2×)"
+        class="h-8 px-2 rounded border border-hairline bg-paper hover:border-ink font-mono text-[11px] font-medium text-ink shrink-0 transition-colors">
+        1×
+      </button>
+
+      <!-- Animated Step +1 Button -->
+      <button id="btn-step-next-int" type="button"
+        title="Smoothly ease k to the next integer degree and highlight Δn*"
+        class="h-8 px-2.5 rounded border border-hairlineStrong bg-surface hover:bg-paper hover:border-ink font-mono text-[11px] font-semibold text-vermilion shrink-0 transition-colors flex items-center gap-1">
+        <span>Step +1</span>
+      </button>
+
+      <!-- Stepper - / k Readout / + -->
+      <div class="flex items-center border border-hairline rounded bg-paper h-8 shrink-0">
+        <button id="btn-step-down" type="button" aria-label="Decrease degree k"
+          class="w-6 h-full flex items-center justify-center font-mono text-sm text-graphite hover:text-ink hover:bg-surface transition-colors border-r border-hairline">
+          −
+        </button>
+        <div class="px-2 font-mono text-xs font-semibold tabular-nums text-ink min-w-[64px] text-center">
+          k = <span id="dock-k-val" class="text-vermilion">2.0</span>
+        </div>
+        <button id="btn-step-up" type="button" aria-label="Increase degree k"
+          class="w-6 h-full flex items-center justify-center font-mono text-sm text-graphite hover:text-ink hover:bg-surface transition-colors border-l border-hairline">
+          +
+        </button>
+      </div>
+
+      <!-- Tactile Precision Slider -->
+      <div class="flex-1 flex items-center px-1 min-w-[75px]">
+        <input id="degree-slider" type="range" min="1" max="15" step="0.05" value="2" class="rams-slider" aria-label="Polynomial degree k" />
+      </div>
+    </div>
+
+    <!-- 2. Segmented Scale Toggle (Linear vs Log10) + Locus Trail Toggle + Ghost Curves Toggle -->
+    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <div class="inline-flex h-8 rounded border border-hairline bg-paper p-0.5" role="group" aria-label="Y-Axis Scale">
+        <button id="btn-scale-linear" type="button"
+          class="px-2 rounded-sm text-[11px] font-mono font-medium transition-colors bg-surface text-ink border border-hairlineStrong">
+          Linear
+        </button>
+        <button id="btn-scale-log" type="button"
+          class="px-2 rounded-sm text-[11px] font-mono font-medium transition-colors text-graphite hover:text-ink border border-transparent">
+          Log₁₀
+        </button>
+      </div>
+
+      <button id="btn-locus-toggle" type="button" aria-pressed="true"
+        class="h-8 px-2.5 rounded border text-[11px] font-mono font-medium transition-colors flex items-center gap-1.5 bg-surface border-hairlineStrong text-ink hover:border-ink"
+        title="Toggle persistent crossover locus trajectory and integer milestone pins">
+        <span id="locus-dot" class="w-1.5 h-1.5 rounded-full bg-vermilion"></span>
+        <span>Locus</span>
+      </button>
+
+      <button id="btn-ghost-toggle" type="button" aria-pressed="true"
+        class="h-8 px-2.5 rounded border text-[11px] font-mono font-medium transition-colors flex items-center gap-1.5 bg-surface border-hairlineStrong text-ink hover:border-ink"
+        title="Toggle hairline traces of integer degrees 1 through 15">
+        <span id="ghost-dot" class="w-1.5 h-1.5 rounded-full bg-ink"></span>
+        <span class="hidden sm:inline">Ghosts</span>
+      </button>
+    </div>
+
+    <!-- 3. Compact Inline Readout Pill: Exact n* & First Integer Win -->
+    <div class="hidden xl:flex items-center h-8 px-3 rounded border border-hairline bg-paper font-mono text-xs tabular-nums gap-3 shrink-0">
+      <div class="flex items-center gap-1.5">
+        <span class="text-graphite">n* =</span>
+        <span id="dock-n-star" class="font-semibold text-vermilion">3.562</span>
+      </div>
+      <span class="text-hairlineStrong">|</span>
+      <div class="flex items-center gap-1.5">
+        <span class="text-graphite">Int win:</span>
+        <span id="dock-int-win" class="font-semibold text-ink">n = 4</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /**
+     * ============================================================================
+     * ASYMPTOTIC CROSSOVER STUDIO — SWISS EDITORIAL / DIETER RAMS EDITION
+     * Exact Lanczos Gamma + Stirling Log Fallback + High-DPI Canvas Renderer
+     * ============================================================================
+     */
+
+    // ----------------------------------------------------------------------------
+    // 1. MATHEMATICAL ENGINE (Lanczos Gamma, Stirling Fallback, Exact Solver)
+    // ----------------------------------------------------------------------------
+
+    const LN10 = Math.LN10;
+    const LANCZOS_G = 7;
+    const LANCZOS_P = [
+      0.99999999999980993,
+      676.5203681218851,
+      -1259.1392167224028,
+      771.32342877765313,
+      -176.61502916214059,
+      12.507343278686905,
+      -0.13857109526572012,
+      9.9843695780195716e-6,
+      1.5056327351493116e-7
+    ];
+
+    /**
+     * Computes ln(Gamma(z)) for z > 0.
+     * Uses Lanczos approximation for moderate z and Stirling's asymptotic series
+     * for large z so log-scale evaluation never overflows.
+     */
+    function lnGamma(z) {
+      if (z <= 0) return Infinity;
+      if (z < 0.5) {
+        return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+      }
+      // Stirling's asymptotic expansion for large arguments (z > 100)
+      if (z > 100) {
+        const invZ = 1 / z;
+        const invZ2 = invZ * invZ;
+        // ln(Gamma(z)) = (z - 0.5)*ln(z) - z + 0.5*ln(2*pi) + 1/(12z) - 1/(360z^3) + 1/(1260z^5)
+        return (
+          (z - 0.5) * Math.log(z) -
+          z +
+          0.5 * Math.log(2 * Math.PI) +
+          invZ * (1 / 12 - invZ2 * (1 / 360 - invZ2 / 1260))
+        );
+      }
+      z -= 1;
+      let x = LANCZOS_P[0];
+      for (let i = 1; i < LANCZOS_P.length; i++) {
+        x += LANCZOS_P[i] / (z + i);
+      }
+      const t = z + LANCZOS_G + 0.5;
+      return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+    }
+
+    /**
+     * Computes ln(n!) = ln(Gamma(n + 1)) for n >= 0.
+     */
+    function lnFactorial(n) {
+      if (n <= 0) return 0; // 0! = 1 => ln(1) = 0
+      if (Number.isInteger(n) && n <= 20) {
+        let f = 1;
+        for (let i = 2; i <= n; i++) f *= i;
+        return Math.log(f);
+      }
+      return lnGamma(n + 1);
+    }
+
+    /**
+     * Computes log10(n!) safely for any n >= 0 without Infinity overflow.
+     */
+    function log10Factorial(n) {
+      return lnFactorial(n) / LN10;
+    }
+
+    /**
+     * Computes log10(n^k) = k * log10(n) for n > 0.
+     */
+    function log10Poly(n, k) {
+      if (n <= 0) return -Infinity;
+      return k * Math.log10(n);
+    }
+
+    /**
+     * Computes continuous n! = Gamma(n + 1) in linear space.
+     */
+    function factorialContinuous(n) {
+      if (n <= 0) return 1;
+      if (n > 170.6) return Infinity;
+      return Math.exp(lnFactorial(n));
+    }
+
+    /**
+     * Exact root finder for n^k = Gamma(n + 1) (n > 1) using bracketed bisection + secant refinement.
+     */
+    function solveCrossover(k) {
+      if (Math.abs(k - 1) < 1e-7) {
+        return 2.0; // Exact solution for n^1 = n! beyond n=1
+      }
+
+      const h = (n) => lnFactorial(n) - k * Math.log(n);
+
+      let low = 1.0001;
+      let high = Math.max(2.5, k * 2.5);
+      while (h(high) <= 0 && high < 10000) {
+        low = high;
+        high *= 1.5;
+      }
+
+      if (k < 1.35) {
+        low = 1.5;
+        while (h(low) > 0 && low > 1.00001) {
+          low = 1 + (low - 1) * 0.5;
+        }
+      }
+
+      // Bracketed bisection for guaranteed convergence
+      for (let iter = 0; iter < 52; iter++) {
+        const mid = 0.5 * (low + high);
+        if (h(mid) < 0) {
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      // 4 Secant polish steps for near machine-epsilon precision
+      let x0 = low;
+      let x1 = high;
+      let f0 = h(x0);
+      let f1 = h(x1);
+      for (let s = 0; s < 4; s++) {
+        if (Math.abs(f1 - f0) < 1e-15) break;
+        const x2 = x1 - f1 * ((x1 - x0) / (f1 - f0));
+        if (x2 <= low || x2 >= high) break;
+        x0 = x1;
+        f0 = f1;
+        x1 = x2;
+        f1 = h(x1);
+      }
+
+      return x1;
+    }
+
+    /**
+     * Smallest integer n >= 2 such that n! > n^k.
+     */
+    function solveFirstIntegerCrossover(k) {
+      for (let n = 2; n <= 500; n++) {
+        if (lnFactorial(n) > k * Math.log(n) + 1e-12) {
+          return n;
+        }
+      }
+      return Math.ceil(solveCrossover(k));
+    }
+
+    /**
+     * Formats numbers cleanly in tabular scientific or decimal notation.
+     */
+    function formatMathNumber(val, decimals = 2) {
+      if (!isFinite(val)) return '∞';
+      if (val === 0) return '0';
+      const abs = Math.abs(val);
+      if (abs >= 1e7) {
+        return val.toExponential(2).replace('+', '');
+      }
+      if (abs >= 1e4) {
+        return Math.round(val).toLocaleString('en-US');
+      }
+      if (abs >= 100) {
+        return val.toFixed(1);
+      }
+      if (abs >= 1) {
+        return val.toFixed(decimals);
+      }
+      return val.toPrecision(3);
+    }
+
+    /**
+     * Formats a value given its base-10 logarithm (log10(v)) without overflow.
+     */
+    function formatFromLog10(log10Val) {
+      if (!isFinite(log10Val)) return log10Val < 0 ? '0' : '∞';
+      if (log10Val < -3) return '< 10⁻³';
+      if (log10Val < 4) {
+        const v = Math.pow(10, log10Val);
+        return formatMathNumber(v, 2);
+      }
+      if (log10Val < 1e9) {
+        const exp = Math.floor(log10Val);
+        const mantissa = Math.pow(10, log10Val - exp);
+        return `${mantissa.toFixed(2)}e${exp}`;
+      }
+      return `10^${formatMathNumber(log10Val, 1)}`;
+    }
+
+    /**
+     * Exact root finder for n^k = Gamma(n + 1) (n >= 1) using bracketed bisection + secant refinement.
+     * Note: For k = 1, 1^1 = 1! = 1 at n = 1, and n^1 = n! again at n = 2.
+     */
+    function solveCrossover(k) {
+      if (k <= 1.00001) {
+        return 1.0; // Base milestone k=1 anchored at n*=1.000 (1^1 = 1!)
+      }
+
+      const h = (n) => lnFactorial(n) - k * Math.log(n);
+
+      let low = 1.0001;
+      let high = Math.max(2.5, k * 2.5);
+      while (h(high) <= 0 && high < 10000) {
+        low = high;
+        high *= 1.5;
+      }
+
+      if (k < 1.35) {
+        low = 1.5;
+        while (h(low) > 0 && low > 1.00001) {
+          low = 1 + (low - 1) * 0.5;
+        }
+      }
+
+      // Bracketed bisection for guaranteed convergence
+      for (let iter = 0; iter < 52; iter++) {
+        const mid = 0.5 * (low + high);
+        if (h(mid) < 0) {
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      // 4 Secant polish steps for near machine-epsilon precision
+      let x0 = low;
+      let x1 = high;
+      let f0 = h(x0);
+      let f1 = h(x1);
+      for (let s = 0; s < 4; s++) {
+        if (Math.abs(f1 - f0) < 1e-15) break;
+        const x2 = x1 - f1 * ((x1 - x0) / (f1 - f0));
+        if (x2 <= low || x2 >= high) break;
+        x0 = x1;
+        f0 = f1;
+        x1 = x2;
+        f1 = h(x1);
+      }
+
+      return x1;
+    }
+// ... existing code ... -->
+    const state = {
+      k: 2.0,
+      scaleMode: 'linear',   // 'linear' | 'log10'
+      showLocus: true,
+      showGhosts: true,
+      autoCamera: true,
+      isPlaying: false,
+      sweepSpeed: 1,         // 1 or 2
+      drawerOpen: false,
+
+      // Smooth Step / Jump Tween State
+      kTween: null,          // { fromK, toK, startTime, duration, fromNStar, toNStar }
+      highlightJump: null,   // { deltaN, targetK, expireTime }
+      milestoneRipples: [],  // [{ k, nStar, log10YStar, birthTime }]
+      lastPassedIntK: 2,
+
+      nStar: 3.56238,
+      yStar: 12.6905,
+      log10YStar: 1.10348,
+      intN: 4,
+
+      view: { xMin: 0, xMax: 6.4, yMin: 0, yMax: 28 },
+      targetView: { xMin: 0, xMax: 6.4, yMin: 0, yMax: 28 },
+
+      // Hitboxes for interactive milestone pins rendered on canvas
+      pinHitboxes: [],
+      hoveredPinK: null,
+
+      hoverN: null,
+      hoverSy: null,
+      isDragging: false,
+      dragStartPx: { x: 0, y: 0 },
+      dragStartView: null,
+
+      lastTimestamp: 0,
+      pulsePhase: 0,
+    };
+
+    // ----------------------------------------------------------------------------
+    // 2. DESIGN TOKENS & APPLICATION STATE
+    // ----------------------------------------------------------------------------
+
+    const TOKENS = {
+      paper: '#FAF9F6',
+      surface: '#FFFFFF',
+      hairline: '#E5E4E0',
+      hairlineStrong: '#D2D0CA',
+      ink: '#141413',
+      graphite: '#6E6D68',
+      vermilion: '#E04F26',
+    };
+
+    // ----------------------------------------------------------------------------
+    // 3. DOM REFERENCES & MILESTONE PRECOMPUTATION
+    // ----------------------------------------------------------------------------
+
+    const canvasWrapper = document.getElementById('canvas-wrapper');
+    const canvas = document.getElementById('mathCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const degreeSlider = document.getElementById('degree-slider');
+    const dockKVal = document.getElementById('dock-k-val');
+    const dockNStar = document.getElementById('dock-n-star');
+    const dockIntWin = document.getElementById('dock-int-win');
+    const paperDeltaBadge = document.getElementById('paper-delta-badge');
+
+    const btnPlayPause = document.getElementById('btn-play-pause');
+    const iconPlay = document.getElementById('icon-play');
+    const iconPause = document.getElementById('icon-pause');
+    const btnSpeed = document.getElementById('btn-speed');
+    const btnStepNextInt = document.getElementById('btn-step-next-int');
+    const btnStepDown = document.getElementById('btn-step-down');
+    const btnStepUp = document.getElementById('btn-step-up');
+
+    const btnScaleLinear = document.getElementById('btn-scale-linear');
+    const btnScaleLog = document.getElementById('btn-scale-log');
+    const btnLocusToggle = document.getElementById('btn-locus-toggle');
+    const locusDot = document.getElementById('locus-dot');
+    const btnGhostToggle = document.getElementById('btn-ghost-toggle');
+    const ghostDot = document.getElementById('ghost-dot');
+
+    const btnAutoCamera = document.getElementById('btn-auto-camera');
+    const autoCamDot = document.getElementById('auto-cam-dot');
+    const autoCamLabel = document.getElementById('auto-cam-label');
+
+    const btnToggleDrawer = document.getElementById('btn-toggle-drawer');
+    const btnCloseDrawer = document.getElementById('btn-close-drawer');
+    const referenceDrawer = document.getElementById('reference-drawer');
+    const milestoneTableBody = document.getElementById('milestone-table-body');
+
+    // Precompute integer milestones k = 1..15
+    const milestones = [];
+    for (let kInt = 1; kInt <= 15; kInt++) {
+      const nCross = solveCrossover(kInt);
+      const log10YCross = kInt * Math.log10(nCross);
+      const nInt = solveFirstIntegerCrossover(kInt);
+      milestones.push({
+        k: kInt,
+        nStar: nCross,
+        intN: nInt,
+        log10YStar: log10YCross,
+        yStar: Math.pow(10, log10YCross)
+      });
+    }
+
+    // Precompute dense continuous locus samples k = 1.00 .. 15.00 (step 0.05) for silky trajectory drawing
+    const locusSamples = [];
+    for (let i = 0; i <= 280; i++) {
+      const ks = 1 + (i / 280) * 14;
+      const ns = solveCrossover(ks);
+      const log10Ys = ks * Math.log10(ns);
+      locusSamples.push({
+        k: ks,
+        nStar: ns,
+        log10YStar: log10Ys,
+        yStar: Math.pow(10, log10Ys)
+      });
+    }
+
+    function renderMilestoneTable() {
+      milestoneTableBody.innerHTML = '';
+      milestones.forEach((m) => {
+        const isSelected = Math.abs(state.k - m.k) < 0.06;
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = `w-full grid grid-cols-12 gap-2 px-5 py-2.5 text-left font-mono text-xs tabular-nums transition-colors items-center ${
+          isSelected
+            ? 'bg-paper text-ink font-semibold border-l-2 border-l-vermilion'
+            : 'hover:bg-paper/70 text-ink'
+        }`;
+
+        row.innerHTML = `
+          <div class="col-span-3 ${isSelected ? 'text-vermilion' : 'text-ink'}">n<sup>${m.k}</sup></div>
+          <div class="col-span-3 text-right text-vermilion font-medium">${m.nStar.toFixed(3)}</div>
+          <div class="col-span-2 text-right text-ink">${m.intN}</div>
+          <div class="col-span-4 text-right text-graphite truncate">${formatFromLog10(m.log10YStar)}</div>
+        `;
+
+        row.addEventListener('click', () => {
+          animateToDegree(m.k, true);
+        });
+
+        milestoneTableBody.appendChild(row);
+      });
+    }
+
+    // ----------------------------------------------------------------------------
+    // 4. SMART AUTO-FRAMING CAMERA & SMOOTH DEGREE TWEENS
+    // ----------------------------------------------------------------------------
+
+    function computeIdealTargetView() {
+      const nStar = state.nStar;
+      // Place active crossover point around ~48-55% across X and ~45% up Y
+      // so both curves and the trailing locus path are clearly framed
+      const xMax = Math.max(3.8, nStar * 1.82);
+
+      if (state.scaleMode === 'linear') {
+        const yCross = Math.pow(10, state.log10YStar);
+        const yMax = Math.max(12, yCross * 2.25);
+        state.targetView = { xMin: 0, xMax, yMin: 0, yMax };
+      } else {
+        const yMax = Math.max(2.4, state.log10YStar * 2.15);
+        state.targetView = {
+          xMin: 0,
+          xMax: Math.max(4.4, nStar * 1.82),
+          yMin: 0,
+          yMax
+        };
+      }
+    }
+
+    function triggerMilestoneRipple(kInt) {
+      const m = milestones[kInt - 1];
+      if (!m) return;
+      state.milestoneRipples.push({
+        k: kInt,
+        nStar: m.nStar,
+        log10YStar: m.log10YStar,
+        yStar: m.yStar,
+        birthTime: performance.now()
+      });
+    }
+
+    function animateToDegree(targetK, showDelta = true) {
+      stopAutoPlay();
+      const clampedK = Math.max(1, Math.min(15, targetK));
+      const fromK = state.k;
+      const fromNStar = state.nStar;
+      const toNStar = solveCrossover(clampedK);
+
+      state.autoCamera = true;
+      updateAutoCameraUI();
+
+      if (Math.abs(clampedK - fromK) < 0.01) {
+        setDegree(clampedK);
+        if (Number.isInteger(clampedK)) triggerMilestoneRipple(clampedK);
+        return;
+      }
+
+      state.kTween = {
+        fromK,
+        toK: clampedK,
+        fromNStar,
+        toNStar,
+        startTime: performance.now(),
+        duration: Math.min(950, Math.max(420, Math.abs(clampedK - fromK) * 320)),
+        showDelta
+      };
+    }
+
+    function updateMetricsAndUI() {
+      const k = state.k;
+      const prevNStar = state.nStar;
+      state.nStar = solveCrossover(k);
+      state.log10YStar = k * Math.log10(state.nStar);
+      state.yStar = Math.pow(10, state.log10YStar);
+      state.intN = solveFirstIntegerCrossover(k);
+
+      // Detect integer milestone crossings during sweep or slider drag
+      const currentFloorInt = Math.floor(k + 1e-6);
+      if (currentFloorInt > state.lastPassedIntK && currentFloorInt >= 1 && currentFloorInt <= 15) {
+        triggerMilestoneRipple(currentFloorInt);
+      }
+      state.lastPassedIntK = currentFloorInt;
+
+      const kFormatted = Math.abs(k - Math.round(k)) < 0.02
+        ? Math.round(k).toString()
+        : k.toFixed(2);
+
+      document.getElementById('header-k-sup').textContent = kFormatted;
+      document.getElementById('legend-k-sup').textContent = kFormatted;
+      document.getElementById('paper-k-sup').textContent = kFormatted;
+      document.getElementById('paper-subtitle').textContent =
+        `n! overtakes n^${kFormatted} for all n > ${state.nStar.toFixed(3)}  ·  First integer win: n = ${state.intN}`;
+
+      dockKVal.textContent = Number.isInteger(Math.round(k * 10) / 10)
+        ? (Math.round(k * 10) / 10).toFixed(1)
+        : k.toFixed(2);
+      dockNStar.textContent = state.nStar.toFixed(3);
+      dockIntWin.textContent = `n = ${state.intN}`;
+      degreeSlider.value = k;
+
+      // Update jump delta badge visibility
+      if (state.highlightJump && performance.now() < state.highlightJump.expireTime) {
+        const sign = state.highlightJump.deltaN >= 0 ? '+' : '';
+        paperDeltaBadge.textContent = `Δn* = ${sign}${state.highlightJump.deltaN.toFixed(2)}`;
+        paperDeltaBadge.classList.remove('hidden');
+      } else {
+        paperDeltaBadge.classList.add('hidden');
+      }
+
+      // Subtle Swiss progress fill on slider track
+      const pct = ((k - 1) / 14) * 100;
+      degreeSlider.style.background = `linear-gradient(to right, #E04F26 0%, #E04F26 ${pct}%, #D2D0CA ${pct}%, #D2D0CA 100%)`;
+
+      if (state.drawerOpen) {
+        renderMilestoneTable();
+      }
+
+      if (state.autoCamera) {
+        computeIdealTargetView();
+      }
+    }
+
+    function setDegree(newK) {
+      state.k = Math.max(1, Math.min(15, newK));
+      updateMetricsAndUI();
+    }
+
+    // ----------------------------------------------------------------------------
+    // 5. CONTROL DOCK & DRAWER INTERACTIONS
+    // ----------------------------------------------------------------------------
+
+    degreeSlider.addEventListener('input', (e) => {
+      stopAutoPlay();
+      state.kTween = null;
+      setDegree(parseFloat(e.target.value));
+    });
+
+    btnStepDown.addEventListener('click', () => {
+      const target = Math.abs(state.k - Math.round(state.k)) < 0.05
+        ? Math.round(state.k) - 1
+        : Math.floor(state.k);
+      animateToDegree(Math.max(1, target), true);
+    });
+
+    btnStepUp.addEventListener('click', () => {
+      const target = Math.abs(state.k - Math.round(state.k)) < 0.05
+        ? Math.round(state.k) + 1
+        : Math.ceil(state.k);
+      animateToDegree(Math.min(15, target), true);
+    });
+
+    btnStepNextInt.addEventListener('click', () => {
+      const currentInt = Math.floor(state.k + 0.02);
+      const nextInt = currentInt >= 15 ? 1 : currentInt + 1;
+      animateToDegree(nextInt, true);
+    });
+
+    btnSpeed.addEventListener('click', () => {
+      state.sweepSpeed = state.sweepSpeed === 1 ? 2 : 1;
+      btnSpeed.textContent = `${state.sweepSpeed}×`;
+    });
+
+    function startAutoPlay() {
+      state.kTween = null;
+      state.isPlaying = true;
+      if (state.k >= 14.95) {
+        state.lastPassedIntK = 0;
+        setDegree(1.0);
+        triggerMilestoneRipple(1);
+      }
+      state.autoCamera = true;
+      updateAutoCameraUI();
+      iconPlay.classList.add('hidden');
+      iconPause.classList.remove('hidden');
+      btnPlayPause.classList.add('bg-vermilion', 'border-vermilion');
+      btnPlayPause.classList.remove('bg-ink', 'border-ink');
+    }
+
+    function stopAutoPlay() {
+      state.isPlaying = false;
+      iconPlay.classList.remove('hidden');
+      iconPause.classList.add('hidden');
+      btnPlayPause.classList.remove('bg-vermilion', 'border-vermilion');
+      btnPlayPause.classList.add('bg-ink', 'border-ink');
+    }
+
+    btnPlayPause.addEventListener('click', () => {
+      if (state.isPlaying) stopAutoPlay();
+      else startAutoPlay();
+    });
+
+    function setScaleMode(mode) {
+      state.scaleMode = mode;
+      if (mode === 'linear') {
+        btnScaleLinear.className = 'px-2 rounded-sm text-[11px] font-mono font-medium transition-colors bg-surface text-ink border border-hairlineStrong';
+        btnScaleLog.className = 'px-2 rounded-sm text-[11px] font-mono font-medium transition-colors text-graphite hover:text-ink border border-transparent';
+      } else {
+        btnScaleLog.className = 'px-2 rounded-sm text-[11px] font-mono font-medium transition-colors bg-surface text-ink border border-hairlineStrong';
+        btnScaleLinear.className = 'px-2 rounded-sm text-[11px] font-mono font-medium transition-colors text-graphite hover:text-ink border border-transparent';
+      }
+      state.autoCamera = true;
+      updateAutoCameraUI();
+      computeIdealTargetView();
+    }
+
+    btnScaleLinear.addEventListener('click', () => setScaleMode('linear'));
+    btnScaleLog.addEventListener('click', () => setScaleMode('log10'));
+
+    btnLocusToggle.addEventListener('click', () => {
+      state.showLocus = !state.showLocus;
+      btnLocusToggle.setAttribute('aria-pressed', state.showLocus);
+      if (state.showLocus) {
+        btnLocusToggle.className = 'h-8 px-2.5 rounded border text-[11px] font-mono font-medium transition-colors flex items-center gap-1.5 bg-surface border-hairlineStrong text-ink hover:border-ink';
+        locusDot.className = 'w-1.5 h-1.5 rounded-full bg-vermilion';
+      } else {
+        btnLocusToggle.className = 'h-8 px-2.5 rounded border text-[11px] font-mono font-medium transition-colors flex items-center gap-1.5 bg-paper border-hairline text-graphite hover:text-ink';
+        locusDot.className = 'w-1.5 h-1.5 rounded-full bg-hairlineStrong';
+      }
+    });
+
+    btnGhostToggle.addEventListener('click', () => {
+      state.showGhosts = !state.showGhosts;
+      btnGhostToggle.setAttribute('aria-pressed', state.showGhosts);
+      if (state.showGhosts) {
+        btnGhostToggle.className = 'h-8 px-2.5 rounded border text-[11px] font-mono font-medium transition-colors flex items-center gap-1.5 bg-surface border-hairlineStrong text-ink hover:border-ink';
+        ghostDot.className = 'w-1.5 h-1.5 rounded-full bg-ink';
+      } else {
+        btnGhostToggle.className = 'h-8 px-2.5 rounded border text-[11px] font-mono font-medium transition-colors flex items-center gap-1.5 bg-paper border-hairline text-graphite hover:text-ink';
+        ghostDot.className = 'w-1.5 h-1.5 rounded-full bg-hairlineStrong';
+      }
+    });
+
+    function updateAutoCameraUI() {
+      btnAutoCamera.setAttribute('aria-pressed', state.autoCamera);
+      if (state.autoCamera) {
+        btnAutoCamera.className = 'h-7 px-2.5 rounded border text-[11px] font-mono tracking-tight transition-colors flex items-center gap-1.5 bg-paper border-hairlineStrong text-ink hover:border-ink';
+        autoCamDot.className = 'w-1.5 h-1.5 rounded-full bg-vermilion';
+        autoCamLabel.textContent = 'Auto-Frame';
+      } else {
+        btnAutoCamera.className = 'h-7 px-2.5 rounded border text-[11px] font-mono tracking-tight transition-colors flex items-center gap-1.5 bg-surface border-vermilion text-vermilion hover:bg-paper';
+        autoCamDot.className = 'w-1.5 h-1.5 rounded-full bg-vermilion';
+        autoCamLabel.textContent = 'Re-center';
+      }
+    }
+
+    btnAutoCamera.addEventListener('click', () => {
+      state.autoCamera = true;
+      updateAutoCameraUI();
+      computeIdealTargetView();
+    });
+
+    function setDrawerOpen(open) {
+      state.drawerOpen = open;
+      btnToggleDrawer.setAttribute('aria-expanded', open);
+      referenceDrawer.setAttribute('aria-hidden', !open);
+      if (open) {
+        renderMilestoneTable();
+        referenceDrawer.classList.remove('translate-x-full');
+        btnToggleDrawer.classList.add('bg-paper', 'border-ink');
+      } else {
+        referenceDrawer.classList.add('translate-x-full');
+        btnToggleDrawer.classList.remove('bg-paper', 'border-ink');
+      }
+    }
+
+    btnToggleDrawer.addEventListener('click', () => setDrawerOpen(!state.drawerOpen));
+    btnCloseDrawer.addEventListener('click', () => setDrawerOpen(false));
+
+    // ----------------------------------------------------------------------------
+    // 6. CANVAS PAN, ZOOM, PIN CLICKING & PRECISION CROSSHAIR
+    // ----------------------------------------------------------------------------
+
+    const PAD = { top: 68, right: 36, bottom: 48, left: 68 };
+
+    function getPlotRect(width, height) {
+      return {
+        x: PAD.left,
+        y: PAD.top,
+        w: Math.max(120, width - PAD.left - PAD.right),
+        h: Math.max(120, height - PAD.top - PAD.bottom)
+      };
+    }
+
+    function worldToScreen(wx, wy, plot) {
+      const { xMin, xMax, yMin, yMax } = state.view;
+      const sx = plot.x + ((wx - xMin) / (xMax - xMin)) * plot.w;
+      const sy = plot.y + plot.h - ((wy - yMin) / (yMax - yMin)) * plot.h;
+      return { x: sx, y: sy };
+    }
+
+    function screenToWorld(sx, sy, plot) {
+      const { xMin, xMax, yMin, yMax } = state.view;
+      const wx = xMin + ((sx - plot.x) / plot.w) * (xMax - xMin);
+      const wy = yMin + ((plot.y + plot.h - sy) / plot.h) * (yMax - yMin);
+      return { x: wx, y: wy };
+    }
+
+    function findPinAtPoint(sx, sy) {
+      for (let i = state.pinHitboxes.length - 1; i >= 0; i--) {
+        const hb = state.pinHitboxes[i];
+        const dist = Math.hypot(sx - hb.x, sy - hb.y);
+        if (dist <= hb.r || (sx >= hb.pillX && sx <= hb.pillX + hb.pillW && sy >= hb.pillY && sy <= hb.pillY + hb.pillH)) {
+          return hb.k;
+        }
+      }
+      return null;
+    }
+
+    let pointerDownPos = { x: 0, y: 0 };
+
+    canvasWrapper.addEventListener('pointerdown', (e) => {
+      if (e.target !== canvas) return;
+      pointerDownPos = { x: e.clientX, y: e.clientY };
+      state.isDragging = true;
+      state.dragStartPx = { x: e.clientX, y: e.clientY };
+      state.dragStartView = { ...state.view };
+      canvasWrapper.setPointerCapture(e.pointerId);
+    });
+
+    canvasWrapper.addEventListener('pointermove', (e) => {
+      const rect = canvasWrapper.getBoundingClientRect();
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
+      const plot = getPlotRect(rect.width, rect.height);
+
+      // Check hover over interactive milestone pins
+      const hitK = findPinAtPoint(sx, sy);
+      state.hoveredPinK = hitK;
+      canvasWrapper.style.cursor = hitK !== null ? 'pointer' : (state.isDragging ? 'grabbing' : 'crosshair');
+
+      if (state.isDragging && state.dragStartView) {
+        const movedDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        if (movedDist > 4 && state.autoCamera) {
+          state.autoCamera = false;
+          updateAutoCameraUI();
+        }
+        const dxPx = e.clientX - state.dragStartPx.x;
+        const dyPx = e.clientY - state.dragStartPx.y;
+
+        const spanX = state.dragStartView.xMax - state.dragStartView.xMin;
+        const spanY = state.dragStartView.yMax - state.dragStartView.yMin;
+
+        const dxWorld = (dxPx / plot.w) * spanX;
+        const dyWorld = (dyPx / plot.h) * spanY;
+
+        let newXMin = state.dragStartView.xMin - dxWorld;
+        let newXMax = state.dragStartView.xMax - dxWorld;
+        let newYMin = state.dragStartView.yMin + dyWorld;
+        let newYMax = state.dragStartView.yMax + dyWorld;
+
+        if (newXMin < 0) {
+          newXMax -= newXMin;
+          newXMin = 0;
+        }
+        if (newYMin < 0) {
+          newYMax -= newYMin;
+          newYMin = 0;
+        }
+
+        state.view = { xMin: newXMin, xMax: newXMax, yMin: newYMin, yMax: newYMax };
+        state.targetView = { ...state.view };
+      }
+
+      if (hitK === null && sx >= plot.x && sx <= plot.x + plot.w && sy >= plot.y && sy <= plot.y + plot.h) {
+        const world = screenToWorld(sx, sy, plot);
+        state.hoverN = Math.max(0.001, world.x);
+        state.hoverSy = sy;
+      } else {
+        state.hoverN = null;
+        state.hoverSy = null;
+      }
+    });
+
+    canvasWrapper.addEventListener('pointerup', (e) => {
+      const movedDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      state.isDragging = false;
+      if (canvasWrapper.hasPointerCapture(e.pointerId)) {
+        canvasWrapper.releasePointerCapture(e.pointerId);
+      }
+
+      // If click (minimal drag), check if user clicked an integer milestone pin
+      if (movedDist < 5) {
+        const rect = canvasWrapper.getBoundingClientRect();
+        const sx = e.clientX - rect.left;
+        const sy = e.clientY - rect.top;
+        const clickedPinK = findPinAtPoint(sx, sy);
+        if (clickedPinK !== null) {
+          animateToDegree(clickedPinK, true);
+        }
+      }
+    });
+
+    canvasWrapper.addEventListener('pointerleave', () => {
+      state.hoverN = null;
+      state.hoverSy = null;
+      state.hoveredPinK = null;
+    });
+
+    canvasWrapper.addEventListener('dblclick', () => {
+      state.autoCamera = true;
+      updateAutoCameraUI();
+      computeIdealTargetView();
+    });
+
+    canvasWrapper.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (state.autoCamera) {
+        state.autoCamera = false;
+        updateAutoCameraUI();
+      }
+      const rect = canvasWrapper.getBoundingClientRect();
+      const plot = getPlotRect(rect.width, rect.height);
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
+
+      const zoomFactor = e.deltaY > 0 ? 1.12 : 0.89;
+      const focus = screenToWorld(
+        Math.max(plot.x, Math.min(plot.x + plot.w, sx)),
+        Math.max(plot.y, Math.min(plot.y + plot.h, sy)),
+        plot
+      );
+
+      let newXMin = Math.max(0, focus.x - (focus.x - state.view.xMin) * zoomFactor);
+      let newXMax = focus.x + (state.view.xMax - focus.x) * zoomFactor;
+      let newYMin = Math.max(0, focus.y - (focus.y - state.view.yMin) * zoomFactor);
+      let newYMax = focus.y + (state.view.yMax - focus.y) * zoomFactor;
+
+      if (newXMax - newXMin < 0.4) newXMax = newXMin + 0.4;
+      if (newYMax - newYMin < 0.4) newYMax = newYMin + 0.4;
+
+      state.view = { xMin: newXMin, xMax: newXMax, yMin: newYMin, yMax: newYMax };
+      state.targetView = { ...state.view };
+    }, { passive: false });
+
+    // ----------------------------------------------------------------------------
+    // 7. HIGH-DPI SWISS EDITORIAL CANVAS RENDERER
+    // ----------------------------------------------------------------------------
+
+    function computeNiceTicks(min, max, targetCount = 6) {
+      const span = max - min;
+      if (span <= 0) return [min];
+      const rawStep = span / targetCount;
+      const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+      const norm = rawStep / mag;
+      let niceStep;
+      if (norm < 1.5) niceStep = 1 * mag;
+      else if (norm < 3) niceStep = 2 * mag;
+      else if (norm < 7) niceStep = 5 * mag;
+      else niceStep = 10 * mag;
+
+      const ticks = [];
+      const start = Math.ceil(min / niceStep) * niceStep;
+      for (let v = start; v <= max + niceStep * 0.001; v += niceStep) {
+        ticks.push(v);
+      }
+      return ticks;
+    }
+
+    function evalPolyPlotY(n, k) {
+      if (state.scaleMode === 'log10') {
+        if (n <= 0.0001) return 0;
+        return Math.max(0, k * Math.log10(n));
+      } else {
+        if (n <= 0) return 0;
+        const lnVal = k * Math.log(n);
+        if (lnVal > 700) return Infinity;
+        return Math.exp(lnVal);
+      }
+    }
+
+    function evalFactPlotY(n) {
+      if (state.scaleMode === 'log10') {
+        return Math.max(0, log10Factorial(n));
+      } else {
+        return factorialContinuous(n);
+      }
+    }
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawChart(now) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvasWrapper.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      // Warm Archival Paper Canvas (#FAF9F6)
+      ctx.fillStyle = TOKENS.paper;
+      ctx.fillRect(0, 0, width, height);
+
+      const plot = getPlotRect(width, height);
+      const { xMin, xMax, yMin, yMax } = state.view;
+      state.pinHitboxes = [];
+
+      // 1. Hairline Coordinate Grid & Tabular Ticks
+      const xTicks = computeNiceTicks(xMin, xMax, Math.floor(plot.w / 100));
+      const yTicks = computeNiceTicks(yMin, yMax, Math.floor(plot.h / 70));
+
+      ctx.lineWidth = 1;
+      ctx.font = '400 11px "JetBrains Mono", monospace';
+
+      // Vertical Gridlines (n-axis)
+      xTicks.forEach((tx) => {
+        const pt = worldToScreen(tx, yMin, plot);
+        if (pt.x < plot.x - 0.5 || pt.x > plot.x + plot.w + 0.5) return;
+
+        ctx.strokeStyle = TOKENS.hairline;
+        ctx.beginPath();
+        ctx.moveTo(Math.round(pt.x) + 0.5, plot.y);
+        ctx.lineTo(Math.round(pt.x) + 0.5, plot.y + plot.h);
+        ctx.stroke();
+
+        ctx.fillStyle = TOKENS.graphite;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const label = Math.abs(tx) < 1e-9 ? '0' : (Number.isInteger(tx) ? tx.toString() : tx.toFixed(1));
+        ctx.fillText(label, pt.x, plot.y + plot.h + 8);
+      });
+
+      // Horizontal Gridlines (y-axis)
+      yTicks.forEach((ty) => {
+        const pt = worldToScreen(xMin, ty, plot);
+        if (pt.y < plot.y - 0.5 || pt.y > plot.y + plot.h + 0.5) return;
+
+        ctx.strokeStyle = TOKENS.hairline;
+        ctx.beginPath();
+        ctx.moveTo(plot.x, Math.round(pt.y) + 0.5);
+        ctx.lineTo(plot.x + plot.w, Math.round(pt.y) + 0.5);
+        ctx.stroke();
+
+        ctx.fillStyle = TOKENS.graphite;
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        let label;
+        if (state.scaleMode === 'log10') {
+          label = Math.abs(ty) < 1e-9 ? '0' : ty.toFixed(1);
+        } else {
+          label = Math.abs(ty) < 1e-9 ? '0' : formatMathNumber(ty, 1);
+        }
+        ctx.fillText(label, plot.x - 10, pt.y);
+      });
+
+      // Primary Origin Axes (Razor-thin 1px #D2D0CA)
+      ctx.strokeStyle = TOKENS.hairlineStrong;
+      ctx.beginPath();
+      ctx.moveTo(plot.x + 0.5, plot.y);
+      ctx.lineTo(plot.x + 0.5, plot.y + plot.h + 0.5);
+      ctx.lineTo(plot.x + plot.w, plot.y + plot.h + 0.5);
+      ctx.stroke();
+
+      // Axis Titles
+      ctx.fillStyle = TOKENS.graphite;
+      ctx.font = '500 11px "Inter", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('n', plot.x + plot.w / 2, height - 12);
+
+      ctx.save();
+      ctx.translate(18, plot.y + plot.h / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(state.scaleMode === 'log10' ? 'log₁₀(y)' : 'y', 0, 0);
+      ctx.restore();
+
+      // Clip Curves inside Plot Bounds
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(plot.x, plot.y, plot.w, plot.h);
+      ctx.clip();
+
+      const numSamples = Math.min(720, Math.max(300, Math.floor(plot.w)));
+
+      // 2. Ghost Curves (Subtle hairline traces of integer degrees 1..15)
+      if (state.showGhosts) {
+        for (let gk = 1; gk <= 15; gk++) {
+          if (Math.abs(gk - state.k) < 0.04) continue;
+          ctx.beginPath();
+          let started = false;
+          for (let i = 0; i <= numSamples; i++) {
+            const n = xMin + (i / numSamples) * (xMax - xMin);
+            const wy = evalPolyPlotY(n, gk);
+            if (!isFinite(wy) || wy > yMax * 1.4) {
+              if (started) {
+                const pt = worldToScreen(n, yMax * 1.4, plot);
+                ctx.lineTo(pt.x, pt.y);
+                break;
+              }
+              continue;
+            }
+            const pt = worldToScreen(n, wy, plot);
+            if (!started) {
+              ctx.moveTo(pt.x, pt.y);
+              started = true;
+            } else {
+              ctx.lineTo(pt.x, pt.y);
+            }
+          }
+          ctx.strokeStyle = 'rgba(20, 20, 19, 0.09)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      // 3. Factorial Curve: g(n) = n! = Gamma(n+1) (Deep Carbon Ink #141413)
+      ctx.beginPath();
+      let factStarted = false;
+      for (let i = 0; i <= numSamples; i++) {
+        const n = xMin + (i / numSamples) * (xMax - xMin);
+        const wy = evalFactPlotY(n);
+        if (!isFinite(wy) || wy > yMax * 1.4) {
+          if (factStarted) {
+            const pt = worldToScreen(n, yMax * 1.4, plot);
+            ctx.lineTo(pt.x, pt.y);
+            break;
+          }
+          continue;
+        }
+        const pt = worldToScreen(n, wy, plot);
+        if (!factStarted) {
+          ctx.moveTo(pt.x, pt.y);
+          factStarted = true;
+        } else {
+          ctx.lineTo(pt.x, pt.y);
+        }
+      }
+      ctx.strokeStyle = TOKENS.ink;
+      ctx.lineWidth = 2.25;
+      ctx.stroke();
+
+      // Discrete Integer Factorial Markers (1!, 2!, 3!, 4!...)
+      const startInt = Math.max(1, Math.ceil(xMin));
+      const endInt = Math.min(170, Math.floor(xMax));
+      if (endInt - startInt <= 32) {
+        for (let ni = startInt; ni <= endInt; ni++) {
+          const wy = evalFactPlotY(ni);
+          if (wy >= yMin && wy <= yMax) {
+            const pt = worldToScreen(ni, wy, plot);
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = TOKENS.surface;
+            ctx.fill();
+            ctx.strokeStyle = TOKENS.ink;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // 4. Persistent Crossover Locus Trajectory & Integer Milestone Pins (k = 1 .. current k)
+      if (state.showLocus) {
+        // Draw dashed vermilion locus curve connecting (n*(1), y*(1)) up to active (n*(k), y*(k))
+        ctx.save();
+        ctx.beginPath();
+        let locusStarted = false;
+        for (let i = 0; i < locusSamples.length; i++) {
+          const s = locusSamples[i];
+          if (s.k > state.k) break;
+          const wy = state.scaleMode === 'log10' ? s.log10YStar : s.yStar;
+          if (!isFinite(wy) || wy > yMax * 1.4) break;
+          const pt = worldToScreen(s.nStar, wy, plot);
+          if (!locusStarted) {
+            ctx.moveTo(pt.x, pt.y);
+            locusStarted = true;
+          } else {
+            ctx.lineTo(pt.x, pt.y);
+          }
+        }
+        // Connect smoothly right up to the exact current state.k point
+        const curCrossY = state.scaleMode === 'log10' ? state.log10YStar : state.yStar;
+        if (locusStarted && isFinite(curCrossY) && curCrossY <= yMax * 1.4) {
+          const curPt = worldToScreen(state.nStar, curCrossY, plot);
+          ctx.lineTo(curPt.x, curPt.y);
+        }
+        ctx.strokeStyle = 'rgba(224, 79, 38, 0.55)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.stroke();
+        ctx.restore();
+
+        // Draw animated milestone ripples when k crosses an integer
+        state.milestoneRipples = state.milestoneRipples.filter((r) => now - r.birthTime < 1100);
+        state.milestoneRipples.forEach((r) => {
+          const t = (now - r.birthTime) / 1100; // 0..1
+          const wy = state.scaleMode === 'log10' ? r.log10YStar : r.yStar;
+          if (r.nStar >= xMin && r.nStar <= xMax && wy >= yMin && wy <= yMax) {
+            const pt = worldToScreen(r.nStar, wy, plot);
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 5 + t * 18, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(224, 79, 38, ${(0.65 * (1 - t)).toFixed(3)})`;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+        });
+
+        // Render Integer Milestone Pins along the trajectory (k = 1 .. floor(state.k))
+        const placedLabelBoxes = [];
+        for (let idx = 0; idx < milestones.length; idx++) {
+          const m = milestones[idx];
+          if (m.k > state.k + 0.02) break;
+          const isCurrentActive = Math.abs(m.k - state.k) < 0.04;
+          const wy = state.scaleMode === 'log10' ? m.log10YStar : m.yStar;
+
+          if (m.nStar < xMin || m.nStar > xMax || wy < yMin || wy > yMax) continue;
+
+          const pt = worldToScreen(m.nStar, wy, plot);
+          const isHovered = state.hoveredPinK === m.k;
+
+          // Milestone node dot (for completed integer k < current k)
+          if (!isCurrentActive) {
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, isHovered ? 5 : 3.75, 0, Math.PI * 2);
+            ctx.fillStyle = isHovered ? TOKENS.vermilion : TOKENS.surface;
+            ctx.fill();
+            ctx.strokeStyle = TOKENS.vermilion;
+            ctx.lineWidth = 1.75;
+            ctx.stroke();
+          }
+
+          // Compact inline callout pill (e.g., "k=2 → n*=3.56")
+          const pillText = `k=${m.k} → n*=${m.nStar.toFixed(2)}`;
+          ctx.font = isHovered || isCurrentActive
+            ? '600 10px "JetBrains Mono", monospace'
+            : '500 10px "JetBrains Mono", monospace';
+          const textW = ctx.measureText(pillText).width;
+          const pillW = textW + 12;
+          const pillH = 18;
+
+          // Position pill cleanly to the left/above the locus curve so it doesn't collide
+          let pillX = pt.x - pillW - 9;
+          let pillY = pt.y - pillH / 2;
+          if (pillX < plot.x + 6) {
+            pillX = pt.x + 9;
+          }
+          pillY = Math.max(plot.y + 6, Math.min(plot.y + plot.h - pillH - 6, pillY));
+
+          // Register hitbox for interactive click-to-jump
+          state.pinHitboxes.push({
+            k: m.k,
+            x: pt.x,
+            y: pt.y,
+            r: 10,
+            pillX,
+            pillY,
+            pillW,
+            pillH
+          });
+
+          // Skip drawing pill text if it overlaps an already-placed milestone pill (unless hovered)
+          const overlaps = placedLabelBoxes.some(
+            (b) => !(pillX + pillW + 4 < b.x || pillX > b.x + b.w + 4 || pillY + pillH + 2 < b.y || pillY > b.y + b.h + 2)
+          );
+
+          if (!isCurrentActive && (!overlaps || isHovered)) {
+            placedLabelBoxes.push({ x: pillX, y: pillY, w: pillW, h: pillH });
+
+            ctx.fillStyle = isHovered ? TOKENS.ink : TOKENS.surface;
+            ctx.strokeStyle = isHovered ? TOKENS.ink : TOKENS.hairlineStrong;
+            ctx.lineWidth = 1;
+            drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 2.5);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = isHovered ? TOKENS.surface : TOKENS.ink;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(pillText, pillX + 6, pillY + pillH / 2 + 0.5);
+          }
+        }
+      }
+
+      // 5. Active Polynomial Curve: f(n) = n^k (International Vermilion #E04F26)
+      ctx.beginPath();
+      let polyStarted = false;
+      for (let i = 0; i <= numSamples; i++) {
+        const n = xMin + (i / numSamples) * (xMax - xMin);
+        const wy = evalPolyPlotY(n, state.k);
+        if (!isFinite(wy) || wy > yMax * 1.4) {
+          if (polyStarted) {
+            const pt = worldToScreen(n, yMax * 1.4, plot);
+            ctx.lineTo(pt.x, pt.y);
+            break;
+          }
+          continue;
+        }
+        const pt = worldToScreen(n, wy, plot);
+        if (!polyStarted) {
+          ctx.moveTo(pt.x, pt.y);
+          polyStarted = true;
+        } else {
+          ctx.lineTo(pt.x, pt.y);
+        }
+      }
+      ctx.strokeStyle = TOKENS.vermilion;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // 6. Active Crossover Node (n*, y*) with Orthogonal Projection & Axis Pill
+      const crossWorldY = state.scaleMode === 'log10' ? state.log10YStar : state.yStar;
+      if (
+        state.nStar >= xMin && state.nStar <= xMax &&
+        crossWorldY >= yMin && crossWorldY <= yMax
+      ) {
+        const cPt = worldToScreen(state.nStar, crossWorldY, plot);
+
+        // Dashed Orthogonal Projections to X & Y Axes
+        ctx.save();
+        ctx.strokeStyle = 'rgba(224, 79, 38, 0.55)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+
+        ctx.beginPath();
+        ctx.moveTo(cPt.x, cPt.y);
+        ctx.lineTo(cPt.x, plot.y + plot.h);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(plot.x, cPt.y);
+        ctx.lineTo(cPt.x, cPt.y);
+        ctx.stroke();
+        ctx.restore();
+
+        // Active n* Pill anchored directly on the X-Axis baseline
+        const xAxisLabel = `n*=${state.nStar.toFixed(2)}`;
+        ctx.font = '600 10px "JetBrains Mono", monospace';
+        const xPillW = ctx.measureText(xAxisLabel).width + 10;
+        const xPillH = 17;
+        const xPillX = Math.max(plot.x + 2, Math.min(plot.x + plot.w - xPillW - 2, cPt.x - xPillW / 2));
+        const xPillY = plot.y + plot.h - xPillH - 3;
+
+        ctx.fillStyle = TOKENS.vermilion;
+        drawRoundedRect(ctx, xPillX, xPillY, xPillW, xPillH, 2.5);
+        ctx.fill();
+
+        ctx.fillStyle = TOKENS.surface;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(xAxisLabel, xPillX + xPillW / 2, xPillY + xPillH / 2 + 0.5);
+
+        // Subtle Animated Pulse Ring on Active Intersection
+        const pulseT = (Math.sin(state.pulsePhase) + 1) * 0.5;
+        const ringRadius = 7 + pulseT * 8;
+        const ringAlpha = 0.5 * (1 - pulseT);
+        ctx.beginPath();
+        ctx.arc(cPt.x, cPt.y, ringRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(224, 79, 38, ${ringAlpha.toFixed(3)})`;
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+
+        // Precision Intersection Node
+        ctx.beginPath();
+        ctx.arc(cPt.x, cPt.y, 4.75, 0, Math.PI * 2);
+        ctx.fillStyle = TOKENS.vermilion;
+        ctx.fill();
+        ctx.strokeStyle = TOKENS.surface;
+        ctx.lineWidth = 1.75;
+        ctx.stroke();
+
+        // Clean Typographic Leader Callout
+        const kDisp = Math.abs(state.k - Math.round(state.k)) < 0.02
+          ? Math.round(state.k).toString()
+          : state.k.toFixed(2);
+        const yDisplayStr = formatFromLog10(state.log10YStar);
+        const labelMain = `k=${kDisp} · n*=${state.nStar.toFixed(3)}`;
+        const labelSub = `y* = ${yDisplayStr}`;
+
+        ctx.font = '600 11px "JetBrains Mono", monospace';
+        const w1 = ctx.measureText(labelMain).width;
+        ctx.font = '400 10px "JetBrains Mono", monospace';
+        const w2 = ctx.measureText(labelSub).width;
+        const tagW = Math.max(w1, w2) + 18;
+        const tagH = 36;
+
+        let tagX = cPt.x + 14;
+        let tagY = cPt.y - tagH - 10;
+        if (tagX + tagW > plot.x + plot.w - 8) {
+          tagX = cPt.x - tagW - 14;
+        }
+        if (tagY < plot.y + 8) {
+          tagY = cPt.y + 12;
+        }
+
+        // Leader hairline connector
+        ctx.strokeStyle = TOKENS.ink;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cPt.x, cPt.y);
+        ctx.lineTo(tagX < cPt.x ? tagX + tagW : tagX, tagY + tagH / 2);
+        ctx.stroke();
+
+        // Crisp 1px Bordered White Tag
+        ctx.fillStyle = TOKENS.surface;
+        ctx.strokeStyle = TOKENS.ink;
+        ctx.lineWidth = 1;
+        drawRoundedRect(ctx, tagX, tagY, tagW, tagH, 3);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = TOKENS.vermilion;
+        ctx.font = '600 11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(labelMain, tagX + 9, tagY + 6);
+
+        ctx.fillStyle = TOKENS.graphite;
+        ctx.font = '400 10px "JetBrains Mono", monospace';
+        ctx.fillText(labelSub, tagX + 9, tagY + 20);
+      }
+
+      // 7. Precision Hover Crosshair & Direct-on-Hairline Swiss Tag
+      if (state.hoverN !== null && state.hoverN >= xMin && state.hoverN <= xMax) {
+        const hx = worldToScreen(state.hoverN, yMin, plot).x;
+
+        // Vertical Hairline Rule
+        ctx.strokeStyle = 'rgba(20, 20, 19, 0.35)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(Math.round(hx) + 0.5, plot.y);
+        ctx.lineTo(Math.round(hx) + 0.5, plot.y + plot.h);
+        ctx.stroke();
+
+        // Snap Dots on Both Curves
+        const pyPoly = evalPolyPlotY(state.hoverN, state.k);
+        if (isFinite(pyPoly) && pyPoly >= yMin && pyPoly <= yMax) {
+          const ptP = worldToScreen(state.hoverN, pyPoly, plot);
+          ctx.beginPath();
+          ctx.arc(ptP.x, ptP.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = TOKENS.vermilion;
+          ctx.fill();
+          ctx.strokeStyle = TOKENS.surface;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+
+        const pyFact = evalFactPlotY(state.hoverN);
+        if (isFinite(pyFact) && pyFact >= yMin && pyFact <= yMax) {
+          const ptF = worldToScreen(state.hoverN, pyFact, plot);
+          ctx.beginPath();
+          ctx.arc(ptF.x, ptF.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = TOKENS.ink;
+          ctx.fill();
+          ctx.strokeStyle = TOKENS.surface;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+
+        // Minimal Swiss Readout Tag Snapped Along Hairline
+        const n = state.hoverN;
+        const k = state.k;
+        const kFmt = Number.isInteger(k) ? k.toString() : k.toFixed(1);
+        const log10P = log10Poly(n, k);
+        const log10F = log10Factorial(n);
+        const log10Ratio = log10F - log10P;
+
+        const polyStr = formatFromLog10(log10P);
+        const factStr = formatFromLog10(log10F);
+
+        let ratioStr;
+        if (log10Ratio >= 0) {
+          ratioStr = `n! ${formatFromLog10(log10Ratio)}×`;
+        } else {
+          ratioStr = `n^${kFmt} ${formatFromLog10(-log10Ratio)}×`;
+        }
+
+        const line1 = `n = ${n.toFixed(3)}`;
+        const line2 = `n^${kFmt}: ${polyStr}`;
+        const line3 = `n! : ${factStr}`;
+        const line4 = `Lead: ${ratioStr}`;
+
+        const boxW = 148;
+        const boxH = 74;
+        let boxX = hx + 12;
+        if (boxX + boxW > plot.x + plot.w - 8) {
+          boxX = hx - boxW - 12;
+        }
+        let boxY = (state.hoverSy !== null ? state.hoverSy - boxH / 2 : plot.y + 16);
+        boxY = Math.max(plot.y + 8, Math.min(plot.y + plot.h - boxH - 8, boxY));
+
+        ctx.fillStyle = TOKENS.surface;
+        ctx.strokeStyle = TOKENS.hairlineStrong;
+        ctx.lineWidth = 1;
+        drawRoundedRect(ctx, boxX, boxY, boxW, boxH, 3);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+
+        ctx.font = '600 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = TOKENS.ink;
+        ctx.fillText(line1, boxX + 9, boxY + 7);
+
+        ctx.font = '400 10.5px "JetBrains Mono", monospace';
+        ctx.fillStyle = TOKENS.vermilion;
+        ctx.fillText(line2, boxX + 9, boxY + 23);
+
+        ctx.fillStyle = TOKENS.ink;
+        ctx.fillText(line3, boxX + 9, boxY + 38);
+
+        ctx.fillStyle = TOKENS.graphite;
+        ctx.fillText(line4, boxX + 9, boxY + 54);
+      }
+
+      ctx.restore(); // End Plot Clip
+      ctx.restore(); // End DPR Scale
+    }
+
+    // ----------------------------------------------------------------------------
+    // 8. ANIMATION LOOP (Sweep, Smooth Step +1 Tween, Camera Tracking)
+    // ----------------------------------------------------------------------------
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function animate(timestamp) {
+      const now = timestamp || performance.now();
+      const dt = state.lastTimestamp ? Math.min(0.05, (now - state.lastTimestamp) / 1000) : 0.016;
+      state.lastTimestamp = now;
+      state.pulsePhase += dt * 3.2;
+
+      // 1. Handle smooth eased Step / Jump tween if active
+      if (state.kTween) {
+        const elapsed = now - state.kTween.startTime;
+        const rawT = Math.min(1, elapsed / state.kTween.duration);
+        const easedT = easeInOutCubic(rawT);
+        const nextK = state.kTween.fromK + (state.kTween.toK - state.kTween.fromK) * easedT;
+        setDegree(nextK);
+
+        if (rawT >= 1) {
+          const finishedK = state.kTween.toK;
+          const deltaN = state.kTween.toNStar - state.kTween.fromNStar;
+          const shouldShowDelta = state.kTween.showDelta;
+          state.kTween = null;
+          setDegree(finishedK);
+          if (Number.isInteger(finishedK)) {
+            triggerMilestoneRipple(finishedK);
+          }
+          if (shouldShowDelta && Math.abs(deltaN) > 0.001) {
+            state.highlightJump = {
+              deltaN,
+              targetK: finishedK,
+              expireTime: now + 2600
+            };
+            updateMetricsAndUI();
+          }
+        }
+      }
+
+      // 2. Expire delta jump badge cleanly
+      if (state.highlightJump && now >= state.highlightJump.expireTime) {
+        state.highlightJump = null;
+        updateMetricsAndUI();
+      }
+
+      // 3. Continuous degree sweep when playing
+      if (state.isPlaying) {
+        const sweepRate = 1.15 * state.sweepSpeed; // degrees per second
+        let nextK = state.k + dt * sweepRate;
+        if (nextK >= 15) {
+          nextK = 15;
+          setDegree(nextK);
+          stopAutoPlay();
+        } else {
+          setDegree(nextK);
+        }
+      }
+
+      // 4. Smoothly interpolate camera toward targetView when Auto-Frame is active
+      if (state.autoCamera) {
+        const lerpFactor = 1 - Math.exp(-7.5 * dt);
+        state.view.xMin += (state.targetView.xMin - state.view.xMin) * lerpFactor;
+        state.view.xMax += (state.targetView.xMax - state.view.xMax) * lerpFactor;
+        state.view.yMin += (state.targetView.yMin - state.view.yMin) * lerpFactor;
+        state.view.yMax += (state.targetView.yMax - state.view.yMax) * lerpFactor;
+      }
+
+      drawChart(now);
+      requestAnimationFrame(animate);
+    }
+
+    // ----------------------------------------------------------------------------
+    // 9. INITIALIZATION
+    // ----------------------------------------------------------------------------
+
+    updateMetricsAndUI();
+    state.view = { ...state.targetView };
+    triggerMilestoneRipple(2);
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
