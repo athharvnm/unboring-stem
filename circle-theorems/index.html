@@ -112,7 +112,10 @@ html,body{
   <div class="w-full bg-[#FAF8F4]/95 border-b border-[#E6E1D6]/85">
     <nav aria-label="Breadcrumb" class="max-w-6xl mx-auto px-4 sm:px-6 h-9 flex items-center gap-1.5 text-xs leading-none whitespace-nowrap overflow-hidden">
       <a href="https://unboringstem.pages.dev/" class="group inline-flex items-center gap-1 font-semibold text-[#5E5A51] hover:text-[#B84A27] transition-colors shrink-0">
-        <span class="font-mono-tech transition-transform duration-150 group-hover:-translate-x-0.5" aria-hidden="true">&larr;</span>
+        <svg class="w-3.5 h-3.5 transition-transform duration-150 group-hover:-translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12.5 8H3.5" />
+          <path d="M7.5 4L3.5 8L7.5 12" />
+        </svg>
         <span>Unboring STEM</span>
       </a>
       <span class="text-[#8A8478] select-none shrink-0" aria-hidden="true">/</span>
@@ -154,8 +157,20 @@ html,body{
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
     <section class="paper-card p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="flex items-center gap-2 flex-wrap">
-        <button id="prevTheoremBtn" type="button" class="pill-btn">&larr; Prev</button>
-        <button id="nextTheoremBtn" type="button" class="pill-btn">Next &rarr;</button>
+        <button id="prevTheoremBtn" type="button" class="pill-btn inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12.5 8H3.5" />
+            <path d="M7.5 4L3.5 8L7.5 12" />
+          </svg>
+          <span>Prev</span>
+        </button>
+        <button id="nextTheoremBtn" type="button" class="pill-btn inline-flex items-center gap-1.5">
+          <span>Next</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3.5 8H12.5" />
+            <path d="M8.5 4L12.5 8L8.5 12" />
+          </svg>
+        </button>
         <span id="progressCounter" class="text-xs sm:text-sm font-mono-tech text-[#5E5A51] px-2"></span>
       </div>
       <div class="flex items-center gap-2.5 flex-wrap">
