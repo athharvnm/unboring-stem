@@ -1,260 +1,1330 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Trigonometry Universe</title>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Trigonometry Universe</title>
-<meta name="description" content="Explore trigonometry interactively across three levels: middle school right-triangle shadows, high school unit circle waves, and undergraduate inverse functions, Euler's formula, and Taylor series.">
-<link rel="canonical" href="https://unboringstem.pages.dev/trigonometry">
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The Trigonometry Universe</title>
+  <meta name="description" content="Explore trigonometry interactively across three levels: middle school right-triangle shadows, high school unit circle waves, and undergraduate inverse functions, Euler's formula, and Taylor series." />
+  <link rel="canonical" href="https://unboringstem.pages.dev/trigonometry" />
 
-<!-- Open Graph / Social Meta Tags -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://unboringstem.pages.dev/trigonometry">
-<meta property="og:title" content="The Trigonometry Universe">
-<meta property="og:description" content="Explore trigonometry interactively across three levels: middle school right-triangle shadows, high school unit circle waves, and undergraduate inverse functions, Euler's formula, and Taylor series.">
-<meta property="og:image" content="https://unboringstem.pages.dev/trigonometry/social.jpg">
+  <!-- Open Graph / Social Meta Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://unboringstem.pages.dev/trigonometry" />
+  <meta property="og:title" content="The Trigonometry Universe" />
+  <meta property="og:description" content="Explore trigonometry interactively across three levels: middle school right-triangle shadows, high school unit circle waves, and undergraduate inverse functions, Euler's formula, and Taylor series." />
+  <meta property="og:image" content="https://unboringstem.pages.dev/trigonometry/social.jpg" />
 
-<!-- Twitter / X Card Tags -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://unborinstem.pages.dev/trigonometry">
-<meta name="twitter:title" content="The Trigonometry Universe">
-<meta name="twitter:description" content="Explore trigonometry interactively across three levels: middle school right-triangle shadows, high school unit circle waves, and undergraduate inverse functions, Euler's formula, and Taylor series.">
-<meta name="twitter:image" content="https://unboringstem.pages.dev/trigonometry/social.jpg">
+  <!-- Twitter / X Card Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://unboringstem.pages.dev/trigonometry" />
+  <meta name="twitter:title" content="The Trigonometry Universe" />
+  <meta name="twitter:description" content="Explore trigonometry interactively across three levels: middle school right-triangle shadows, high school unit circle waves, and undergraduate inverse functions, Euler's formula, and Taylor series." />
+  <meta name="twitter:image" content="https://unboringstem.pages.dev/trigonometry/social.jpg" />
 
-<style>
-:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mut:#64748b;--bd:#e2e8f0;--cv:#f8fafc;--grid:#e2e8f0;--ax:#94a3b8;--am:#f59e0b;--in:#4f46e5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#020617;--card:#0f172a;--tx:#f1f5f9;--mut:#94a3b8;--bd:#1e293b;--cv:#020617;--grid:#1e293b;--ax:#475569;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#020617;--card:#0f172a;--tx:#f1f5f9;--mut:#94a3b8;--bd:#1e293b;--cv:#020617;--grid:#1e293b;--ax:#475569;color-scheme:dark}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--bd)}
-.hd,.wrap{max-width:1100px;margin:auto;padding:10px 14px}
-.hd{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-h1{font-size:17px;margin:0}h2{font-size:15px;margin:0}
-small,.m{color:var(--mut);font-size:12px}
-button{font:inherit;font-size:12px;font-weight:700;padding:6px 11px;border-radius:10px;border:1px solid var(--bd);background:var(--cv);color:var(--tx);cursor:pointer}
-button:focus-visible,input:focus-visible{outline:2px solid var(--in);outline-offset:2px}
-button.on{background:var(--am);border-color:var(--am);color:#fff}
-#nav button[data-l="2"].on{background:#059669;border-color:#059669}
-#nav button[data-l="3"].on,.sub .on{background:var(--in);border-color:var(--in)}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px}
-.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:12px}
-.g>.card{margin:0}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px}
-canvas{width:100%;display:block;border-radius:12px;border:1px solid var(--bd);background:var(--cv);touch-action:none}
-#c1{aspect-ratio:520/290}#c2{height:250px}.cb{height:230px}
-input[type=range]{width:100%;accent-color:var(--am)}
-.rd{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid;border-radius:12px;padding:8px 12px;margin-top:8px;font:12px ui-monospace,Menlo,monospace}
-.rd b{font-size:19px}
-.bs{border-color:#10b98177;background:#10b98115}.bc{border-color:#3b82f677;background:#3b82f615}.bt{border-color:#f43f5e77;background:#f43f5e15}.bi{border-color:#6366f177;background:#6366f115}
-.s{color:#10b981}.c{color:#3b82f6}.t{color:#f43f5e}.i{color:#818cf8}
-.note{font-size:12px;border:1px solid var(--bd);border-radius:12px;padding:8px 10px;margin:8px 0 0;background:var(--cv)}
-.sub{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-details{margin:0 14px;max-width:1100px}
-.pic{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;padding:6px 0 12px;font-size:12px}
-.pic div{border:1px solid var(--bd);border-radius:12px;padding:8px;background:var(--cv)}
-summary{cursor:pointer;font-size:12px;font-weight:700;padding:4px 0}
-[hidden]{display:none!important}
-</style></head><body>
-  <header><div class="hd"><div><h1>The Trigonometry Universe</h1><small>Middle school shadows → high school waves → undergraduate calculus &amp; complex numbers</small></div>
-<nav id="nav" aria-label="Level"><button data-l="1" class="on">1. Middle School</button> <button data-l="2">2. High School</button> <button data-l="3">3. Undergraduate</button></nav>
-<button id="th" aria-label="Toggle light and dark theme">◐ Theme</button></div>
-<div style="max-width:1100px;margin:auto;padding:0 14px"><details><summary>Big picture</summary><div class="pic">
-<div><b>Stage 1 · static shapes.</b> Right triangles with the same angle share the same side ratios, so a shadow reveals a height.</div>
-<div><b>Stage 2 · spinning waves.</b> Fix the hypotenuse at 1 and trig becomes the coordinates (cos θ, sin θ), which unroll into waves.</div>
-<div><b>Stage 3 · inverses, complex numbers, series.</b> arcsin needs a restricted domain, e<sup>iθ</sup> packs cos and sin into one rotation, and polynomials approximate sin.</div></div></details></div></header>
-<main class="wrap">
+  <style>
+    /* Theme tokens and safe-area layout variables */
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --tx: #0f172a;
+      --mut: #64748b;
+      --bd: #e2e8f0;
+      --cv: #f8fafc;
+      --grid: #e2e8f0;
+      --ax: #94a3b8;
+      --am: #f59e0b;
+      --in: #4f46e5;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
 
-<section id="p1"><div class="g">
-<div class="card"><div class="row"><div><h2>The Constant Ratio Lab</h2><small>Drag the glowing corner or use the sliders. With θ locked, resizing never changes the ratios.</small></div>
-<button id="sh" class="on" aria-pressed="true">Shadow mission: on</button></div>
-<canvas id="c1" role="img" aria-label="Right triangle with draggable top corner; sides and sun shadow update live"></canvas>
-<p class="note" id="story"></p></div>
-<div class="card">
-<div class="row" style="margin:0"><label class="m" for="sa">Corner angle θ (changes the shape)</label><b id="a1v"></b></div>
-<input id="sa" type="range" min="15" max="72" step="any" value="37">
-<div class="row" style="margin:8px 0 0"><label class="m" for="ss">Size multiplier (ratios stay fixed) <b id="s1v"></b></label><label class="m"><input type="checkbox" id="lk"> Lock angle</label></div>
-<input id="ss" type="range" min=".55" max="1.45" step=".01" value="1">
-<div class="row" style="margin:8px 0 0"><button data-p="36.8699">3-4-5 triangle (θ ≈ 36.87°)</button><button data-p="30">30° ramp (sin = 0.5)</button><button data-p="45">45° cut</button></div>
-<div class="rd bs"><div><b class="s">SOH · sine θ</b><br><span id="r1s"></span></div><b class="s" id="v1s"></b></div>
-<div class="rd bc"><div><b class="c">CAH · cosine θ</b><br><span id="r1c"></span></div><b class="c" id="v1c"></b></div>
-<div class="rd bt"><div><b class="t">TOA · tangent θ</b><br><span id="r1t"></span></div><b class="t" id="v1t"></b></div>
-</div></div>
-<div class="g">
-<div class="card"><b>Surveying &amp; astronomy</b><p class="m">Eratosthenes used a shadow angle to estimate Earth’s size, and Galileo estimated lunar mountain heights from their shadows. Surveyors still rely on the same ratios.</p></div>
-<div class="card"><b>Game physics</b><p class="m">A character moving at speed v at angle θ has vx = v·cos θ and vy = v·sin θ.</p></div>
-<div class="card"><b>Roofs &amp; ramps</b><p class="m">Tangent is rise ÷ run, which sets the slope of roofs, bridges and wheelchair ramps.</p></div></div>
-</section>
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #020617;
+        --card: #0f172a;
+        --tx: #f1f5f9;
+        --mut: #94a3b8;
+        --bd: #1e293b;
+        --cv: #020617;
+        --grid: #1e293b;
+        --ax: #475569;
+        color-scheme: dark;
+      }
+    }
 
-<section id="p2" hidden><div class="card">
-<div class="row"><div><h2>The Unit Circle &amp; Wave Unroller</h2><small>With radius 1, the point’s height is sin θ and its width is cos θ. Tracing them over time gives waves.</small></div>
-<div><button id="pl" class="on">Plot wave</button> <button id="cw" class="on" aria-pressed="true">Cosine wave</button> <button id="tg" class="on" aria-pressed="true">Tangent line</button></div></div>
-<div class="row"><b id="a2v" class="m" style="min-width:110px"></b><input id="s2" type="range" min="0" max="360" step="1" value="30" style="flex:1;min-width:160px" aria-label="Angle in degrees"><span id="q2"></span></div>
-<canvas id="c2" role="img" aria-label="Unit circle with sine and cosine waves"></canvas>
-<p class="note"><b style="color:#8b5cf6">Purple</b> radius (length 1) · <b class="s">green</b> sin θ · <b class="c">blue</b> cos θ · <b class="t">red</b> tan θ, the height where the radius line meets x = 1. Drag the circle; it snaps near multiples of 15°.</p></div>
-<div class="g">
-<div class="rd bs"><div><b class="s">SINE · y</b><br>height on circle</div><div style="text-align:right"><b class="s" id="v2s"></b><br><span class="s" id="e2s"></span></div></div>
-<div class="rd bc"><div><b class="c">COSINE · x</b><br>horizontal position</div><div style="text-align:right"><b class="c" id="v2c"></b><br><span class="c" id="e2c"></span></div></div>
-<div class="rd bt"><div><b class="t">TANGENT · sin ÷ cos</b><br>slope of radius line</div><div style="text-align:right"><b class="t" id="v2t"></b><br><span class="t" id="e2t"></span></div></div></div>
-<div class="g">
-<div class="card"><b>AC electricity</b><p class="m">Generators spin magnets in a circle, giving the 50/60 Hz sine wave at your socket.</p></div>
-<div class="card"><b>Sound</b><p class="m">A pure tone is a sine wave; real notes are sums of sines. Noise-cancelling headphones add an inverted copy (shifted by π) to cancel much of the noise.</p></div>
-<div class="card"><b>GPS</b><p class="m">Satellite positions along their orbits are computed with cos and sin; your phone times signals from 4+ satellites to locate you within metres.</p></div></div>
-</section>
+    :root[data-theme="dark"] {
+      --bg: #020617;
+      --card: #0f172a;
+      --tx: #f1f5f9;
+      --mut: #94a3b8;
+      --bd: #1e293b;
+      --cv: #020617;
+      --grid: #1e293b;
+      --ax: #475569;
+      color-scheme: dark;
+    }
 
-<section id="p3" hidden>
-<div class="sub" id="sub"><button data-t="inv" class="on">1. Inverse branches (arcsin)</button><button data-t="eu">2. Euler’s formula (e<sup>iθ</sup>)</button><button data-t="ta">3. Taylor polynomials</button></div>
-<div id="t-inv" class="g"><div class="card"><div class="row"><div><h2>Inverse sine: finding the unique angle</h2><small>A horizontal line hits sin θ infinitely often (red). arcsin picks the single green point in [−90°, +90°].</small></div><button id="si">Sweep ratio</button></div>
-<div class="row" style="margin:0"><b class="m" id="yv" style="min-width:90px"></b><input id="sy" type="range" min="-.98" max=".98" step=".02" value=".5" style="flex:1" aria-label="Ratio y"></div>
-<canvas id="ci" class="cb" role="img" aria-label="Sine curve with horizontal sweeper line and its intersections"></canvas></div>
-<div class="card"><div class="rd bs" style="margin-top:0"><div><b class="s">Principal output</b><br><span id="iq"></span></div><b class="s" id="iv"></b></div>
-<p class="m">A function returns one answer per input, so arcsin is defined on the restricted domain [−90°, +90°]. Otherwise arcsin(0.5) could be 30°, 150°, 390° …</p>
-<p class="note"><b>Robotics:</b> inverse kinematics turns a target (x, y) into joint angles using atan2 and arccos (law of cosines).</p></div></div>
-<div id="t-eu" class="g" hidden><div class="card"><div class="row"><div><h2>Euler’s formula: e<sup>iθ</sup> = cos θ + i·sin θ</h2><small>Multiplying by i turns a point by 90°. An imaginary exponent turns growth into rotation.</small></div><button id="ep">Rotate phasor</button></div>
-<div class="row" style="margin:0"><input id="se" type="range" min="0" max="360" value="60" style="flex:1;min-width:160px" aria-label="Angle in degrees"><button data-e="0">0° (1)</button><button data-e="90">90° (i)</button><button data-e="180">180° (−1)</button><button data-e="270">270° (−i)</button></div>
-<canvas id="ce" class="cb" role="img" aria-label="Complex plane with unit phasor"></canvas></div>
-<div class="card"><div class="rd bi" style="margin-top:0"><div><b class="i">θ = <span id="ed"></span>°</b></div><b class="i" id="ev" style="font-size:14px"></b></div>
-<p class="note" id="eid" hidden><b>Euler’s identity:</b> e<sup>iπ</sup> + 1 = 0 links e, i, π, 1 and 0.</p>
-<p class="note"><b>Signals:</b> Wi-Fi, 5G and MRI rely on the Fast Fourier Transform, built on e<sup>iθ</sup>, to separate many overlapping frequency components.</p></div></div>
-<div id="t-ta" class="g" hidden><div class="card"><div class="row"><div><h2>Taylor series: a curve from simple powers</h2><small>The dashed polynomial hugs sin x near 0 and drifts away farther out. More terms widen the fit.</small></div><button id="tp">Auto-add terms</button></div>
-<div class="row" style="margin:0"><label class="m" for="sn" style="min-width:90px">Terms: <b id="nv"></b></label><input id="sn" type="range" min="1" max="7" value="3" style="flex:1"><label class="m" for="sx" style="min-width:110px">x = <b id="xv"></b> rad</label><input id="sx" type="range" min="-3.14" max="3.14" step=".05" value="1.8" style="flex:1"></div>
-<canvas id="ct" class="cb" role="img" aria-label="sin x with Taylor polynomial approximation"></canvas></div>
-<div class="card"><div class="note m" id="tf" style="margin:0;font-family:ui-monospace,monospace"></div>
-<div class="rd bs"><div><b class="s">True sin(x)</b></div><b class="s" id="tv"></b></div><div class="rd bt"><div><b class="t">Polynomial</b></div><b class="t" id="ta2"></b></div>
-<p class="m" id="te"></p><p class="note"><b>In practice:</b> libraries reduce the angle to a small range, then use a short polynomial (a close cousin of Taylor, usually minimax) or CORDIC.</p></div></div>
-</section></main>
+    * {
+      box-sizing: border-box;
+    }
 
-<script>
-const $=s=>document.querySelector(s),T=(i,t)=>{$('#'+i).textContent=t},H=(i,t)=>{$('#'+i).innerHTML=t};
-const R=d=>d*Math.PI/180,D=r=>r*180/Math.PI,fact=n=>n<2?1:n*fact(n-1),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),f2=a=>String(+a.toFixed(2));
-const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const ln=(x,a,b,c,d,col,lw,da)=>{x.strokeStyle=col;x.lineWidth=lw||1;x.setLineDash(da||[]);x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke();x.setLineDash([])};
-const dot=(x,a,b,r,f,s)=>{x.fillStyle=f;x.beginPath();x.arc(a,b,r,0,7);x.fill();if(s){x.strokeStyle=s;x.lineWidth=2.5;x.stroke()}};
-const tt=(x,s,a,b,c,z,al)=>{x.fillStyle=c;x.font='700 '+(z||11)+'px system-ui,sans-serif';x.textAlign=al||'left';x.fillText(s,a,b)};
-function cv(id){const c=$(id),d=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);return{x,w,h}}
-const grid=(x,w,h,s)=>{x.strokeStyle=css('--grid');x.lineWidth=.8;for(let i=0;i<=w;i+=s){x.beginPath();x.moveTo(i,0);x.lineTo(i,h);x.stroke()}for(let j=0;j<=h;j+=s){x.beginPath();x.moveTo(0,j);x.lineTo(w,j);x.stroke()}};
-const EX={0:['0','1','0','0'],30:['1/2','√3/2','1/√3','π/6'],45:['√2/2','√2/2','1','π/4'],60:['√3/2','1/2','√3','π/3'],90:['1','0','Undefined','π/2'],120:['√3/2','-1/2','-√3','2π/3'],135:['√2/2','-√2/2','-1','3π/4'],150:['1/2','-√3/2','-1/√3','5π/6'],180:['0','-1','0','π'],210:['-1/2','-√3/2','1/√3','7π/6'],225:['-√2/2','-√2/2','1','5π/4'],240:['-√3/2','-1/2','√3','4π/3'],270:['-1','0','Undefined','3π/2'],300:['-√3/2','1/2','-√3','5π/3'],315:['-√2/2','√2/2','-1','7π/4'],330:['-1/2','√3/2','-1/√3','11π/6']};
-const exact=a=>{const n=Math.round(a);if(Math.abs(a-n)>.05)return null;const e=EX[((n%360)+360)%360];return n===360?[e[0],e[1],e[2],'2π']:e};
-const S={l:1,a:37,s:1,lock:0,sh:1,a2:30,p2:0,cw:1,tg:1,tab:'inv',y:.5,yd:1,sw:0,eu:60,pe:0,n:3,tx:1.8,pt:0,tt:0,hx:0,hy:0};
+    html, body {
+      margin: 0;
+    }
 
-/* ---------- Level 1 ---------- */
-function u1(){const r=R(S.a),h=200*S.s,A=h*Math.cos(r),O=h*Math.sin(r),m=v=>(v/10).toFixed(1),tn=Math.tan(r);
-T('a1v',f2(S.a)+'°');T('s1v',S.s.toFixed(2)+'×');
-T('r1s',`Opposite (${m(O)}) ÷ Hyp (${m(h)})`);T('v1s',Math.sin(r).toFixed(3));
-T('r1c',`Adjacent (${m(A)}) ÷ Hyp (${m(h)})`);T('v1c',Math.cos(r).toFixed(3));
-T('r1t',`Opposite (${m(O)}) ÷ Adjacent (${m(A)})`);T('v1t',tn.toFixed(3));
-H('story',S.sh?`<b>Surveyor’s trick:</b> you can’t climb a ${m(O)} m tower with a tape, so measure its <b>${m(A)} m shadow</b> and multiply by <b>tan(${f2(S.a)}°) = ${tn.toFixed(3)}</b>. A taller tower casting a longer shadow at the same sun angle gives the same ratio.`:`<b>Similar triangles:</b> tick <i>Lock angle</i> and drag the size slider. Every side stretches, yet sin, cos and tan do not change.`);
-$('#sa').value=S.a;$('#ss').value=S.s;$('#sa').disabled=!!S.lock;d1()}
-function d1(){const{x,w,h}=cv('#c1');x.scale(w/520,h/290);grid(x,520,290,20);const ax=css('--ax');
-const r=R(S.a),H_=200*S.s,A=H_*Math.cos(r),O=H_*Math.sin(r),f=Math.min(1,300/A,195/O),dA=A*f,dO=O*f,ox=85,oy=250,X=ox+dA,Y=oy-dO;S.hx=X;S.hy=Y;
-ln(x,35,oy,485,oy,ax,2.5);
-if(S.sh){const dx=Math.cos(r),dy=-Math.sin(r),e=Math.max(28,Math.min((480-X)/Math.max(dx,.01),(Y-36)/Math.max(-dy,.01))),sx=X+dx*e,sy=Y+dy*e;
-dot(x,sx,sy,20,'rgba(251,191,36,.25)');dot(x,sx,sy,13,'#f59e0b');ln(x,sx,sy,X,Y,'#f59e0b',2,[5,4]);
-x.fillStyle='rgba(16,185,129,.25)';x.strokeStyle='#10b981';x.lineWidth=1.5;x.fillRect(X-6,Y,12,dO);x.strokeRect(X-6,Y,12,dO);ln(x,ox,oy+6,X,oy+6,'#d97706',4)}
-x.fillStyle='rgba(99,102,241,.12)';x.beginPath();x.moveTo(ox,oy);x.lineTo(X,oy);x.lineTo(X,Y);x.fill();
-ln(x,X-14,oy,X-14,oy-14,ax,2);ln(x,X-14,oy-14,X,oy-14,ax,2);
-const ar=Math.min(38,dA*.45);x.strokeStyle='#f59e0b';x.lineWidth=3;x.beginPath();x.arc(ox,oy,ar,-r,0);x.stroke();
-tt(x,'θ = '+f2(S.a)+'°',ox+ar+10,oy-8,'#f59e0b',12);
-const m=v=>(v/10).toFixed(1);
-ln(x,ox,oy,X,oy,'#3b82f6',4);tt(x,S.sh?'Ground shadow = '+m(A)+' m':'Adjacent = '+m(A),(ox+X)/2,oy+22,'#3b82f6',11,'center');
-ln(x,X,oy,X,Y,'#10b981',4);tt(x,S.sh?'Height: '+m(O)+' m':'Opposite = '+m(O),X+12,(oy+Y)/2,'#10b981');
-ln(x,ox,oy,X,Y,'#8b5cf6',4);tt(x,(S.sh?'Sun ray: ':'Hyp = ')+m(H_)+(S.sh?' m':''),(ox+X)/2-14,(oy+Y)/2-10,'#8b5cf6',11,'right');
-dot(x,X,Y,16,'rgba(245,158,11,.25)');dot(x,X,Y,7,'#f59e0b','#fff')}
-let dg=0;const c1=$('#c1'),p1=e=>{const b=c1.getBoundingClientRect();return[(e.clientX-b.left)/b.width*520,(e.clientY-b.top)/b.height*290]};
-c1.onpointerdown=e=>{const[a,b]=p1(e);if(Math.hypot(a-S.hx,b-S.hy)<28){dg=1;c1.setPointerCapture(e.pointerId)}};
-c1.onpointermove=e=>{if(!dg)return;const[a,b]=p1(e),dx=cl(a-85,40,340),dy=cl(250-b,25,210);S.s=+cl(Math.hypot(dx,dy)/200,.55,1.45).toFixed(2);if(!S.lock)S.a=Math.round(cl(D(Math.atan2(dy,dx)),15,72));u1()};
-c1.onpointerup=c1.onpointercancel=()=>dg=0;
-$('#sa').oninput=e=>{S.a=Math.round(+e.target.value);u1()};$('#ss').oninput=e=>{S.s=+e.target.value;u1()};
-$('#lk').onchange=e=>{S.lock=e.target.checked?1:0;u1()};
-$('#sh').onclick=()=>{S.sh=1-S.sh;$('#sh').classList.toggle('on',!!S.sh);$('#sh').setAttribute('aria-pressed',!!S.sh);T('sh','Shadow mission: '+(S.sh?'on':'off'));u1()};
-document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.lock=0;$('#lk').checked=false;S.a=+b.dataset.p;S.s=1;u1()});
+    body {
+      font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--tx);
+    }
 
-/* ---------- Level 2 ---------- */
-function u2(){const r=R(S.a2),co=Math.cos(r),si=Math.sin(r),e=exact(S.a2);
-T('a2v',Math.round(S.a2)+'° ('+(e?e[3]:f2(r/Math.PI)+'π')+')');T('q2','');$('#s2').value=S.a2;
-T('v2s',si.toFixed(3));T('v2c',co.toFixed(3));T('v2t',Math.abs(co)<1e-9?'Undefined':Math.tan(r).toFixed(3));
-T('e2s',e?'Exact: '+e[0]:'');T('e2c',e?'Exact: '+e[1]:'');T('e2t',e?'Exact: '+e[2]:'');
-document.querySelectorAll('[data-a]').forEach(b=>b.classList.toggle('on',Math.round(S.a2)==+b.dataset.a));d2()}
-function d2(){const{x,w,h}=cv('#c2');grid(x,w,h,25);const r=R(S.a2),co=Math.cos(r),si=Math.sin(r),cx=Math.min(145,w*.2),cy=h*.52,q=Math.min(88,h*.36,cx-28),ax=css('--ax'),mu=css('--mut');
-ln(x,cx-q-22,cy,cx+q+22,cy,ax,1.5);ln(x,cx,cy-q-22,cx,cy+q+22,ax,1.5);
-x.strokeStyle=css('--mut');x.lineWidth=2;x.beginPath();x.arc(cx,cy,q,0,7);x.stroke();
-x.fillStyle='rgba(245,158,11,.16)';x.beginPath();x.moveTo(cx,cy);x.arc(cx,cy,q*.35,0,-r,true);x.fill();
-const px=cx+q*co,py=cy-q*si,tx=cx+q;
-if(S.tg){ln(x,tx,cy-q-18,tx,cy+q+18,'rgba(244,63,94,.35)',1,[4,4]);
-if(Math.abs(co)>.08){const ty=cy-q*Math.tan(r);ln(x,cx,cy,tx,ty,'rgba(244,63,94,.45)',1.2,[3,3]);ln(x,tx,cy,tx,ty,'#f43f5e',3);if(ty>12&&ty<h-12)dot(x,tx,ty,4,'#f43f5e')}}
-ln(x,cx,cy,px,cy,'#3b82f6',3);ln(x,px,cy,px,py,'#10b981',3);ln(x,cx,cy,px,py,'#8b5cf6',2.5);
-const ws=cx+q+52,ww=w-ws-24;
-if(ww>80){ln(x,ws,cy,ws+ww,cy,ax,1.5);ln(x,ws,cy-q-18,ws,cy+q+18,ax,1.5);
-tt(x,'sin θ and cos θ plotted against the angle',ws+6,16,mu,10);tt(x,'+1',ws-6,cy-q+4,mu,10,'right');tt(x,'−1',ws-6,cy+q+4,mu,10,'right');
-[[0,'0°'],[.25,'90°'],[.5,'180°'],[.75,'270°'],[1,'360°']].forEach(([f,l])=>{const mx=ws+f*ww;ln(x,mx,cy-4,mx,cy+4,ax,1.5);tt(x,l,mx,cy+16,mu,10,'center')});
-const wave=(fn,col,lw,da,to)=>{x.strokeStyle=col;x.lineWidth=lw;x.setLineDash(da||[]);x.beginPath();for(let i=0;i<=to;i++){const y=cy-q*fn((i/ww)*2*Math.PI);i?x.lineTo(ws+i,y):x.moveTo(ws+i,y)}x.stroke();x.setLineDash([])};
-const pr=Math.min(S.a2,360)/360,ap=ws+pr*ww;
-wave(Math.sin,'rgba(16,185,129,.22)',2,0,ww);if(S.cw)wave(Math.cos,'rgba(59,130,246,.22)',2,[4,3],ww);
-wave(Math.sin,'#10b981',3,0,pr*ww);if(S.cw)wave(Math.cos,'#3b82f6',2.5,0,pr*ww);
-ln(x,px,py,ap,py,'rgba(16,185,129,.6)',1.5,[5,4]);dot(x,ap,py,5.5,'#10b981');if(S.cw)dot(x,ap,cy-q*co,5,'#3b82f6')}
-dot(x,px,py,7,'#f59e0b','#fff')}
-const c2=$('#c2');let d2g=0;
-const drag2=e=>{const b=c2.getBoundingClientRect(),X=e.clientX-b.left,Y=e.clientY-b.top,cx=Math.min(145,b.width*.2),cy=b.height*.52;if(X<cx+130){S.p2=0;$('#pl').classList.remove('on');T('pl','Plot wave');let a=D(Math.atan2(cy-Y,X-cx));if(a<0)a+=360;const n=Math.round(a/15)*15;if(Math.abs(a-n)<2)a=n%360;S.a2=a;u2()}};
-c2.onpointerdown=e=>{d2g=1;c2.setPointerCapture(e.pointerId);drag2(e)};c2.onpointermove=e=>{if(d2g)drag2(e)};c2.onpointerup=c2.onpointercancel=()=>d2g=0;
-$('#s2').oninput=e=>{S.p2=0;S.a2=+e.target.value;T('pl','Plot wave');u2()};
-$('#pl').onclick=()=>{S.p2=1-S.p2;T('pl',S.p2?'Pause':'Plot wave')};
-$('#cw').onclick=()=>{S.cw=1-S.cw;$('#cw').classList.toggle('on',!!S.cw);$('#cw').setAttribute('aria-pressed',!!S.cw);d2()};
-$('#tg').onclick=()=>{S.tg=1-S.tg;$('#tg').classList.toggle('on',!!S.tg);$('#tg').setAttribute('aria-pressed',!!S.tg);d2()};
-{const q=$('#q2');q.className='';[270,180,90,60,45,30,0].forEach(a=>{const b=document.createElement('button');b.dataset.a=a;b.textContent=a+'°';b.style.margin='0 2px';b.onclick=()=>{S.p2=0;T('pl','Plot wave');S.a2=a;u2()};q.after(b)})}
+    /* Slim single-line breadcrumb bar at the top */
+    .bc-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.875rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--bd);
+      font-size: 11.5px;
+      line-height: 1.25;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      z-index: 12;
+    }
 
-/* ---------- Level 3 ---------- */
-function dInv(){const{x,w,h}=cv('#ci'),cx=w/2,cy=h/2,sx=(w-60)/(4*Math.PI),sy=(h-50)/2.4,b1=cx-Math.PI/2*sx,b2=cx+Math.PI/2*sx,ax=css('--ax'),mu=css('--mut'),y=S.y;
-x.fillStyle='rgba(16,185,129,.13)';x.fillRect(b1,12,b2-b1,h-24);ln(x,b1,12,b1,h-12,'rgba(16,185,129,.5)',1,[4,4]);ln(x,b2,12,b2,h-12,'rgba(16,185,129,.5)',1,[4,4]);
-ln(x,20,cy,w-20,cy,ax,1.5);ln(x,cx,12,cx,h-12,ax,1.5);
-[-2,-1,0,1,2].forEach(k=>{const p=cx+k*Math.PI*sx;ln(x,p,cy-4,p,cy+4,ax,1.5);tt(x,k?(k<0?'−':'')+(Math.abs(k)>1?Math.abs(k):'')+'π':'0',p,cy+16,mu,10,'center')});
-const crv=(a,b,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.beginPath();for(let p=a;p<=b;p++){const yy=cy-Math.sin((p-cx)/sx)*sy;p==a?x.moveTo(p,yy):x.lineTo(p,yy)}x.stroke()};
-crv(30,w-30,css('--ax'),2);crv(Math.ceil(b1),Math.floor(b2),'#10b981',3.5);
-const ty=cy-y*sy;ln(x,25,ty,w-25,ty,'#f59e0b',2,[5,3]);
-const a0=Math.asin(y);[a0-2*Math.PI,Math.PI-a0-2*Math.PI,a0,Math.PI-a0,a0+2*Math.PI].forEach(a=>{if(a<-2*Math.PI||a>2*Math.PI)return;const pr=Math.abs(a-a0)<1e-3;if(!pr&&Math.abs(a-a0)<.02)return;dot(x,cx+a*sx,ty,pr?7:5,pr?'#10b981':'#f43f5e',pr?'#fff':0)});
-tt(x,'Principal window [−90°, +90°]',cx,24,'#10b981',11,'center');
-T('yv','Ratio y = '+y.toFixed(2));const pd=D(a0);T('iv',pd.toFixed(1)+'° ('+a0.toFixed(2)+' rad)');T('iq','arcsin('+y.toFixed(2)+')')}
-function dEu(){const{x,w,h}=cv('#ce'),cx=w/2,cy=h/2,q=Math.min(w,h)*.36,r=R(S.eu),px=cx+q*Math.cos(r),py=cy-q*Math.sin(r),ax=css('--ax'),mu=css('--mut');
-ln(x,cx-q-35,cy,cx+q+35,cy,ax,1.5);ln(x,cx,cy-q-28,cx,cy+q+28,ax,1.5);
-tt(x,'Real',cx+q+8,cy-6,mu);tt(x,'+i',cx+8,cy-q-14,mu);tt(x,'−i',cx+8,cy+q+22,mu);tt(x,'−1',cx-q-22,cy-6,mu);tt(x,'+1',cx+q+6,cy+14,mu);
-x.strokeStyle=mu;x.lineWidth=2;x.beginPath();x.arc(cx,cy,q,0,7);x.stroke();
-x.fillStyle='rgba(139,92,246,.2)';x.beginPath();x.moveTo(cx,cy);x.arc(cx,cy,q*.32,0,-r,true);x.fill();
-ln(x,cx,cy,px,cy,'#3b82f6',3);ln(x,px,cy,px,py,'#10b981',3);ln(x,cx,cy,px,py,'#8b5cf6',3.5);dot(x,px,py,7,'#8b5cf6','#fff');
-const cs=Math.cos(r),sn=Math.sin(r),z=v=>Math.abs(v)<1e-6?0:v;
-T('ed',Math.round(S.eu));H('ev','e<sup>i·'+f2(S.eu/180)+'π</sup> = '+z(cs).toFixed(3)+(z(sn)<0?' − ':' + ')+Math.abs(z(sn)).toFixed(3)+'i');$('#eid').hidden=Math.round(S.eu)!==180;$('#se').value=S.eu}
-const ts=(v,n)=>{let s=0;for(let k=0;k<n;k++){const p=2*k+1;s+=(k%2?-1:1)*v**p/fact(p)}return s};
-function dTa(){const{x,w,h}=cv('#ct'),cx=w/2,cy=h/2,sx=(w-60)/(4*Math.PI),sy=(h-50)/2.6,ax=css('--ax');
-ln(x,20,cy,w-20,cy,ax,1.5);ln(x,cx,12,cx,h-12,ax,1.5);
-x.strokeStyle='#10b981';x.lineWidth=3;x.beginPath();for(let p=25;p<=w-25;p++){const yy=cy-Math.sin((p-cx)/sx)*sy;p==25?x.moveTo(p,yy):x.lineTo(p,yy)}x.stroke();
-x.strokeStyle='#f43f5e';x.lineWidth=2.5;x.setLineDash([6,4]);x.beginPath();let st=0;for(let p=25;p<=w-25;p++){const yy=cy-ts((p-cx)/sx,S.n)*sy;if(yy>=-20&&yy<=h+20){st?x.lineTo(p,yy):x.moveTo(p,yy);st=1}else st=0}x.stroke();x.setLineDash([]);
-const mx=cx+S.tx*sx;ln(x,mx,14,mx,h-14,'#f59e0b',1.5);dot(x,mx,cy-Math.sin(S.tx)*sy,5,'#10b981');dot(x,mx,cl(cy-ts(S.tx,S.n)*sy,10,h-10),5,'#f43f5e');
-T('nv',S.n);T('xv',S.tx.toFixed(2));$('#sn').value=S.n;
-T('tf','sin(x) ≈ '+[...Array(S.n)].map((_,k)=>{const p=2*k+1,b=p==1?'x':'x^'+p+'/'+p+'!';return k?(k%2?' − ':' + ')+b:b}).join(''));
-const tr=Math.sin(S.tx),ap=ts(S.tx,S.n);T('tv',tr.toFixed(5));T('ta2',ap.toFixed(5));T('te','Approximation error: '+Math.abs(tr-ap).toExponential(2))}
-const upd3=()=>({inv:dInv,eu:dEu,ta:dTa})[S.tab]();
-$('#si').onclick=()=>{S.sw=1-S.sw;T('si',S.sw?'Stop sweep':'Sweep ratio')};
-$('#sy').oninput=e=>{S.sw=0;T('si','Sweep ratio');S.y=+e.target.value;dInv()};
-$('#ep').onclick=()=>{S.pe=1-S.pe;T('ep',S.pe?'Pause':'Rotate phasor')};
-$('#se').oninput=e=>{S.pe=0;T('ep','Rotate phasor');S.eu=+e.target.value;dEu()};
-document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{S.pe=0;T('ep','Rotate phasor');S.eu=+b.dataset.e;dEu()});
-$('#tp').onclick=()=>{S.pt=1-S.pt;T('tp',S.pt?'Stop':'Auto-add terms')};
-$('#sn').oninput=e=>{S.pt=0;T('tp','Auto-add terms');S.n=+e.target.value;dTa()};
-$('#sx').oninput=e=>{S.tx=+e.target.value;dTa()};
-document.querySelectorAll('#sub button').forEach(b=>b.onclick=()=>{S.tab=b.dataset.t;document.querySelectorAll('#sub button').forEach(o=>o.classList.toggle('on',o===b));['inv','eu','ta'].forEach(t=>$('#t-'+t).hidden=t!==S.tab);upd3()});
+    .bc-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--mut);
+      text-decoration: none;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: color 0.16s ease, transform 0.16s ease;
+    }
 
-/* ---------- Shell, animation ---------- */
-function draw(){S.l==1?u1():S.l==2?u2():upd3()}
-document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{S.l=+b.dataset.l;document.querySelectorAll('#nav button').forEach(o=>o.classList.toggle('on',o===b));[1,2,3].forEach(n=>$('#p'+n).hidden=n!==S.l);draw()});
-$('#th').onclick=()=>{const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark';draw()};
-document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
-let lt=performance.now();
-(function tick(n){const dt=Math.min(.05,(n-lt)/1000);lt=n;
-if(S.l==2&&S.p2){S.a2=(S.a2+45*dt)%360;u2()}
-if(S.l==3){if(S.tab=='eu'&&S.pe){S.eu=(S.eu+60*dt)%360;dEu()}
-if(S.tab=='inv'&&S.sw){S.y+=.6*dt*S.yd;if(S.y>=.98){S.y=.98;S.yd=-1}if(S.y<=-.98){S.y=-.98;S.yd=1}$('#sy').value=S.y;dInv()}
-if(S.tab=='ta'&&S.pt){S.tt+=dt;if(S.tt>.9){S.tt=0;S.n=S.n>=7?1:S.n+1;dTa()}}}
-requestAnimationFrame(tick)})(lt);
-new ResizeObserver(draw).observe(document.body);draw();
-</script></body></html>
+    .bc-link:hover {
+      color: var(--in);
+    }
+
+    .bc-link:hover .bc-arr {
+      transform: translateX(-2px);
+    }
+
+    .bc-arr {
+      display: inline-block;
+      transition: transform 0.16s ease;
+      font-family: ui-monospace, Menlo, monospace;
+    }
+
+    .bc-sep {
+      color: var(--ax);
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .bc-cur {
+      color: var(--tx);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    header {
+      position: sticky;
+      top: env(safe-area-inset-top, 0px);
+      z-index: 5;
+      background: var(--card);
+      border-bottom: 1px solid var(--bd);
+    }
+
+    .hd, .wrap {
+      max-width: 1100px;
+      margin: auto;
+      padding: 10px 14px;
+    }
+
+    .hd {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      font-size: 17px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 15px;
+      margin: 0;
+    }
+
+    small, .m {
+      color: var(--mut);
+      font-size: 12px;
+    }
+
+    button {
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 11px;
+      border-radius: 10px;
+      border: 1px solid var(--bd);
+      background: var(--cv);
+      color: var(--tx);
+      cursor: pointer;
+    }
+
+    button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--in);
+      outline-offset: 2px;
+    }
+
+    button.on {
+      background: var(--am);
+      border-color: var(--am);
+      color: #fff;
+    }
+
+    #nav button[data-l="2"].on {
+      background: #059669;
+      border-color: #059669;
+    }
+
+    #nav button[data-l="3"].on, .sub .on {
+      background: var(--in);
+      border-color: var(--in);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--bd);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .g {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .g > .card {
+      margin: 0;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    canvas {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid var(--bd);
+      background: var(--cv);
+      touch-action: none;
+    }
+
+    #c1 {
+      aspect-ratio: 520 / 290;
+    }
+
+    #c2 {
+      height: 250px;
+    }
+
+    .cb {
+      height: 230px;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--am);
+    }
+
+    .rd {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid;
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-top: 8px;
+      font: 12px ui-monospace, Menlo, monospace;
+    }
+
+    .rd b {
+      font-size: 19px;
+    }
+
+    .bs {
+      border-color: #10b98177;
+      background: #10b98115;
+    }
+
+    .bc {
+      border-color: #3b82f677;
+      background: #3b82f615;
+    }
+
+    .bt {
+      border-color: #f43f5e77;
+      background: #f43f5e15;
+    }
+
+    .bi {
+      border-color: #6366f177;
+      background: #6366f115;
+    }
+
+    .s {
+      color: #10b981;
+    }
+
+    .c {
+      color: #3b82f6;
+    }
+
+    .t {
+      color: #f43f5e;
+    }
+
+    .i {
+      color: #818cf8;
+    }
+
+    .note {
+      font-size: 12px;
+      border: 1px solid var(--bd);
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin: 8px 0 0;
+      background: var(--cv);
+    }
+
+    .sub {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    details {
+      margin: 0 14px;
+      max-width: 1100px;
+    }
+
+    .pic {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 8px;
+      padding: 6px 0 12px;
+      font-size: 12px;
+    }
+
+    .pic div {
+      border: 1px solid var(--bd);
+      border-radius: 12px;
+      padding: 8px;
+      background: var(--cv);
+    }
+
+    summary {
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Slim Single-Line Breadcrumb Navigation Bar -->
+  <nav class="bc-bar" aria-label="Breadcrumb">
+    <a href="https://unboringstem.pages.dev/" class="bc-link">
+      <span class="bc-arr" aria-hidden="true">&larr;</span>
+      <span>Unboring STEM</span>
+    </a>
+    <span class="bc-sep" aria-hidden="true">/</span>
+    <span class="bc-cur" aria-current="page">The Trigonometry Universe</span>
+  </nav>
+
+  <header>
+    <div class="hd">
+      <div>
+        <h1>The Trigonometry Universe</h1>
+        <small>Middle school shadows &rarr; high school waves &rarr; undergraduate calculus &amp; complex numbers</small>
+      </div>
+      <nav id="nav" aria-label="Level">
+        <button data-l="1" class="on">1. Middle School</button>
+        <button data-l="2">2. High School</button>
+        <button data-l="3">3. Undergraduate</button>
+      </nav>
+      <button id="th" aria-label="Toggle light and dark theme">&#9681; Theme</button>
+    </div>
+    <div style="max-width:1100px;margin:auto;padding:0 14px">
+      <details>
+        <summary>Big picture</summary>
+        <div class="pic">
+          <div><b>Stage 1 &middot; static shapes.</b> Right triangles with the same angle share the same side ratios, so a shadow reveals a height.</div>
+          <div><b>Stage 2 &middot; spinning waves.</b> Fix the hypotenuse at 1 and trig becomes the coordinates (cos &theta;, sin &theta;), which unroll into waves.</div>
+          <div><b>Stage 3 &middot; inverses, complex numbers, series.</b> arcsin needs a restricted domain, e<sup>i&theta;</sup> packs cos and sin into one rotation, and polynomials approximate sin.</div>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Level 1: Middle School Right Triangle & Shadow Lab -->
+    <section id="p1">
+      <div class="g">
+        <div class="card">
+          <div class="row">
+            <div>
+              <h2>The Constant Ratio Lab</h2>
+              <small>Drag the glowing corner or use the sliders. With &theta; locked, resizing never changes the ratios.</small>
+            </div>
+            <button id="sh" class="on" aria-pressed="true">Shadow mission: on</button>
+          </div>
+          <canvas id="c1" role="img" aria-label="Right triangle with draggable top corner; sides and sun shadow update live"></canvas>
+          <p class="note" id="story"></p>
+        </div>
+        <div class="card">
+          <div class="row" style="margin:0">
+            <label class="m" for="sa">Corner angle &theta; (changes the shape)</label>
+            <b id="a1v"></b>
+          </div>
+          <input id="sa" type="range" min="15" max="72" step="any" value="37" />
+          <div class="row" style="margin:8px 0 0">
+            <label class="m" for="ss">Size multiplier (ratios stay fixed) <b id="s1v"></b></label>
+            <label class="m"><input type="checkbox" id="lk" /> Lock angle</label>
+          </div>
+          <input id="ss" type="range" min=".55" max="1.45" step=".01" value="1" />
+          <div class="row" style="margin:8px 0 0">
+            <button data-p="36.8699">3-4-5 triangle (&theta; &approx; 36.87&deg;)</button>
+            <button data-p="30">30&deg; ramp (sin = 0.5)</button>
+            <button data-p="45">45&deg; cut</button>
+          </div>
+          <div class="rd bs">
+            <div><b class="s">SOH &middot; sine &theta;</b><br><span id="r1s"></span></div>
+            <b class="s" id="v1s"></b>
+          </div>
+          <div class="rd bc">
+            <div><b class="c">CAH &middot; cosine &theta;</b><br><span id="r1c"></span></div>
+            <b class="c" id="v1c"></b>
+          </div>
+          <div class="rd bt">
+            <div><b class="t">TOA &middot; tangent &theta;</b><br><span id="r1t"></span></div>
+            <b class="t" id="v1t"></b>
+          </div>
+        </div>
+      </div>
+      <div class="g">
+        <div class="card">
+          <b>Surveying &amp; astronomy</b>
+          <p class="m">Eratosthenes used a shadow angle to estimate Earth&rsquo;s size, and Galileo estimated lunar mountain heights from their shadows. Surveyors still rely on the same ratios.</p>
+        </div>
+        <div class="card">
+          <b>Game physics</b>
+          <p class="m">A character moving at speed v at angle &theta; has vx = v&middot;cos &theta; and vy = v&middot;sin &theta;.</p>
+        </div>
+        <div class="card">
+          <b>Roofs &amp; ramps</b>
+          <p class="m">Tangent is rise &divide; run, which sets the slope of roofs, bridges and wheelchair ramps.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Level 2: High School Unit Circle & Wave Unroller -->
+    <section id="p2" hidden>
+      <div class="card">
+        <div class="row">
+          <div>
+            <h2>The Unit Circle &amp; Wave Unroller</h2>
+            <small>With radius 1, the point&rsquo;s height is sin &theta; and its width is cos &theta;. Tracing them over time gives waves.</small>
+          </div>
+          <div>
+            <button id="pl" class="on">Plot wave</button>
+            <button id="cw" class="on" aria-pressed="true">Cosine wave</button>
+            <button id="tg" class="on" aria-pressed="true">Tangent line</button>
+          </div>
+        </div>
+        <div class="row">
+          <b id="a2v" class="m" style="min-width:110px"></b>
+          <input id="s2" type="range" min="0" max="360" step="1" value="30" style="flex:1;min-width:160px" aria-label="Angle in degrees" />
+          <span id="q2"></span>
+        </div>
+        <canvas id="c2" role="img" aria-label="Unit circle with sine and cosine waves"></canvas>
+        <p class="note"><b style="color:#8b5cf6">Purple</b> radius (length 1) &middot; <b class="s">green</b> sin &theta; &middot; <b class="c">blue</b> cos &theta; &middot; <b class="t">red</b> tan &theta;, the height where the radius line meets x = 1. Drag the circle; it snaps near multiples of 15&deg;.</p>
+      </div>
+      <div class="g">
+        <div class="rd bs">
+          <div><b class="s">SINE &middot; y</b><br>height on circle</div>
+          <div style="text-align:right"><b class="s" id="v2s"></b><br><span class="s" id="e2s"></span></div>
+        </div>
+        <div class="rd bc">
+          <div><b class="c">COSINE &middot; x</b><br>horizontal position</div>
+          <div style="text-align:right"><b class="c" id="v2c"></b><br><span class="c" id="e2c"></span></div>
+        </div>
+        <div class="rd bt">
+          <div><b class="t">TANGENT &middot; sin &divide; cos</b><br>slope of radius line</div>
+          <div style="text-align:right"><b class="t" id="v2t"></b><br><span class="t" id="e2t"></span></div>
+        </div>
+      </div>
+      <div class="g">
+        <div class="card">
+          <b>AC electricity</b>
+          <p class="m">Generators spin magnets in a circle, giving the 50/60 Hz sine wave at your socket.</p>
+        </div>
+        <div class="card">
+          <b>Sound</b>
+          <p class="m">A pure tone is a sine wave; real notes are sums of sines. Noise-cancelling headphones add an inverted copy (shifted by &pi;) to cancel much of the noise.</p>
+        </div>
+        <div class="card">
+          <b>GPS</b>
+          <p class="m">Satellite positions along their orbits are computed with cos and sin; your phone times signals from 4+ satellites to locate you within metres.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Level 3: Undergraduate Inverse Functions, Euler's Formula, Taylor Series -->
+    <section id="p3" hidden>
+      <div class="sub" id="sub">
+        <button data-t="inv" class="on">1. Inverse branches (arcsin)</button>
+        <button data-t="eu">2. Euler&rsquo;s formula (e<sup>i&theta;</sup>)</button>
+        <button data-t="ta">3. Taylor polynomials</button>
+      </div>
+
+      <div id="t-inv" class="g">
+        <div class="card">
+          <div class="row">
+            <div>
+              <h2>Inverse sine: finding the unique angle</h2>
+              <small>A horizontal line hits sin &theta; infinitely often (red). arcsin picks the single green point in [&minus;90&deg;, +90&deg;].</small>
+            </div>
+            <button id="si">Sweep ratio</button>
+          </div>
+          <div class="row" style="margin:0">
+            <b class="m" id="yv" style="min-width:90px"></b>
+            <input id="sy" type="range" min="-.98" max=".98" step=".02" value=".5" style="flex:1" aria-label="Ratio y" />
+          </div>
+          <canvas id="ci" class="cb" role="img" aria-label="Sine curve with horizontal sweeper line and its intersections"></canvas>
+        </div>
+        <div class="card">
+          <div class="rd bs" style="margin-top:0">
+            <div><b class="s">Principal output</b><br><span id="iq"></span></div>
+            <b class="s" id="iv"></b>
+          </div>
+          <p class="m">A function returns one answer per input, so arcsin is defined on the restricted domain [&minus;90&deg;, +90&deg;]. Otherwise arcsin(0.5) could be 30&deg;, 150&deg;, 390&deg; &hellip;</p>
+          <p class="note"><b>Robotics:</b> inverse kinematics turns a target (x, y) into joint angles using atan2 and arccos (law of cosines).</p>
+        </div>
+      </div>
+
+      <div id="t-eu" class="g" hidden>
+        <div class="card">
+          <div class="row">
+            <div>
+              <h2>Euler&rsquo;s formula: e<sup>i&theta;</sup> = cos &theta; + i&middot;sin &theta;</h2>
+              <small>Multiplying by i turns a point by 90&deg;. An imaginary exponent turns growth into rotation.</small>
+            </div>
+            <button id="ep">Rotate phasor</button>
+          </div>
+          <div class="row" style="margin:0">
+            <input id="se" type="range" min="0" max="360" value="60" style="flex:1;min-width:160px" aria-label="Angle in degrees" />
+            <button data-e="0">0&deg; (1)</button>
+            <button data-e="90">90&deg; (i)</button>
+            <button data-e="180">180&deg; (&minus;1)</button>
+            <button data-e="270">270&deg; (&minus;i)</button>
+          </div>
+          <canvas id="ce" class="cb" role="img" aria-label="Complex plane with unit phasor"></canvas>
+        </div>
+        <div class="card">
+          <div class="rd bi" style="margin-top:0">
+            <div><b class="i">&theta; = <span id="ed"></span>&deg;</b></div>
+            <b class="i" id="ev" style="font-size:14px"></b>
+          </div>
+          <p class="note" id="eid" hidden><b>Euler&rsquo;s identity:</b> e<sup>i&pi;</sup> + 1 = 0 links e, i, &pi;, 1 and 0.</p>
+          <p class="note"><b>Signals:</b> Wi-Fi, 5G and MRI rely on the Fast Fourier Transform, built on e<sup>i&theta;</sup>, to separate many overlapping frequency components.</p>
+        </div>
+      </div>
+
+      <div id="t-ta" class="g" hidden>
+        <div class="card">
+          <div class="row">
+            <div>
+              <h2>Taylor series: a curve from simple powers</h2>
+              <small>The dashed polynomial hugs sin x near 0 and drifts away farther out. More terms widen the fit.</small>
+            </div>
+            <button id="tp">Auto-add terms</button>
+          </div>
+          <div class="row" style="margin:0">
+            <label class="m" for="sn" style="min-width:90px">Terms: <b id="nv"></b></label>
+            <input id="sn" type="range" min="1" max="7" value="3" style="flex:1" />
+            <label class="m" for="sx" style="min-width:110px">x = <b id="xv"></b> rad</label>
+            <input id="sx" type="range" min="-3.14" max="3.14" step=".05" value="1.8" style="flex:1" />
+          </div>
+          <canvas id="ct" class="cb" role="img" aria-label="sin x with Taylor polynomial approximation"></canvas>
+        </div>
+        <div class="card">
+          <div class="note m" id="tf" style="margin:0;font-family:ui-monospace,monospace"></div>
+          <div class="rd bs"><div><b class="s">True sin(x)</b></div><b class="s" id="tv"></b></div>
+          <div class="rd bt"><div><b class="t">Polynomial</b></div><b class="t" id="ta2"></b></div>
+          <p class="m" id="te"></p>
+          <p class="note"><b>In practice:</b> libraries reduce the angle to a small range, then use a short polynomial (a close cousin of Taylor, usually minimax) or CORDIC.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    try {
+      const $ = (s) => document.querySelector(s);
+      const T = (i, t) => { const el = $('#' + i); if (el) el.textContent = t; };
+      const H = (i, t) => { const el = $('#' + i); if (el) el.innerHTML = t; };
+      const R = (d) => (d * Math.PI) / 180;
+      const D = (r) => (r * 180) / Math.PI;
+      const fact = (n) => (n < 2 ? 1 : n * fact(n - 1));
+      const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+      const f2 = (a) => String(+a.toFixed(2));
+      const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+      const ln = (x, a, b, c, d, col, lw, da) => {
+        x.strokeStyle = col;
+        x.lineWidth = lw || 1;
+        x.setLineDash(da || []);
+        x.beginPath();
+        x.moveTo(a, b);
+        x.lineTo(c, d);
+        x.stroke();
+        x.setLineDash([]);
+      };
+
+      const dot = (x, a, b, r, f, s) => {
+        x.fillStyle = f;
+        x.beginPath();
+        x.arc(a, b, r, 0, Math.PI * 2);
+        x.fill();
+        if (s) {
+          x.strokeStyle = s;
+          x.lineWidth = 2.5;
+          x.stroke();
+        }
+      };
+
+      const tt = (x, s, a, b, c, z, al) => {
+        x.fillStyle = c;
+        x.font = '700 ' + (z || 11) + 'px system-ui,sans-serif';
+        x.textAlign = al || 'left';
+        x.fillText(s, a, b);
+      };
+
+      function cv(id) {
+        const c = $(id);
+        const d = window.devicePixelRatio || 1;
+        const w = c.clientWidth || 300;
+        const h = c.clientHeight || 200;
+        if (c.width !== Math.round(w * d) || c.height !== Math.round(h * d)) {
+          c.width = Math.round(w * d);
+          c.height = Math.round(h * d);
+        }
+        const x = c.getContext('2d');
+        x.setTransform(d, 0, 0, d, 0, 0);
+        x.clearRect(0, 0, w, h);
+        return { x, w, h };
+      }
+
+      const grid = (x, w, h, s) => {
+        x.strokeStyle = css('--grid');
+        x.lineWidth = 0.8;
+        for (let i = 0; i <= w; i += s) {
+          x.beginPath();
+          x.moveTo(i, 0);
+          x.lineTo(i, h);
+          x.stroke();
+        }
+        for (let j = 0; j <= h; j += s) {
+          x.beginPath();
+          x.moveTo(0, j);
+          x.lineTo(w, j);
+          x.stroke();
+        }
+      };
+
+      const EX = {
+        0: ['0', '1', '0', '0'],
+        30: ['1/2', '√3/2', '1/√3', 'π/6'],
+        45: ['√2/2', '√2/2', '1', 'π/4'],
+        60: ['√3/2', '1/2', '√3', 'π/3'],
+        90: ['1', '0', 'Undefined', 'π/2'],
+        120: ['√3/2', '-1/2', '-√3', '2π/3'],
+        135: ['√2/2', '-√2/2', '-1', '3π/4'],
+        150: ['1/2', '-√3/2', '-1/√3', '5π/6'],
+        180: ['0', '-1', '0', 'π'],
+        210: ['-1/2', '-√3/2', '1/√3', '7π/6'],
+        225: ['-√2/2', '-√2/2', '1', '5π/4'],
+        240: ['-√3/2', '-1/2', '√3', '4π/3'],
+        270: ['-1', '0', 'Undefined', '3π/2'],
+        300: ['-√3/2', '1/2', '-√3', '5π/3'],
+        315: ['-√2/2', '√2/2', '-1', '7π/4'],
+        330: ['-1/2', '√3/2', '-1/√3', '11π/6']
+      };
+
+      const exact = (a) => {
+        const n = Math.round(a);
+        if (Math.abs(a - n) > 0.05) return null;
+        const e = EX[((n % 360) + 360) % 360];
+        return n === 360 ? [e[0], e[1], e[2], '2π'] : e;
+      };
+
+      const S = {
+        l: 1, a: 37, s: 1, lock: 0, sh: 1,
+        a2: 30, p2: 0, cw: 1, tg: 1,
+        tab: 'inv', y: 0.5, yd: 1, sw: 0,
+        eu: 60, pe: 0,
+        n: 3, tx: 1.8, pt: 0, tt: 0,
+        hx: 0, hy: 0
+      };
+
+      /* ---------- Level 1: Constant Ratio Lab ---------- */
+      function u1() {
+        const r = R(S.a);
+        const h = 200 * S.s;
+        const A = h * Math.cos(r);
+        const O = h * Math.sin(r);
+        const m = (v) => (v / 10).toFixed(1);
+        const tn = Math.tan(r);
+
+        T('a1v', f2(S.a) + '°');
+        T('s1v', S.s.toFixed(2) + '×');
+        T('r1s', `Opposite (${m(O)}) ÷ Hyp (${m(h)})`);
+        T('v1s', Math.sin(r).toFixed(3));
+        T('r1c', `Adjacent (${m(A)}) ÷ Hyp (${m(h)})`);
+        T('v1c', Math.cos(r).toFixed(3));
+        T('r1t', `Opposite (${m(O)}) ÷ Adjacent (${m(A)})`);
+        T('v1t', tn.toFixed(3));
+
+        H(
+          'story',
+          S.sh
+            ? `<b>Surveyor’s trick:</b> you can’t climb a ${m(O)} m tower with a tape, so measure its <b>${m(A)} m shadow</b> and multiply by <b>tan(${f2(S.a)}°) = ${tn.toFixed(3)}</b>. A taller tower casting a longer shadow at the same sun angle gives the same ratio.`
+            : `<b>Similar triangles:</b> tick <i>Lock angle</i> and drag the size slider. Every side stretches, yet sin, cos and tan do not change.`
+        );
+
+        $('#sa').value = S.a;
+        $('#ss').value = S.s;
+        $('#sa').disabled = !!S.lock;
+        d1();
+      }
+
+      function d1() {
+        const { x, w, h } = cv('#c1');
+        x.scale(w / 520, h / 290);
+        grid(x, 520, 290, 20);
+        const ax = css('--ax');
+        const r = R(S.a);
+        const H_ = 200 * S.s;
+        const A = H_ * Math.cos(r);
+        const O = H_ * Math.sin(r);
+        const f = Math.min(1, 300 / A, 195 / O);
+        const dA = A * f;
+        const dO = O * f;
+        const ox = 85;
+        const oy = 250;
+        const X = ox + dA;
+        const Y = oy - dO;
+        S.hx = X;
+        S.hy = Y;
+
+        ln(x, 35, oy, 485, oy, ax, 2.5);
+        if (S.sh) {
+          const dx = Math.cos(r);
+          const dy = -Math.sin(r);
+          const e = Math.max(28, Math.min((480 - X) / Math.max(dx, 0.01), (Y - 36) / Math.max(-dy, 0.01)));
+          const sx = X + dx * e;
+          const sy = Y + dy * e;
+          dot(x, sx, sy, 20, 'rgba(251,191,36,.25)');
+          dot(x, sx, sy, 13, '#f59e0b');
+          ln(x, sx, sy, X, Y, '#f59e0b', 2, [5, 4]);
+          x.fillStyle = 'rgba(16,185,129,.25)';
+          x.strokeStyle = '#10b981';
+          x.lineWidth = 1.5;
+          x.fillRect(X - 6, Y, 12, dO);
+          x.strokeRect(X - 6, Y, 12, dO);
+          ln(x, ox, oy + 6, X, oy + 6, '#d97706', 4);
+        }
+
+        x.fillStyle = 'rgba(99,102,241,.12)';
+        x.beginPath();
+        x.moveTo(ox, oy);
+        x.lineTo(X, oy);
+        x.lineTo(X, Y);
+        x.fill();
+
+        ln(x, X - 14, oy, X - 14, oy - 14, ax, 2);
+        ln(x, X - 14, oy - 14, X, oy - 14, ax, 2);
+
+        const ar = Math.min(38, dA * 0.45);
+        x.strokeStyle = '#f59e0b';
+        x.lineWidth = 3;
+        x.beginPath();
+        x.arc(ox, oy, ar, -r, 0);
+        x.stroke();
+
+        tt(x, 'θ = ' + f2(S.a) + '°', ox + ar + 10, oy - 8, '#f59e0b', 12);
+        const m = (v) => (v / 10).toFixed(1);
+        ln(x, ox, oy, X, oy, '#3b82f6', 4);
+        tt(x, S.sh ? 'Ground shadow = ' + m(A) + ' m' : 'Adjacent = ' + m(A), (ox + X) / 2, oy + 22, '#3b82f6', 11, 'center');
+        ln(x, X, oy, X, Y, '#10b981', 4);
+        tt(x, S.sh ? 'Height: ' + m(O) + ' m' : 'Opposite = ' + m(O), X + 12, (oy + Y) / 2, '#10b981');
+        ln(x, ox, oy, X, Y, '#8b5cf6', 4);
+        tt(x, (S.sh ? 'Sun ray: ' : 'Hyp = ') + m(H_) + (S.sh ? ' m' : ''), (ox + X) / 2 - 14, (oy + Y) / 2 - 10, '#8b5cf6', 11, 'right');
+        dot(x, X, Y, 16, 'rgba(245,158,11,.25)');
+        dot(x, X, Y, 7, '#f59e0b', '#fff');
+      }
+
+      let dg = 0;
+      const c1 = $('#c1');
+      const p1 = (e) => {
+        const b = c1.getBoundingClientRect();
+        return [((e.clientX - b.left) / b.width) * 520, ((e.clientY - b.top) / b.height) * 290];
+      };
+      c1.onpointerdown = (e) => {
+        const [a, b] = p1(e);
+        if (Math.hypot(a - S.hx, b - S.hy) < 28) {
+          dg = 1;
+          c1.setPointerCapture(e.pointerId);
+        }
+      };
+      c1.onpointermove = (e) => {
+        if (!dg) return;
+        const [a, b] = p1(e);
+        const dx = cl(a - 85, 40, 340);
+        const dy = cl(250 - b, 25, 210);
+        S.s = +cl(Math.hypot(dx, dy) / 200, 0.55, 1.45).toFixed(2);
+        if (!S.lock) S.a = Math.round(cl(D(Math.atan2(dy, dx)), 15, 72));
+        u1();
+      };
+      c1.onpointerup = c1.onpointercancel = () => {
+        dg = 0;
+      };
+      $('#sa').oninput = (e) => {
+        S.a = Math.round(+e.target.value);
+        u1();
+      };
+      $('#ss').oninput = (e) => {
+        S.s = +e.target.value;
+        u1();
+      };
+      $('#lk').onchange = (e) => {
+        S.lock = e.target.checked ? 1 : 0;
+        u1();
+      };
+      $('#sh').onclick = () => {
+        S.sh = 1 - S.sh;
+        $('#sh').classList.toggle('on', !!S.sh);
+        $('#sh').setAttribute('aria-pressed', !!S.sh);
+        T('sh', 'Shadow mission: ' + (S.sh ? 'on' : 'off'));
+        u1();
+      };
+      document.querySelectorAll('[data-p]').forEach((b) => {
+        b.onclick = () => {
+          S.lock = 0;
+          $('#lk').checked = false;
+          S.a = +b.dataset.p;
+          S.s = 1;
+          u1();
+        };
+      });
+
+      /* ---------- Level 2: Unit Circle & Wave Unroller ---------- */
+      function u2() {
+        const r = R(S.a2);
+        const co = Math.cos(r);
+        const si = Math.sin(r);
+        const e = exact(S.a2);
+        T('a2v', Math.round(S.a2) + '° (' + (e ? e[3] : f2(r / Math.PI) + 'π') + ')');
+        T('q2', '');
+        $('#s2').value = S.a2;
+        T('v2s', si.toFixed(3));
+        T('v2c', co.toFixed(3));
+        T('v2t', Math.abs(co) < 1e-9 ? 'Undefined' : Math.tan(r).toFixed(3));
+        T('e2s', e ? 'Exact: ' + e[0] : '');
+        T('e2c', e ? 'Exact: ' + e[1] : '');
+        T('e2t', e ? 'Exact: ' + e[2] : '');
+        document.querySelectorAll('[data-a]').forEach((b) => b.classList.toggle('on', Math.round(S.a2) == +b.dataset.a));
+        d2();
+      }
+
+      function d2() {
+        const { x, w, h } = cv('#c2');
+        grid(x, w, h, 25);
+        const r = R(S.a2);
+        const co = Math.cos(r);
+        const si = Math.sin(r);
+        const cx = Math.min(145, w * 0.2);
+        const cy = h * 0.52;
+        const q = Math.min(88, h * 0.36, cx - 28);
+        const ax = css('--ax');
+        const mu = css('--mut');
+
+        ln(x, cx - q - 22, cy, cx + q + 22, cy, ax, 1.5);
+        ln(x, cx, cy - q - 22, cx, cy + q + 22, ax, 1.5);
+        x.strokeStyle = css('--mut');
+        x.lineWidth = 2;
+        x.beginPath();
+        x.arc(cx, cy, q, 0, Math.PI * 2);
+        x.stroke();
+
+        x.fillStyle = 'rgba(245,158,11,.16)';
+        x.beginPath();
+        x.moveTo(cx, cy);
+        x.arc(cx, cy, q * 0.35, 0, -r, true);
+        x.fill();
+
+        const px = cx + q * co;
+        const py = cy - q * si;
+        const tx = cx + q;
+        if (S.tg) {
+          ln(x, tx, cy - q - 18, tx, cy + q + 18, 'rgba(244,63,94,.35)', 1, [4, 4]);
+          if (Math.abs(co) > 0.08) {
+            const ty = cy - q * Math.tan(r);
+            ln(x, cx, cy, tx, ty, 'rgba(244,63,94,.45)', 1.2, [3, 3]);
+            ln(x, tx, cy, tx, ty, '#f43f5e', 3);
+            if (ty > 12 && ty < h - 12) dot(x, tx, ty, 4, '#f43f5e');
+          }
+        }
+
+        ln(x, cx, cy, px, cy, '#3b82f6', 3);
+        ln(x, px, cy, px, py, '#10b981', 3);
+        ln(x, cx, cy, px, py, '#8b5cf6', 2.5);
+
+        const ws = cx + q + 52;
+        const ww = w - ws - 24;
+        if (ww > 80) {
+          ln(x, ws, cy, ws + ww, cy, ax, 1.5);
+          ln(x, ws, cy - q - 18, ws, cy + q + 18, ax, 1.5);
+          tt(x, 'sin θ and cos θ plotted against the angle', ws + 6, 16, mu, 10);
+          tt(x, '+1', ws - 6, cy - q + 4, mu, 10, 'right');
+          tt(x, '−1', ws - 6, cy + q + 4, mu, 10, 'right');
+          [[0, '0°'], [0.25, '90°'], [0.5, '180°'], [0.75, '270°'], [1, '360°']].forEach(([f, l]) => {
+            const mx = ws + f * ww;
+            ln(x, mx, cy - 4, mx, cy + 4, ax, 1.5);
+            tt(x, l, mx, cy + 16, mu, 10, 'center');
+          });
+          const wave = (fn, col, lw, da, to) => {
+            x.strokeStyle = col;
+            x.lineWidth = lw;
+            x.setLineDash(da || []);
+            x.beginPath();
+            for (let i = 0; i <= to; i++) {
+              const y = cy - q * fn((i / ww) * 2 * Math.PI);
+              i ? x.lineTo(ws + i, y) : x.moveTo(ws + i, y);
+            }
+            x.stroke();
+            x.setLineDash([]);
+          };
+          const pr = Math.min(S.a2, 360) / 360;
+          const ap = ws + pr * ww;
+          wave(Math.sin, 'rgba(16,185,129,.22)', 2, 0, ww);
+          if (S.cw) wave(Math.cos, 'rgba(59,130,246,.22)', 2, [4, 3], ww);
+          wave(Math.sin, '#10b981', 3, 0, pr * ww);
+          if (S.cw) wave(Math.cos, '#3b82f6', 2.5, 0, pr * ww);
+          ln(x, px, py, ap, py, 'rgba(16,185,129,.6)', 1.5, [5, 4]);
+          dot(x, ap, py, 5.5, '#10b981');
+          if (S.cw) dot(x, ap, cy - q * co, 5, '#3b82f6');
+        }
+        dot(x, px, py, 7, '#f59e0b', '#fff');
+      }
+
+      const c2 = $('#c2');
+      let d2g = 0;
+      const drag2 = (e) => {
+        const b = c2.getBoundingClientRect();
+        const X = e.clientX - b.left;
+        const Y = e.clientY - b.top;
+        const cx = Math.min(145, b.width * 0.2);
+        const cy = b.height * 0.52;
+        if (X < cx + 130) {
+          S.p2 = 0;
+          $('#pl').classList.remove('on');
+          T('pl', 'Plot wave');
+          let a = D(Math.atan2(cy - Y, X - cx));
+          if (a < 0) a += 360;
+          const n = Math.round(a / 15) * 15;
+          if (Math.abs(a - n) < 2) a = n % 360;
+          S.a2 = a;
+          u2();
+        }
+      };
+      c2.onpointerdown = (e) => {
+        d2g = 1;
+        c2.setPointerCapture(e.pointerId);
+        drag2(e);
+      };
+      c2.onpointermove = (e) => {
+        if (d2g) drag2(e);
+      };
+      c2.onpointerup = c2.onpointercancel = () => {
+        d2g = 0;
+      };
+      $('#s2').oninput = (e) => {
+        S.p2 = 0;
+        S.a2 = +e.target.value;
+        T('pl', 'Plot wave');
+        u2();
+      };
+      $('#pl').onclick = () => {
+        S.p2 = 1 - S.p2;
+        T('pl', S.p2 ? 'Pause' : 'Plot wave');
+      };
+      $('#cw').onclick = () => {
+        S.cw = 1 - S.cw;
+        $('#cw').classList.toggle('on', !!S.cw);
+        $('#cw').setAttribute('aria-pressed', !!S.cw);
+        d2();
+      };
+      $('#tg').onclick = () => {
+        S.tg = 1 - S.tg;
+        $('#tg').classList.toggle('on', !!S.tg);
+        $('#tg').setAttribute('aria-pressed', !!S.tg);
+        d2();
+      };
+      {
+        const q = $('#q2');
+        q.className = '';
+        [270, 180, 90, 60, 45, 30, 0].forEach((a) => {
+          const b = document.createElement('button');
+          b.dataset.a = a;
+          b.textContent = a + '°';
+          b.style.margin = '0 2px';
+          b.onclick = () => {
+            S.p2 = 0;
+            T('pl', 'Plot wave');
+            S.a2 = a;
+            u2();
+          };
+          q.after(b);
+        });
+      }
+
+      /* ---------- Level 3: Inverse, Euler, Taylor ---------- */
+      function dInv() {
+        const { x, w, h } = cv('#ci');
+        const cx = w / 2;
+        const cy = h / 2;
+        const sx = (w - 60) / (4 * Math.PI);
+        const sy = (h - 50) / 2.4;
+        const b1 = cx - (Math.PI / 2) * sx;
+        const b2 = cx + (Math.PI / 2) * sx;
+        const ax = css('--ax');
+        const mu = css('--mut');
+        const y = S.y;
+
+        x.fillStyle = 'rgba(16,185,129,.13)';
+        x.fillRect(b1, 12, b2 - b1, h - 24);
+        ln(x, b1, 12, b1, h - 12, 'rgba(16,185,129,.5)', 1, [4, 4]);
+        ln(x, b2, 12, b2, h - 12, 'rgba(16,185,129,.5)', 1, [4, 4]);
+        ln(x, 20, cy, w - 20, cy, ax, 1.5);
+        ln(x, cx, 12, cx, h - 12, ax, 1.5);
+
+        [-2, -1, 0, 1, 2].forEach((k) => {
+          const p = cx + k * Math.PI * sx;
+          ln(x, p, cy - 4, p, cy + 4, ax, 1.5);
+          tt(x, k ? (k < 0 ? '−' : '') + (Math.abs(k) > 1 ? Math.abs(k) : '') + 'π' : '0', p, cy + 16, mu, 10, 'center');
+        });
+
+        const crv = (a, b, col, lw) => {
+          x.strokeStyle = col;
+          x.lineWidth = lw;
+          x.beginPath();
+          for (let p = a; p <= b; p++) {
+            const yy = cy - Math.sin((p - cx) / sx) * sy;
+            p == a ? x.moveTo(p, yy) : x.lineTo(p, yy);
+          }
+          x.stroke();
+        };
+
+        crv(30, w - 30, css('--ax'), 2);
+        crv(Math.ceil(b1), Math.floor(b2), '#10b981', 3.5);
+
+        const ty = cy - y * sy;
+        ln(x, 25, ty, w - 25, ty, '#f59e0b', 2, [5, 3]);
+        const a0 = Math.asin(y);
+        [a0 - 2 * Math.PI, Math.PI - a0 - 2 * Math.PI, a0, Math.PI - a0, a0 + 2 * Math.PI].forEach((a) => {
+          if (a < -2 * Math.PI || a > 2 * Math.PI) return;
+          const pr = Math.abs(a - a0) < 1e-3;
+          if (!pr && Math.abs(a - a0) < 0.02) return;
+          dot(x, cx + a * sx, ty, pr ? 7 : 5, pr ? '#10b981' : '#f43f5e', pr ? '#fff' : 0);
+        });
+
+        tt(x, 'Principal window [−90°, +90°]', cx, 24, '#10b981', 11, 'center');
+        T('yv', 'Ratio y = ' + y.toFixed(2));
+        const pd = D(a0);
+        T('iv', pd.toFixed(1) + '° (' + a0.toFixed(2) + ' rad)');
+        T('iq', 'arcsin(' + y.toFixed(2) + ')');
+      }
+
+      function dEu() {
+        const { x, w, h } = cv('#ce');
+        const cx = w / 2;
+        const cy = h / 2;
+        const q = Math.min(w, h) * 0.36;
+        const r = R(S.eu);
+        const px = cx + q * Math.cos(r);
+        const py = cy - q * Math.sin(r);
+        const ax = css('--ax');
+        const mu = css('--mut');
+
+        ln(x, cx - q - 35, cy, cx + q + 35, cy, ax, 1.5);
+        ln(x, cx, cy - q - 28, cx, cy + q + 28, ax, 1.5);
+        tt(x, 'Real', cx + q + 8, cy - 6, mu);
+        tt(x, '+i', cx + 8, cy - q - 14, mu);
+        tt(x, '−i', cx + 8, cy + q + 22, mu);
+        tt(x, '−1', cx - q - 22, cy - 6, mu);
+        tt(x, '+1', cx + q + 6, cy + 14, mu);
+
+        x.strokeStyle = mu;
+        x.lineWidth = 2;
+        x.beginPath();
+        x.arc(cx, cy, q, 0, Math.PI * 2);
+        x.stroke();
+
+        x.fillStyle = 'rgba(139,92,246,.2)';
+        x.beginPath();
+        x.moveTo(cx, cy);
+        x.arc(cx, cy, q * 0.32, 0, -r, true);
+        x.fill();
+
+        ln(x, cx, cy, px, cy, '#3b82f6', 3);
+        ln(x, px, cy, px, py, '#10b981', 3);
+        ln(x, cx, cy, px, py, '#8b5cf6', 3.5);
+        dot(x, px, py, 7, '#8b5cf6', '#fff');
+
+        const cs = Math.cos(r);
+        const sn = Math.sin(r);
+        const z = (v) => (Math.abs(v) < 1e-6 ? 0 : v);
+        T('ed', Math.round(S.eu));
+        H('ev', 'e<sup>i·' + f2(S.eu / 180) + 'π</sup> = ' + z(cs).toFixed(3) + (z(sn) < 0 ? ' − ' : ' + ') + Math.abs(z(sn)).toFixed(3) + 'i');
+        $('#eid').hidden = Math.round(S.eu) !== 180;
+        $('#se').value = S.eu;
+      }
+
+      const ts = (v, n) => {
+        let s = 0;
+        for (let k = 0; k < n; k++) {
+          const p = 2 * k + 1;
+          s += (k % 2 ? -1 : 1) * v ** p / fact(p);
+        }
+        return s;
+      };
+
+      function dTa() {
+        const { x, w, h } = cv('#ct');
+        const cx = w / 2;
+        const cy = h / 2;
+        const sx = (w - 60) / (4 * Math.PI);
+        const sy = (h - 50) / 2.6;
+        const ax = css('--ax');
+
+        ln(x, 20, cy, w - 20, cy, ax, 1.5);
+        ln(x, cx, 12, cx, h - 12, ax, 1.5);
+
+        x.strokeStyle = '#10b981';
+        x.lineWidth = 3;
+        x.beginPath();
+        for (let p = 25; p <= w - 25; p++) {
+          const yy = cy - Math.sin((p - cx) / sx) * sy;
+          p == 25 ? x.moveTo(p, yy) : x.lineTo(p, yy);
+        }
+        x.stroke();
+
+        x.strokeStyle = '#f43f5e';
+        x.lineWidth = 2.5;
+        x.setLineDash([6, 4]);
+        x.beginPath();
+        let st = 0;
+        for (let p = 25; p <= w - 25; p++) {
+          const yy = cy - ts((p - cx) / sx, S.n) * sy;
+          if (yy >= -20 && yy <= h + 20) {
+            st ? x.lineTo(p, yy) : x.moveTo(p, yy);
+            st = 1;
+          } else {
+            st = 0;
+          }
+        }
+        x.stroke();
+        x.setLineDash([]);
+
+        const mx = cx + S.tx * sx;
+        ln(x, mx, 14, mx, h - 14, '#f59e0b', 1.5);
+        dot(x, mx, cy - Math.sin(S.tx) * sy, 5, '#10b981');
+        dot(x, mx, cl(cy - ts(S.tx, S.n) * sy, 10, h - 10), 5, '#f43f5e');
+
+        T('nv', S.n);
+        T('xv', S.tx.toFixed(2));
+        $('#sn').value = S.n;
+        T(
+          'tf',
+          'sin(x) ≈ ' +
+            [...Array(S.n)]
+              .map((_, k) => {
+                const p = 2 * k + 1;
+                const b = p == 1 ? 'x' : 'x^' + p + '/' + p + '!';
+                return k ? (k % 2 ? ' − ' : ' + ') + b : b;
+              })
+              .join('')
+        );
+        const tr = Math.sin(S.tx);
+        const ap = ts(S.tx, S.n);
+        T('tv', tr.toFixed(5));
+        T('ta2', ap.toFixed(5));
+        T('te', 'Approximation error: ' + Math.abs(tr - ap).toExponential(2));
+      }
+
+      const upd3 = () => ({ inv: dInv, eu: dEu, ta: dTa })[S.tab]();
+      $('#si').onclick = () => {
+        S.sw = 1 - S.sw;
+        T('si', S.sw ? 'Stop sweep' : 'Sweep ratio');
+      };
+      $('#sy').oninput = (e) => {
+        S.sw = 0;
+        T('si', 'Sweep ratio');
+        S.y = +e.target.value;
+        dInv();
+      };
+      $('#ep').onclick = () => {
+        S.pe = 1 - S.pe;
+        T('ep', S.pe ? 'Pause' : 'Rotate phasor');
+      };
+      $('#se').oninput = (e) => {
+        S.pe = 0;
+        T('ep', 'Rotate phasor');
+        S.eu = +e.target.value;
+        dEu();
+      };
+      document.querySelectorAll('[data-e]').forEach((b) => {
+        b.onclick = () => {
+          S.pe = 0;
+          T('ep', 'Rotate phasor');
+          S.eu = +b.dataset.e;
+          dEu();
+        };
+      });
+      $('#tp').onclick = () => {
+        S.pt = 1 - S.pt;
+        T('tp', S.pt ? 'Stop' : 'Auto-add terms');
+      };
+      $('#sn').oninput = (e) => {
+        S.pt = 0;
+        T('tp', 'Auto-add terms');
+        S.n = +e.target.value;
+        dTa();
+      };
+      $('#sx').oninput = (e) => {
+        S.tx = +e.target.value;
+        dTa();
+      };
+      document.querySelectorAll('#sub button').forEach((b) => {
+        b.onclick = () => {
+          S.tab = b.dataset.t;
+          document.querySelectorAll('#sub button').forEach((o) => o.classList.toggle('on', o === b));
+          ['inv', 'eu', 'ta'].forEach((t) => {
+            $('#t-' + t).hidden = t !== S.tab;
+          });
+          upd3();
+        };
+      });
+
+      /* ---------- Navigation, Theme & Animation Loop ---------- */
+      function draw() {
+        S.l == 1 ? u1() : S.l == 2 ? u2() : upd3();
+      }
+
+      document.querySelectorAll('#nav button').forEach((b) => {
+        b.onclick = () => {
+          S.l = +b.dataset.l;
+          document.querySelectorAll('#nav button').forEach((o) => o.classList.toggle('on', o === b));
+          [1, 2, 3].forEach((n) => {
+            $('#p' + n).hidden = n !== S.l;
+          });
+          draw();
+        };
+      });
+
+      $('#th').onclick = () => {
+        const r = document.documentElement;
+        r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
+        draw();
+      };
+
+      document.documentElement.dataset.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+      let lt = performance.now();
+      (function tick(n) {
+        const dt = Math.min(0.05, (n - lt) / 1000);
+        lt = n;
+        if (S.l == 2 && S.p2) {
+          S.a2 = (S.a2 + 45 * dt) % 360;
+          u2();
+        }
+        if (S.l == 3) {
+          if (S.tab == 'eu' && S.pe) {
+            S.eu = (S.eu + 60 * dt) % 360;
+            dEu();
+          }
+          if (S.tab == 'inv' && S.sw) {
+            S.y += 0.6 * dt * S.yd;
+            if (S.y >= 0.98) {
+              S.y = 0.98;
+              S.yd = -1;
+            }
+            if (S.y <= -0.98) {
+              S.y = -0.98;
+              S.yd = 1;
+            }
+            $('#sy').value = S.y;
+            dInv();
+          }
+          if (S.tab == 'ta' && S.pt) {
+            S.tt += dt;
+            if (S.tt > 0.9) {
+              S.tt = 0;
+              S.n = S.n >= 7 ? 1 : S.n + 1;
+              dTa();
+            }
+          }
+        }
+        requestAnimationFrame(tick);
+      })(lt);
+
+      if (window.ResizeObserver) {
+        new ResizeObserver(draw).observe(document.body);
+      } else {
+        window.addEventListener('resize', draw);
+      }
+      draw();
+    } catch (err) {
+      console.error('Trigonometry Universe error:', err);
+    }
+  </script>
+</body>
+</html>
