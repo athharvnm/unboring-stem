@@ -344,6 +344,41 @@ function drawPoint(ctx, pt, label, color) {
   if (label) { ctx.font = '600 12px "JetBrains Mono", monospace'; ctx.fillStyle = '#1C1B18'; ctx.fillText(label, pt.x + 7, pt.y - 7); }
   ctx.restore();
 }
+function drawArcHighlight(ctx, cx, cy, r, aStart, aEnd, anticlockwise, color, width) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, aStart, aEnd, anticlockwise);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width || 4.5;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.restore();
+}
+function drawAngleSector(ctx, v, p1, p2, radius, fill, stroke, forceReflex) {
+  const a1 = Math.atan2(p1.y - v.y, p1.x - v.x);
+  const a2 = Math.atan2(p2.y - v.y, p2.x - v.x);
+  let diff = normalizeAngle(a2 - a1);
+  let start = a1, end = a2, ccw = false;
+  if (forceReflex) {
+    if (diff < Math.PI) ccw = true;
+  } else {
+    if (diff > Math.PI) ccw = true;
+  }
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(v.x, v.y);
+  ctx.arc(v.x, v.y, radius, start, end, ccw);
+  ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) {
+    ctx.beginPath();
+    ctx.arc(v.x, v.y, radius, start, end, ccw);
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
 function roundRectPath(ctx, x, y, w, h, r) {
   ctx.beginPath(); ctx.moveTo(x + r, y);
   ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
@@ -369,12 +404,12 @@ const CORE_THEOREMS = [
 {
   id: 'c1', num: '01', title: 'Angle at the Center Theorem',
   statement: 'The angle subtended by an arc at the center $O$ is twice the angle it subtends at any point on the remaining part of the circle.',
-  invariantFormula: '∠AOB = 2 × ∠ACB',
-  intuition: 'Moving $A$ or $B$ changes both angles together, and the central angle stays locked at double the inscribed one. Moving $C$ along the same arc does not change $\\angle ACB$ at all. If $C$ crosses onto the minor arc, the arc it faces becomes the major arc, so the central angle is the reflex angle.',
+  invariantFormula: '∠AOB = 2 × ∠ACB  (measured on the same subtended arc AB)',
+  intuition: 'Both $\\angle AOB$ and $\\angle ACB$ must subtend the **same highlighted arc $AB$**. As $A$, $B$, or $C$ move around the circle, the subtended arc $AB$ is whichever arc lies opposite $C$. When $C$ enters the minor arc, the subtended arc becomes the major arc, so $\\angle AOB$ is the reflex angle ($> 180^\\circ$) and $\\angle ACB$ is obtuse ($> 90^\\circ$).',
   proofSteps: [
     'Draw radius $CO$ and extend it past $O$ to form exterior angles on $\\triangle AOC$ and $\\triangle BOC$.',
     'Since $OA = OC = OB$ (radii), $\\triangle AOC$ and $\\triangle BOC$ are isosceles with equal base angles.',
-    'Each exterior angle equals the sum of its two opposite interior angles, so $\\angle AOB = 2\\angle ACB$.'
+    'Each exterior angle equals the sum of its two opposite interior angles, so $\\angle AOB = 2\\angle ACB$ on the same arc.'
   ],
   defaultState: { a: 2.35, b: 0.78, c: -1.35 },
   stepDemo(st, dt) { st.c += dt * 0.5; st.a += dt * 0.25; st.b -= dt * 0.22; },
@@ -387,14 +422,26 @@ const CORE_THEOREMS = [
   render(ctx, st, g, hl) {
     const o = { x: g.cx, y: g.cy };
     const A = circlePt(g.cx, g.cy, g.r, st.a), B = circlePt(g.cx, g.cy, g.r, st.b), C = circlePt(g.cx, g.cy, g.r, st.c);
+    // Exact directed arc from A to B in positive angle direction, and check if C lies on it
+    const thA = normalizeAngle(st.a), thB = normalizeAngle(st.b), thC = normalizeAngle(st.c);
+    const spanAB = normalizeAngle(thB - thA); // arc going A -> B in positive direction
+    const posC = normalizeAngle(thC - thA);
+    // If C is on the positive A->B arc, then the subtended arc (opposite C) is the negative A->B arc (anticlockwise = true)
+    const cOnPosArc = posC < spanAB;
+    const subtendedSpan = cOnPosArc ? (Math.PI * 2 - spanAB) : spanAB;
+    const cen = subtendedSpan * 180 / Math.PI;
+    const insc = cen / 2;
+    const reflex = cen > 180;
+
+    // Highlight the exact subtended arc AB and shade both angles so the correspondence is unambiguous
+    drawArcHighlight(ctx, g.cx, g.cy, g.r, thA, thB, cOnPosArc, 'rgba(184,74,39,0.45)', 6);
+    drawAngleSector(ctx, o, A, B, 26, 'rgba(184,74,39,0.16)', AC, reflex);
+    drawAngleSector(ctx, C, A, B, 24, 'rgba(47,111,94,0.16)', SG, false);
+
     drawSegment(ctx, o, A, AC, hl ? 2.5 : 1.8); drawSegment(ctx, o, B, AC, hl ? 2.5 : 1.8);
     drawSegment(ctx, C, A, SG, hl ? 2.4 : 1.8); drawSegment(ctx, C, B, SG, hl ? 2.4 : 1.8);
-    const insc = angleDeg(A, C, B);
-    const cm = angleDeg(A, o, B);
-    const reflex = insc > 90;
-    const cen = reflex ? 360 - cm : cm;
     drawPoint(ctx, o, 'O', IK);
-    drawBadge(ctx, { x: o.x, y: o.y + 24 }, '∠AOB = ' + (reflex ? 'reflex ' : '') + fmtAng(cen), RB, AC);
+    drawBadge(ctx, { x: o.x, y: o.y + 26 }, '∠AOB = ' + (reflex ? 'reflex ' : '') + fmtAng(cen), RB, AC);
     drawBadge(ctx, { x: C.x, y: C.y - 22 }, '∠ACB = ' + fmtAng(insc), SB, SG);
     return [
       { label: reflex ? '∠AOB (reflex)' : '∠AOB (Center)', value: fmtAng(cen) },
@@ -504,7 +551,9 @@ const CORE_THEOREMS = [
     const ext = { x: C.x + dx / len * 68, y: C.y + dy / len * 68 };
     drawSegment(ctx, C, ext, AC, hl ? 2.8 : 2.2);
     q.forEach((o, i) => { if (o.k !== 'a' && o.k !== 'c') drawPoint(ctx, o.pt, 'ABCD'[i], '#5E5A51'); });
-    const aA = angleDeg(D, A, B), intC = angleDeg(B, C, D), extA = 180 - intC;
+    const aA = angleDeg(D, A, B), intC = angleDeg(B, C, D), extA = angleDeg(ext, C, D);
+    drawAngleSector(ctx, A, D, B, 22, 'rgba(47,111,94,0.16)', SG, false);
+    drawAngleSector(ctx, C, ext, D, 22, 'rgba(184,74,39,0.16)', AC, false);
     drawBadge(ctx, { x: A.x * 0.72 + g.cx * 0.28, y: A.y * 0.72 + g.cy * 0.28 }, '∠A = ' + fmtAng(aA), SB, SG);
     drawBadge(ctx, { x: ext.x, y: ext.y - 16 }, 'Ext = ' + fmtAng(extA), RB, AC);
     return [{ label: 'Interior ∠A', value: fmtAng(aA) }, { label: 'Exterior at C', value: fmtAng(extA) }, { label: 'Interior ∠BCD', value: fmtAng(intC) }];
