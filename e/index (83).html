@@ -1,0 +1,3398 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>e — The Mathematical Observatory | Interactive Euler's Number Explorer</title>
+  <meta name="description" content="Why is e ≈ 2.71828 everywhere in compound interest, calculus, probability, and cooling coffee? Explore 5 interactive labs with visual intuition and live math." />
+  <link rel="canonical" href="https://unboringstem.pages.dev/e/" />
+
+  <!-- Inline SVG Favicon ("e" in warm amber & ink) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fef3c7'/%3E%3Crect x='2' y='2' width='60' height='60' rx='14' fill='none' stroke='%23d97706' stroke-width='3'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia, serif' font-style='italic' font-weight='bold' font-size='38' fill='%230f172a'%3Ee%3C/text%3E%3C/svg%3E" />
+
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://unboringstem.pages.dev/e/" />
+  <meta property="og:title" content="e — The Mathematical Observatory | Why Is Euler's Number So Great?" />
+  <meta property="og:description" content="From compounding money and self-cloning slopes to the 37% rule and 100°C coffee cooling—see why e ≈ 2.71828 is nature's favorite growth constant." />
+  <meta property="og:image" content="https://unboringstem.pages.dev/e/social.png" />
+  <meta property="og:image:alt" content="Euler's Observatory interactive explorer for e ≈ 2.71828" />
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://unboringstem.pages.dev/e/" />
+  <meta name="twitter:title" content="e — The Mathematical Observatory | Why Is Euler's Number So Great?" />
+  <meta name="twitter:description" content="Interactive visual labs showing why e ≈ 2.71828 links growth, rotation, factorials, probability, and everyday science." />
+  <meta name="twitter:image" content="https://unboringstem.pages.dev/e/social.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-paper: #f8fafc;
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --bg-card-solid: #ffffff;
+      --border-subtle: rgba(15, 23, 42, 0.1);
+      --gold: #d97706;
+      --gold-glow: rgba(217, 119, 6, 0.2);
+      --cyan: #0284c7;
+      --cyan-glow: rgba(2, 132, 199, 0.18);
+      --emerald: #059669;
+      --rose: #e11d48;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-paper);
+      color: #0f172a;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(245, 158, 11, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 88% 14%, rgba(2, 132, 199, 0.1) 0%, transparent 42%),
+        linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    .font-serif-math {
+      font-family: 'Fraunces', Georgia, serif;
+    }
+
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .glass-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.09);
+    }
+
+    .gold-glow-box {
+      box-shadow: 0 12px 30px -8px rgba(217, 119, 6, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border-color: rgba(217, 119, 6, 0.5) !important;
+    }
+
+    .cyan-glow-box {
+      box-shadow: 0 12px 30px -8px rgba(2, 132, 199, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border-color: rgba(2, 132, 199, 0.45) !important;
+    }
+
+    /* Custom Range Sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.12);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #d97706;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 10px rgba(217, 119, 6, 0.55);
+      margin-top: -8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.75);
+    }
+
+    input[type="range"].cyan-slider::-webkit-slider-thumb {
+      background: #0284c7;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.55);
+    }
+
+    /* Clean Mathematical Fraction Styling */
+    .math-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.22em;
+      line-height: 1.05;
+      font-size: 0.85em;
+    }
+    .math-frac > span:first-child {
+      border-bottom: 1.5px solid currentColor;
+      padding: 0 0.25em 0.12em;
+    }
+    .math-frac > span:last-child {
+      padding: 0.12em 0.25em 0;
+    }
+
+    /* Smooth tab panel entrance */
+    .lab-panel {
+      display: none;
+      animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .lab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseGold {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.35); }
+      50% { box-shadow: 0 0 20px 6px rgba(217, 119, 6, 0.16); }
+    }
+
+    .eureka-pulse {
+      animation: pulseGold 2.2s infinite;
+    }
+
+    /* Custom Scrollbar for horizontal pills on mobile */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    canvas {
+      touch-action: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-900 selection:bg-amber-200 selection:text-slate-950">
+
+  <!-- TOP NAVIGATION & OBSERVATORY HEADER -->
+  <header class="sticky top-0 z-40 border-b border-slate-200/90 bg-white/90 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-serif-math italic font-bold text-xl sm:text-2xl shadow-sm shrink-0">
+          e
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <h1 class="font-serif-math font-bold text-base sm:text-xl tracking-tight text-slate-900 truncate">Euler’s Observatory</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono-num bg-amber-100 text-amber-800 border border-amber-300/70">
+              2.718281828...
+            </span>
+          </div>
+          <!-- Breadcrumb to Unboring STEM Main Page -->
+          <nav aria-label="Breadcrumb" class="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5 truncate">
+            <a href="https://unboringstem.pages.dev/" class="hover:text-amber-700 font-medium transition truncate">Unboring STEM</a>
+            <span class="text-slate-400" aria-hidden="true">/</span>
+            <span class="text-slate-700 font-semibold truncate" aria-current="page">e Explorer</span>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Discovery Progress & Sound Controls -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <!-- Eureka Badges Counter -->
+        <button id="badgeModalBtn" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 transition text-xs sm:text-sm text-slate-800">
+          <span class="text-amber-600 font-bold">✦</span>
+          <span class="hidden xs:inline sm:inline text-slate-600 font-medium">Eurekas:</span>
+          <span id="eurekaCountText" class="font-mono-num font-bold text-amber-700">0 / 5</span>
+          <div class="hidden md:flex items-center gap-1 ml-1" id="headerBadgeDots">
+            <span class="w-2 h-2 rounded-full bg-slate-300" data-dot="0"></span>
+            <span class="w-2 h-2 rounded-full bg-slate-300" data-dot="1"></span>
+            <span class="w-2 h-2 rounded-full bg-slate-300" data-dot="2"></span>
+            <span class="w-2 h-2 rounded-full bg-slate-300" data-dot="3"></span>
+            <span class="w-2 h-2 rounded-full bg-slate-300" data-dot="4"></span>
+          </div>
+        </button>
+
+        <!-- Procedural Audio Toggle -->
+        <button id="soundToggleBtn" title="Toggle Tactile Synth Audio" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-700 hover:text-slate-950 transition flex items-center gap-1.5 text-xs">
+          <svg id="soundOnIcon" class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+          </svg>
+          <svg id="soundOffIcon" class="w-4 h-4 text-slate-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+          </svg>
+          <span class="hidden sm:inline font-medium" id="soundLabel">Sound On</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5-Chapter Pill Navigation Bar -->
+    <nav class="max-w-7xl mx-auto px-3.5 sm:px-6 pb-2.5 sm:pb-3 pt-0.5 overflow-x-auto no-scrollbar">
+      <div class="flex items-center gap-1.5 sm:gap-2 min-w-max" role="tablist">
+        <button data-tab="0" class="nav-pill active px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 bg-amber-100 text-amber-900 border border-amber-300 shadow-xs">
+          <span class="w-5 h-5 rounded-md bg-amber-200/80 text-amber-900 flex items-center justify-center font-mono-num text-[11px] font-bold">01</span>
+          <span>Bernoulli’s Bank</span>
+          <span class="badge-check hidden text-emerald-700 font-bold">✓</span>
+        </button>
+        <button data-tab="1" class="nav-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent hover:border-slate-200">
+          <span class="w-5 h-5 rounded-md bg-slate-200/80 text-slate-700 flex items-center justify-center font-mono-num text-[11px] font-bold">02</span>
+          <span>Self-Cloning Slope</span>
+          <span class="badge-check hidden text-emerald-700 font-bold">✓</span>
+        </button>
+        <button data-tab="2" class="nav-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent hover:border-slate-200">
+          <span class="w-5 h-5 rounded-md bg-slate-200/80 text-slate-700 flex items-center justify-center font-mono-num text-[11px] font-bold">03</span>
+          <span>Factorial Staircase</span>
+          <span class="badge-check hidden text-emerald-700 font-bold">✓</span>
+        </button>
+        <button data-tab="3" class="nav-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent hover:border-slate-200">
+          <span class="w-5 h-5 rounded-md bg-slate-200/80 text-slate-700 flex items-center justify-center font-mono-num text-[11px] font-bold">04</span>
+          <span>Chaos &amp; The 37% Rule</span>
+          <span class="badge-check hidden text-emerald-700 font-bold">✓</span>
+        </button>
+        <button data-tab="4" class="nav-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent hover:border-slate-200">
+          <span class="w-5 h-5 rounded-md bg-slate-200/80 text-slate-700 flex items-center justify-center font-mono-num text-[11px] font-bold">05</span>
+          <span>Euler’s Identity &amp; Nature</span>
+          <span class="badge-check hidden text-emerald-700 font-bold">✓</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- EUREKA TOAST NOTIFICATION -->
+  <div id="eurekaToast" class="fixed bottom-16 sm:bottom-20 right-3 sm:right-6 left-3 sm:left-auto z-50 pointer-events-none transform translate-y-8 opacity-0 transition-all duration-500 sm:max-w-sm">
+    <div class="glass-panel gold-glow-box rounded-2xl p-3.5 sm:p-4 flex items-start gap-3 bg-white/95">
+      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 text-lg sm:text-xl shrink-0">
+        ✦
+      </div>
+      <div class="min-w-0">
+        <div class="text-[11px] font-mono-num uppercase tracking-wider text-amber-700 font-bold">Eureka Moment Unlocked!</div>
+        <div id="eurekaToastTitle" class="font-bold text-slate-900 text-sm mt-0.5">Continuous Compounding</div>
+        <div id="eurekaToastDesc" class="text-xs text-slate-600 mt-1 leading-relaxed">You discovered the natural ceiling of 100% growth!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN INTERACTIVE WORKSPACE -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-7 space-y-5 sm:space-y-6">
+
+    <!-- OPENING HOOK: WHY IS 'e' SO GREAT? -->
+    <section aria-label="Why is e so great" class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-amber-300/60 bg-gradient-to-r from-amber-50/90 via-white to-sky-50/80">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="space-y-1.5 max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300/80 text-[11px] font-mono-num font-bold">
+            <span>WHY IS <i class="font-serif-math">e</i> ≈ 2.71828 SO GREAT?</span>
+          </div>
+          <h2 class="font-serif-math text-lg sm:text-2xl font-bold text-slate-900 leading-snug">
+            Most numbers are invented to measure things—<span class="text-amber-700">e</span> is the natural speed limit of “the bigger you get, the faster you change.”
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Whether money compounds continuously, a cell divides, hot coffee cools toward room temperature, or a wave spins around a circle, <strong class="text-slate-900">e</strong> keeps the math clean without messy extra constants.
+          </p>
+        </div>
+
+        <!-- Quick 3-Pillar Hook Strip -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-2.5 shrink-0 text-left">
+          <button type="button" onclick="switchLab(0)" class="rounded-xl bg-white hover:bg-amber-50/80 border border-slate-200/90 hover:border-amber-300 p-2.5 transition">
+            <div class="text-[11px] font-mono-num font-bold text-amber-700">01 · Ceiling</div>
+            <div class="text-xs font-bold text-slate-900 mt-0.5">100% Growth</div>
+            <div class="text-[11px] text-slate-500 leading-tight mt-0.5">Caps at ~2.718×</div>
+          </button>
+          <button type="button" onclick="switchLab(1)" class="rounded-xl bg-white hover:bg-sky-50/80 border border-slate-200/90 hover:border-sky-300 p-2.5 transition">
+            <div class="text-[11px] font-mono-num font-bold text-sky-700">02 · Twin</div>
+            <div class="text-xs font-bold text-slate-900 mt-0.5">Height = Slope</div>
+            <div class="text-[11px] text-slate-500 leading-tight mt-0.5">Clones itself</div>
+          </button>
+          <button type="button" onclick="switchLab(4)" class="rounded-xl bg-white hover:bg-emerald-50/80 border border-slate-200/90 hover:border-emerald-300 p-2.5 transition">
+            <div class="text-[11px] font-mono-num font-bold text-emerald-700">05 · Bridge</div>
+            <div class="text-xs font-bold text-slate-900 mt-0.5">Spins &amp; Cools</div>
+            <div class="text-[11px] text-slate-500 leading-tight mt-0.5">Circles &amp; 100°C tea</div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- LAB 1: THE COMPOUNDING MACHINE (JACOB BERNOULLI'S BANK)               -->
+    <!-- ===================================================================== -->
+    <section id="lab-0" class="lab-panel active space-y-5 sm:space-y-6">
+      <!-- Lab Header -->
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-3 sm:gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono-num font-semibold mb-2">
+            <span>LAB 01 // 1683 DISCOVERY</span>
+          </div>
+          <h2 class="font-serif-math text-2xl sm:text-4xl font-bold text-slate-900">The Compounding Machine</h2>
+          <p class="text-slate-600 text-sm sm:text-base max-w-2xl mt-1.5">
+            Imagine a generous bank offering <span class="text-amber-800 font-semibold">100% annual interest</span> on your <span id="compPrincipalLabel" class="text-slate-900 font-semibold">$1.00</span> deposit. If they split that 100% into smaller, more frequent compoundings, do you get infinitely rich—or hit a mysterious cosmic speed limit?
+          </p>
+        </div>
+
+        <!-- Live Formula Pill -->
+        <div class="glass-panel rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 flex items-center gap-3 self-start lg:self-auto">
+          <span class="text-xs uppercase tracking-wider text-slate-600 font-bold">Formula:</span>
+          <div class="font-serif-math text-base sm:text-xl text-slate-900 font-semibold">
+            <i>A</i> = <span class="text-slate-600">(</span>1 + <span class="math-frac"><span>1</span><span><i>n</i></span></span><span class="text-slate-600">)</span><sup class="text-sky-800 font-mono-num text-sm font-bold"><i>n</i></sup>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+        <!-- Left Visualizer Canvas -->
+        <div class="lg:col-span-7 glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col justify-between min-w-0">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <span class="text-xs uppercase tracking-wider text-slate-600 font-bold">Step-by-Step Compounding Breakdown</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900" id="compFreqTitle">Annually (1 compounding period)</h3>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 text-[11px] font-mono-num font-semibold">
+              <span class="flex items-center gap-1.5 text-slate-700">
+                <span class="inline-block w-2.5 h-2.5 rounded-sm bg-slate-400/80 border border-slate-500"></span>
+                <span id="compLegendPrincipal">Principal ($1)</span>
+              </span>
+              <span class="flex items-center gap-1.5 text-sky-700">
+                <span class="inline-block w-2.5 h-2.5 rounded-sm bg-sky-500/80"></span>
+                <span>Simple Interest</span>
+              </span>
+              <span class="flex items-center gap-1.5 text-amber-700">
+                <span class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-500"></span>
+                <span>Interest-on-Interest</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Interactive Canvas + Replay Controls -->
+          <div class="relative w-full h-64 sm:h-80 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden">
+            <canvas id="compoundingCanvas" class="w-full h-full block cursor-pointer"></canvas>
+            <!-- Top-right Replay / Step Controls Overlay -->
+            <div class="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
+              <button id="compStepBtn" class="px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white backdrop-blur-md border border-slate-200 text-[11px] font-mono-num text-sky-800 font-semibold shadow-xs transition active:scale-95" title="Advance one compounding payout">
+                Step +1
+              </button>
+              <button id="compReplayBtn" class="px-2.5 py-1 rounded-lg bg-amber-100/95 hover:bg-amber-200 backdrop-blur-md border border-amber-400/70 text-[11px] font-mono-num text-amber-950 font-bold shadow-xs transition active:scale-95" title="Animate payouts across the year">
+                ▶ Replay Year
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Period-by-Period Math Ledger -->
+          <div id="compPeriodLedger" class="mt-3 rounded-2xl bg-slate-50 border border-slate-200/90 p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div class="space-y-0.5 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="ledgerStepBadge" class="px-2 py-0.5 rounded bg-amber-100 text-amber-950 font-mono-num text-[11px] font-bold">Period 1 / 1 (t = 1.00)</span>
+                <span id="ledgerHintText" class="text-[11px] text-slate-600 font-medium">Hover or tap any chart node to inspect</span>
+              </div>
+              <div class="text-xs font-mono-num font-medium text-slate-900 break-words" id="ledgerEquationText">
+                $1.0000 × (1 + 1/1) = <span class="text-amber-800 font-bold">$2.0000</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-[11px] font-mono-num shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
+              <div>
+                <div class="text-slate-600 font-medium">Base Interest</div>
+                <div id="ledgerSimpleVal" class="text-sky-800 font-bold">+$1.0000</div>
+              </div>
+              <div class="h-6 w-px bg-slate-200"></div>
+              <div>
+                <div class="text-slate-600 font-medium">Compound Bonus</div>
+                <div id="ledgerBonusVal" class="text-amber-800 font-bold">+$0.0000</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Preset Frequency Buttons -->
+          <div class="mt-3.5">
+            <div class="text-xs text-slate-700 mb-2 font-semibold">Jump to compounding frequency (<span class="font-mono-num text-sky-800 font-bold">n</span>):</div>
+            <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-6 gap-2">
+              <button data-n="1" class="comp-preset px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 text-xs font-medium transition text-center">
+                <div class="text-slate-900 font-bold">Annual</div>
+                <div id="compPresetLabel1" class="font-mono-num text-[11px] text-slate-600 font-medium">n = 1 ($2.00)</div>
+              </button>
+              <button data-n="2" class="comp-preset px-2.5 py-2 rounded-xl bg-amber-100/80 hover:bg-amber-100 border border-amber-300 text-xs font-medium transition text-center">
+                <div class="text-amber-950 font-bold">Semi-Annual</div>
+                <div id="compPresetLabel2" class="font-mono-num text-[11px] text-amber-900 font-semibold">n = 2 ($2.25)</div>
+              </button>
+              <button data-n="4" class="comp-preset px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 text-xs font-medium transition text-center">
+                <div class="text-slate-900 font-bold">Quarterly</div>
+                <div id="compPresetLabel4" class="font-mono-num text-[11px] text-slate-600 font-medium">n = 4 ($2.44)</div>
+              </button>
+              <button data-n="12" class="comp-preset px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 text-xs font-medium transition text-center">
+                <div class="text-slate-900 font-bold">Monthly</div>
+                <div class="font-mono-num text-[11px] text-slate-600 font-medium">n = 12</div>
+              </button>
+              <button data-n="365" class="comp-preset px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 text-xs font-medium transition text-center">
+                <div class="text-slate-900 font-bold">Daily</div>
+                <div class="font-mono-num text-[11px] text-slate-600 font-medium">n = 365</div>
+              </button>
+              <button data-n="100000000" class="comp-preset px-2.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-300 text-xs font-medium transition text-center">
+                <div class="text-sky-900 font-bold">Continuous</div>
+                <div class="font-mono-num text-[11px] text-sky-800 font-semibold">n → ∞ (e)</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Controls & Convergence Readout -->
+        <div class="lg:col-span-5 flex flex-col gap-4 sm:gap-5 min-w-0">
+          <!-- Live Payout Readout Card -->
+          <div class="glass-panel gold-glow-box rounded-2xl sm:rounded-3xl p-5 sm:p-6">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs uppercase tracking-wider text-amber-800 font-bold">Final Balance After 1 Year</span>
+              <span id="compAccuracyBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-mono-num bg-slate-100 text-slate-700 border border-slate-200">
+                73.58% of e
+              </span>
+            </div>
+
+            <div class="mt-2 flex items-baseline gap-1 font-mono-num">
+              <span id="compCurrencySymbol" class="text-2xl sm:text-3xl text-amber-600 font-bold">$</span>
+              <span id="compBalanceDisplay" class="text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight break-all">2.0000000</span>
+            </div>
+
+            <!-- Pure Growth Ratio (Final Balance / Principal) -> Converges directly to e -->
+            <div class="mt-3 rounded-xl bg-sky-50/90 border border-sky-200 px-3.5 py-2.5 flex items-center justify-between gap-2">
+              <div class="text-xs text-slate-700">
+                <span class="font-bold text-sky-800">Growth Ratio</span>
+                <span class="font-mono-num text-[11px] text-slate-500 ml-1">(Balance ÷ Principal)</span>
+              </div>
+              <div class="font-mono-num text-base sm:text-lg font-bold text-sky-800 shrink-0">
+                <span id="compRatioDisplay">2.0000000</span>×
+              </div>
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-600 font-medium">True Euler’s <i class="font-serif-math">e</i> <span id="compTargetMultiplierLabel">(× $1)</span>:</span>
+              <span id="compTrueTargetDisplay" class="text-amber-800 font-bold">2.7182818...</span>
+            </div>
+            <div class="mt-1 flex items-center justify-between text-xs font-mono-num">
+              <span class="text-slate-600 font-medium">Gap remaining:</span>
+              <span id="compGapDisplay" class="text-sky-800 font-bold">0.7182818</span>
+            </div>
+
+            <!-- Turbo Logarithmic Slider -->
+            <div class="mt-5">
+              <div class="flex justify-between text-xs mb-2">
+                <span class="text-slate-800 font-semibold">Turbo Compounding Slider</span>
+                <span class="font-mono-num text-sky-800 font-bold">n = <span id="compNDisplay">1</span></span>
+              </div>
+              <input id="compSlider" type="range" min="0" max="100" step="0.1" value="0" class="w-full" />
+              <div class="flex justify-between text-[11px] font-mono-num text-slate-600 font-medium mt-1">
+                <span>1 (Yearly)</span>
+                <span>1,000</span>
+                <span>100M (∞)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Mini-Challenge Box -->
+          <div id="lab1ChallengeCard" class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-sky-200">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold shrink-0">
+                🎯
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-900">Observatory Challenge</h4>
+                <p id="lab1ChallengeText" class="text-xs text-slate-600 mt-1 leading-relaxed">
+                  Slide or scrub <span class="font-mono-num text-sky-800 font-semibold">n</span> until your balance gets within <span id="compChallengeTolLabel" class="font-mono-num text-amber-800 font-semibold">0.001</span> of the <i class="font-serif-math">e</i> ceiling (i.e. above <span id="compChallengeFloorLabel" class="font-mono-num text-slate-900 font-semibold">$2.71728</span>). Notice how many compoundings it takes!
+                </p>
+                <div id="lab1ChallengeStatus" class="mt-2.5 inline-flex items-center gap-1.5 text-xs font-mono-num text-slate-600">
+                  <span>Status:</span>
+                  <span class="text-amber-700 font-semibold">Keep increasing n...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historical Note -->
+          <div class="glass-panel rounded-2xl p-4 text-xs text-slate-700 leading-relaxed">
+            <span id="compDidYouKnowLabel" class="text-amber-800 font-bold">Did You Know?</span> <span id="compDidYouKnowText">Jacob Bernoulli discovered this limit in 1683 while studying compound interest. Even if you compound every nanosecond, your $1 never reaches $2.72!</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- LAB 2: THE KING OF CALCULUS (SELF-CLONING SLOPE)                      -->
+    <!-- ===================================================================== -->
+    <section id="lab-1" class="lab-panel space-y-5 sm:space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-3 sm:gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100 border border-sky-300 text-sky-900 text-xs font-mono-num font-semibold mb-2">
+            <span>LAB 02 // CALCULUS SUPERPOWER</span>
+          </div>
+          <h2 class="font-serif-math text-2xl sm:text-4xl font-bold text-slate-900">The Self-Cloning Function</h2>
+          <p class="text-slate-600 text-sm sm:text-base max-w-2xl mt-1.5">
+            At any spot on the <span class="text-amber-800 font-semibold">gold curve</span>, how high you are is your <span class="text-amber-800 font-semibold">Height</span>, and how steep the <span class="text-emerald-700 font-semibold">green ramp</span> is right there is your <span class="text-sky-800 font-semibold">Slope</span>. Drag the base <span class="font-mono-num text-amber-800 font-semibold">a</span> until the <span class="text-sky-800 font-semibold">blue/cyan slope curve</span> lands right on top of the gold curve!
+          </p>
+        </div>
+
+        <button id="snapToEBtn" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-400 text-amber-950 text-xs sm:text-sm font-bold transition flex items-center gap-2 self-start lg:self-auto shadow-xs">
+          <span>🧲 Magnetic Snap to <i>e</i> (2.7183)</span>
+        </button>
+      </div>
+
+      <!-- Plain-English Step-by-Step Guide Card -->
+      <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-amber-300/70 bg-amber-50/40">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+          <div class="flex flex-wrap items-center gap-2 min-w-0">
+            <span class="px-2 py-0.5 rounded-md bg-amber-200 text-amber-950 text-[11px] font-mono-num font-bold shrink-0">SIMPLE TRANSLATION</span>
+            <span id="lab2PlainSummary" class="text-xs sm:text-sm font-semibold text-slate-800">
+              Right now at a = 2.00: Height is 2.000, while Slope is only 1.386 (too flat!).
+            </span>
+          </div>
+          <div class="inline-flex p-0.5 rounded-lg bg-white border border-slate-200 text-[11px] shrink-0">
+            <button id="lab2ExplainSimpleBtn" class="px-2.5 py-1 rounded-md bg-amber-500 text-slate-950 font-bold transition">Plain English</button>
+            <button id="lab2ExplainMathBtn" class="px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-950 font-semibold transition">Calculus Terms</button>
+          </div>
+        </div>
+        <div id="lab2ExplainSteps" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-700">
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-amber-800 mb-0.5">1. Height = How Tall It Is</div>
+            Look at the <strong class="text-slate-900">gold curve</strong> above your dot. That number is your current value or size.
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-sky-800 mb-0.5">2. Slope = How Steep It Climbs</div>
+            The <strong class="text-emerald-700">green line</strong> touches the curve like a ramp. The <strong class="text-sky-800">blue curve</strong> tracks that steepness across the graph.
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-emerald-800 mb-0.5">3. Match = The Magic of e</div>
+            When <strong class="text-amber-800">a = e (2.7183)</strong>, Height and Slope match everywhere—the curve clones its own steepness!
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+        <!-- Interactive Graph Canvas -->
+        <div class="lg:col-span-8 glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 min-w-0">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
+              <span class="flex items-center gap-1.5 font-semibold text-amber-800">
+                <span class="w-3 h-1 rounded-full bg-amber-500"></span>
+                <span>Curve Height: f(x) = a<sup>x</sup></span>
+              </span>
+              <span class="flex items-center gap-1.5 font-semibold text-sky-800">
+                <span class="w-3 h-1 rounded-full bg-sky-600"></span>
+                <span>Slope Curve: f'(x)</span>
+              </span>
+              <span class="flex items-center gap-1.5 font-semibold text-emerald-700">
+                <span class="w-3 h-1 rounded-full bg-emerald-600"></span>
+                <span>Tangent Ramp (Steepness)</span>
+              </span>
+            </div>
+            <span class="text-[11px] text-slate-600 font-mono-num font-semibold">Drag the glowing dot left or right!</span>
+          </div>
+
+          <div class="relative w-full h-64 sm:h-96 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden">
+            <canvas id="calculusCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+          </div>
+        </div>
+
+        <!-- Right Controls & Twin Gauges -->
+        <div class="lg:col-span-4 flex flex-col gap-4 sm:gap-5 min-w-0">
+          <!-- Base 'a' Tuner Card -->
+          <div id="calculusControlCard" class="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-all duration-300">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="text-xs uppercase tracking-wider text-slate-600 font-bold">Exponential Base (<i class="font-serif-math">a</i>)</span>
+              <span id="resonanceBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-mono-num bg-slate-100 text-slate-700 border border-slate-200">
+                Out of Sync
+              </span>
+            </div>
+
+            <div class="font-mono-num text-2xl sm:text-4xl font-bold text-slate-900 my-2">
+              a = <span id="baseAValue" class="text-amber-700">2.0000</span>
+            </div>
+
+            <input id="baseASlider" type="range" min="1.4" max="3.8" step="0.001" value="2.000" class="w-full my-2" />
+            <div class="flex justify-between text-[11px] font-mono-num text-slate-600 font-medium">
+              <span>1.4 (Sluggish)</span>
+              <span class="text-amber-800 font-bold">e ≈ 2.718</span>
+              <span>3.8 (Steep)</span>
+            </div>
+
+            <!-- Point X Slider (Secondary accessibility for mobile) -->
+            <div class="mt-5 pt-4 border-t border-slate-200">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-slate-800 font-semibold">Probe Position (<i class="font-serif-math">x</i>)</span>
+                <span class="font-mono-num text-sky-800 font-bold">x = <span id="probeXValue">1.00</span></span>
+              </div>
+              <input id="probeXSlider" type="range" min="-1.5" max="2.1" step="0.02" value="1.0" class="w-full cyan-slider" />
+            </div>
+          </div>
+
+          <!-- Twin Live Gauges: Height vs Slope -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border-l-4 border-l-amber-500">
+              <div class="text-[11px] uppercase tracking-wider text-slate-600 font-bold">Curve Height</div>
+              <div class="text-xs font-serif-math italic text-amber-800 font-semibold mt-0.5">f(x) = a<sup>x</sup></div>
+              <div id="gaugeHeightVal" class="font-mono-num text-xl sm:text-2xl font-bold text-slate-900 mt-1.5">2.000</div>
+            </div>
+            <div class="glass-panel rounded-2xl p-3.5 sm:p-4 border-l-4 border-l-sky-600">
+              <div class="text-[11px] uppercase tracking-wider text-slate-600 font-bold">Tangent Slope</div>
+              <div class="text-xs font-serif-math italic text-sky-800 font-semibold mt-0.5">f'(x) = dy/dx</div>
+              <div id="gaugeSlopeVal" class="font-mono-num text-xl sm:text-2xl font-bold text-slate-900 mt-1.5">1.386</div>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4 text-xs text-slate-700 leading-relaxed">
+            <strong class="text-amber-800">Why this matters:</strong> When <span class="font-mono-num text-slate-900 font-bold">a = e</span>, at height <span class="font-mono-num text-slate-900 font-semibold">2.718</span> the slope is <span class="font-mono-num text-slate-900 font-semibold">2.718</span>. At height <span class="font-mono-num text-slate-900 font-semibold">1,000</span>, the slope is <span class="font-mono-num text-slate-900 font-semibold">1,000</span>. That’s why nature uses <i class="font-serif-math">e</i> to model growth where rate of change equals current size!
+          </div>
+
+          <!-- Practical Real-Life Payoff of Height = Slope -->
+          <div class="glass-panel rounded-2xl p-4 border border-emerald-300/80 bg-emerald-50/50 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-mono-num uppercase tracking-wider text-emerald-900 font-bold">Real-Life Use of "Height = Slope"</span>
+              <div class="inline-flex gap-1" id="lab2UseCaseMiniTabs">
+                <button type="button" data-l2use="viral" class="l2use-btn px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-600 text-white transition">Shares</button>
+                <button type="button" data-l2use="meds" class="l2use-btn px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white text-slate-700 border border-slate-200 transition">Medicine</button>
+                <button type="button" data-l2use="tea" class="l2use-btn px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white text-slate-700 border border-slate-200 transition">100°C Tea</button>
+              </div>
+            </div>
+            <p id="lab2UseCaseCopy" class="text-xs text-slate-800 leading-relaxed">
+              <strong class="text-emerald-900">Viral posts &amp; bacteria:</strong> If 10,000 people see a post and each person shares at rate <i>r</i>, new shares per hour equal <i>r × 10,000</i>. Using base <i>e</i> means you write <i>N(t) = N₀e^(rt)</i> directly—no awkward extra constant needed to find how fast it’s climbing right now.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-World Relevance Strip for Self-Cloning Function -->
+      <div class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <span class="text-xs uppercase tracking-wider text-sky-800 font-bold">Real-World Relevance</span>
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">Where "Rate of Change = Current Size" Runs the Real World</h3>
+          </div>
+          <span class="text-xs text-slate-500 font-mono-num">Click a domain to inspect the mechanism</span>
+        </div>
+
+        <div id="selfCloneDomainTabs" class="flex flex-wrap gap-2">
+          <button data-domain="bio" class="domain-chip px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 transition">
+            🦠 Biology &amp; Epidemics
+          </button>
+          <button data-domain="decay" class="domain-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+            🦴 Carbon Dating &amp; Decay
+          </button>
+          <button data-domain="cooling" class="domain-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+            ☕ Cooling &amp; Forensics
+          </button>
+          <button data-domain="circuits" class="domain-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+            ⚡ Electronics &amp; Dampers
+          </button>
+          <button data-domain="finance" class="domain-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+            📈 Continuous Finance
+          </button>
+        </div>
+
+        <div id="selfCloneDomainDetail" class="rounded-2xl bg-slate-50 border border-slate-200/90 p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div class="md:col-span-8 space-y-1.5">
+            <div id="domainDetailTitle" class="text-sm sm:text-base font-bold text-amber-800">Biology &amp; Epidemics — Why Bigger Crowds Spread Faster</div>
+            <p id="domainDetailWhy" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              10 dividing cells create 20; 1,000,000 create 2,000,000. Because each active case or organism can reproduce, the rate of new growth is proportional to the current population size.
+            </p>
+            <p id="domainDetailUse" class="text-xs text-slate-600 leading-relaxed">
+              <strong class="text-sky-800">In practice:</strong> Epidemiologists use <span class="font-mono-num text-slate-900 font-semibold">P(t) = P₀e^{rt}</span> to model early outbreak growth and doubling times.
+            </p>
+          </div>
+          <div class="md:col-span-4 rounded-xl bg-white border border-slate-200 p-3.5 text-center space-y-1">
+            <div class="text-[10px] font-mono-num uppercase tracking-wider text-slate-500">Governing Model</div>
+            <div id="domainDetailFormula" class="font-mono-num text-sm sm:text-base font-bold text-slate-900">P(t) = P₀ · e^{rt}</div>
+            <button id="domainTryLab5Btn" class="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 underline">
+              Explore in Lab 05 Simulator →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- LAB 3: THE FACTORIAL STAIRCASE (INFINITE SERIES BUILDER)              -->
+    <!-- ===================================================================== -->
+    <section id="lab-2" class="lab-panel space-y-5 sm:space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-3 sm:gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-mono-num font-semibold mb-2">
+            <span>LAB 03 // EULER'S RAPID SERIES</span>
+          </div>
+          <h2 class="font-serif-math text-2xl sm:text-4xl font-bold text-slate-900">The Factorial Staircase</h2>
+          <p class="text-slate-600 text-sm sm:text-base max-w-2xl mt-1.5">
+            Bernoulli needed millions of compoundings to get 7 decimal places of <i class="font-serif-math">e</i>. Leonhard Euler found a shortcut using <span class="text-emerald-800 font-semibold">factorials (n!)</span> that locks in <i class="font-serif-math">e</i> at warp speed. Stack the blocks below!
+          </p>
+        </div>
+
+        <!-- Series Equation -->
+        <div class="glass-panel rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base font-serif-math text-slate-900 self-start lg:self-auto overflow-x-auto max-w-full">
+          <i>e</i> = <span class="math-frac"><span>1</span><span>0!</span></span> + <span class="math-frac"><span>1</span><span>1!</span></span> + <span class="math-frac"><span>1</span><span>2!</span></span> + <span class="math-frac"><span>1</span><span>3!</span></span> + <span class="math-frac"><span>1</span><span>4!</span></span> + &hellip;
+        </div>
+      </div>
+
+      <!-- Precision Number Line & Digit Locking Display -->
+      <div class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-5 sm:space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="min-w-0">
+            <div class="text-xs uppercase tracking-wider text-slate-600 font-bold">Locked Digits of Euler’s Number</div>
+            <div id="factorialDigitDisplay" class="font-mono-num text-xl sm:text-4xl font-bold tracking-wider mt-1 break-all">
+              <span class="text-amber-700">1</span><span class="text-slate-500">.000000000000</span>
+            </div>
+            <div class="text-xs text-slate-600 font-medium mt-1">
+              Target: <span class="font-mono-num text-slate-900 font-bold">2.718281828459</span> &bull; Terms added: <span id="factorialTermCount" class="font-mono-num text-emerald-800 font-bold">1</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            <button id="addTermBtn" class="px-3.5 sm:px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs sm:text-sm shadow-sm transition active:scale-95">
+              + Add Next Term (1/1!)
+            </button>
+            <button id="autoSeriesBtn" class="px-3.5 sm:px-4 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 text-emerald-900 font-semibold text-xs sm:text-sm transition">
+              ▶ Auto-Stack
+            </button>
+            <button id="resetSeriesBtn" class="px-3 sm:px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs sm:text-sm font-medium transition">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Visual Horizontal Stacking Bar from 0 to 3 -->
+        <div>
+          <div class="flex justify-between text-[11px] sm:text-xs font-mono-num text-slate-600 font-medium mb-1.5">
+            <span>0.0</span>
+            <span>1.0</span>
+            <span>2.0</span>
+            <span class="text-amber-800 font-bold">e ≈ 2.71828</span>
+            <span>3.0</span>
+          </div>
+          <div class="relative w-full h-12 sm:h-16 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden p-1.5">
+            <!-- Target 'e' Marker Line at (2.718281828 / 3) * 100% = 90.6094% -->
+            <div style="left: calc(6px + (100% - 12px) * 0.906094);" class="absolute top-0 bottom-0 w-0.5 bg-amber-600 z-20">
+              <div class="absolute -top-0.5 -translate-x-1/2 bg-amber-600 text-white text-[9px] font-mono-num font-bold px-1 rounded-b">
+                e
+              </div>
+            </div>
+            <!-- Dynamic Stacked Blocks Container -->
+            <div id="factorialBarContainer" class="h-full flex items-center rounded-xl overflow-hidden"></div>
+          </div>
+        </div>
+
+        <!-- Term Breakdown Cards Grid -->
+        <div>
+          <div class="text-xs uppercase tracking-wider text-slate-600 font-bold mb-3">Series Term Breakdown</div>
+          <div id="factorialCardsGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-2.5">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Real-World Use Cases & Why Learn This -->
+        <div class="pt-4 border-t border-slate-200 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="text-xs uppercase tracking-wider text-emerald-800 font-bold">Real-World Use Cases &amp; Why Learn This</span>
+              <h3 class="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">How a Tiny Staircase of Factorials Powers Modern Computing</h3>
+            </div>
+            <span class="text-xs text-slate-500 font-mono-num">Select a use case to see the payoff</span>
+          </div>
+
+          <div id="factorialUseCaseTabs" class="flex flex-wrap gap-2">
+            <button data-fcase="calculators" class="fcase-chip px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 transition">
+              🖩 Calculators &amp; Compilers
+            </button>
+            <button data-fcase="physics" class="fcase-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+              🚀 Physics &amp; ODE Solvers
+            </button>
+            <button data-fcase="signals" class="fcase-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+              📡 Control &amp; Signal Systems
+            </button>
+            <button data-fcase="why" class="fcase-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+              💡 Why Learn This Series?
+            </button>
+          </div>
+
+          <div id="factorialUseCaseDetail" class="rounded-2xl bg-slate-50 border border-slate-200/90 p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div class="md:col-span-8 space-y-1.5">
+              <div id="fcaseTitle" class="text-sm sm:text-base font-bold text-emerald-800">Calculators &amp; Compilers — Computing e^x Using Only +, −, ×, ÷</div>
+              <p id="fcaseBody" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                Microprocessors do not natively know what an irrational constant like e or e^x is—they execute basic arithmetic. Using the Taylor series e^x = 1 + x + x²/2! + x³/3! + …, software computes exponentials to full precision in just a handful of steps.
+              </p>
+              <p id="fcaseTakeaway" class="text-xs text-slate-600 leading-relaxed">
+                <strong class="text-amber-800">Key insight:</strong> Because factorials in the denominator explode (12! = 479,001,600), the remainder shrinks faster than almost any other series.
+              </p>
+            </div>
+            <div class="md:col-span-4 rounded-xl bg-white border border-slate-200 p-3.5 text-center space-y-1">
+              <div class="text-[10px] font-mono-num uppercase tracking-wider text-slate-500">Series Engine</div>
+              <div id="fcaseFormula" class="font-mono-num text-sm sm:text-base font-bold text-slate-900">e^x = Σ (x^n / n!)</div>
+              <div id="fcaseBadge" class="text-[11px] font-mono-num text-emerald-700 font-semibold pt-1">~12 terms → 9+ digits</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- LAB 4: CHAOS & THE 37% RULE (MONTE CARLO + OPTIMAL STOPPING)        -->
+    <!-- ===================================================================== -->
+    <section id="lab-3" class="lab-panel space-y-5 sm:space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-3 sm:gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 border border-purple-300 text-purple-900 text-xs font-mono-num font-semibold mb-2">
+            <span>LAB 04 // PROBABILITY &amp; DECISION THEORY</span>
+          </div>
+          <h2 class="font-serif-math text-2xl sm:text-4xl font-bold text-slate-900">Chaos &amp; The 37% Rule</h2>
+          <p class="text-slate-600 text-sm sm:text-base max-w-2xl mt-1.5">
+            Where else does <i class="font-serif-math">e</i> hide? In pure randomness! Add random numbers in <span class="font-mono-num text-sky-800 font-semibold">[0, 1]</span> until the sum passes <span class="font-mono-num text-amber-800 font-semibold">1</span>—or test the <span class="font-mono-num text-amber-800 font-semibold">1/e ≈ 36.8%</span> optimal stopping benchmark.
+          </p>
+        </div>
+
+        <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200 self-start lg:self-auto">
+          <button id="modeMonteCarloBtn" class="px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-amber-500 text-slate-950 transition">
+            Random Sum → e
+          </button>
+          <button id="modeSecretaryBtn" class="px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-950 transition">
+            37% Stopping Game
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-lab A: Random Sum Exceeding 1 -->
+      <div id="subLabMonteCarlo" class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+        <div class="lg:col-span-7 glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-4 min-w-0">
+          <!-- Top Summary Strip: Current Trial + Live Empirical Average Draws -->
+          <div class="rounded-2xl bg-amber-50/70 border border-amber-300/80 p-3.5 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-4">
+              <div>
+                <span class="text-[11px] uppercase tracking-wider text-slate-600 font-bold">Current Trial Sum</span>
+                <div id="mcCurrentSum" class="font-mono-num text-lg sm:text-xl font-bold text-slate-900">0.000 / 1.000</div>
+              </div>
+              <div class="h-8 w-px bg-amber-300/70"></div>
+              <div>
+                <span class="text-[11px] uppercase tracking-wider text-slate-600 font-bold">Draws</span>
+                <div id="mcCurrentDraws" class="font-mono-num text-lg sm:text-xl font-bold text-sky-800">0</div>
+              </div>
+            </div>
+            <div class="text-left sm:text-right">
+              <span class="text-[11px] uppercase tracking-wider text-amber-900 font-bold">Empirical Average Draws</span>
+              <div class="flex items-baseline sm:justify-end gap-2">
+                <span id="mcTopAvgDisplay" class="font-mono-num text-xl sm:text-2xl font-bold text-amber-800">0.0000</span>
+                <span class="text-[11px] font-mono-num text-slate-600">/ e ≈ 2.7183 (<span id="mcTopTotalTrials" class="font-bold text-sky-800">0</span>)</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="mcCurrentDropsBar" class="w-full h-11 rounded-xl bg-slate-100 border border-slate-200 p-1.5 flex items-center gap-1 overflow-hidden">
+            <span class="text-[11px] text-slate-600 font-medium px-2">Click "Draw Random Number" below...</span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="mcDrawStepBtn" class="px-3.5 sm:px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs sm:text-sm transition active:scale-95">
+              + Draw Random Number
+            </button>
+            <button id="mcSim100Btn" class="px-3 sm:px-3.5 py-2.5 rounded-xl bg-sky-100 hover:bg-sky-200 border border-sky-300 text-sky-900 font-semibold text-xs sm:text-sm transition">
+              Run 100 Trials
+            </button>
+            <button id="mcSim5000Btn" class="px-3 sm:px-3.5 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 text-emerald-900 font-semibold text-xs sm:text-sm transition">
+              Run 5,000 Trials
+            </button>
+            <button id="mcResetBtn" class="px-3 sm:px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs sm:text-sm font-medium transition">
+              Reset
+            </button>
+            <span id="mcRoundResult" class="text-xs font-mono-num text-amber-800 font-bold"></span>
+          </div>
+
+          <div class="pt-2">
+            <div class="text-xs text-slate-700 mb-2 font-semibold">Distribution of Draws Needed to Exceed 1.0:</div>
+            <div class="w-full h-48 sm:h-52 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden">
+              <canvas id="monteCarloCanvas" class="w-full h-full block"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 flex flex-col gap-4 sm:gap-5 min-w-0">
+          <div class="glass-panel gold-glow-box rounded-2xl sm:rounded-3xl p-5 sm:p-6">
+            <span class="text-xs uppercase tracking-wider text-amber-800 font-bold">Empirical Average Draws</span>
+            <div id="mcAvgDisplay" class="font-mono-num text-3xl sm:text-5xl font-bold text-slate-900 mt-2">0.0000</div>
+            <div class="text-xs text-slate-600 mt-2 font-mono-num">
+              Expected value: <span class="text-amber-800 font-bold">e ≈ 2.7183</span> &bull; Trials: <span id="mcTotalTrials" class="text-sky-800 font-bold">0</span>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-5 text-xs text-slate-700 leading-relaxed space-y-2">
+            <h4 class="text-sm font-bold text-slate-900">Why Does the Average Equal <i class="font-serif-math">e</i>?</h4>
+            <p>
+              The probability that <span class="font-mono-num text-slate-900 font-semibold">k</span> independent uniform random numbers in <span class="font-mono-num text-slate-900 font-semibold">[0, 1]</span> sum to less than <span class="font-mono-num text-slate-900 font-semibold">1</span> is <span class="font-mono-num text-slate-900 font-semibold">1 / k!</span>.
+            </p>
+            <p>
+              Summing those probabilities across all <span class="font-mono-num text-slate-900 font-semibold">k</span> gives the expected number of draws: <span class="font-mono-num text-slate-900 font-semibold">1 + 1/1! + 1/2! + 1/3! + … = e</span>!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-lab B: 37% Optimal Stopping ("Secretary Problem") Game -->
+      <div id="subLabSecretary" class="hidden glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-xs uppercase tracking-wider text-amber-800 font-bold">1 / e ≈ 36.8% Optimal Stopping Rule</span>
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">Pick the #1 Best Candidate Out of 10 (Once Rejected, Never Go Back!)</h3>
+          </div>
+          <button id="secNewGameBtn" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-800 transition self-start sm:self-auto">
+            ↻ New 10 Candidates
+          </button>
+        </div>
+
+        <div id="secFeedbackText" class="rounded-2xl bg-slate-50 border border-slate-200 p-3.5 text-xs sm:text-sm text-slate-700">
+          Candidate #1 is ready. Remember: reject the first <span class="text-amber-800 font-bold">37% (Cards 1–4)</span> to calibrate your standard!
+        </div>
+
+        <div id="secretaryCardsGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div id="secActionBtns" class="flex flex-wrap items-center gap-3">
+          <button id="secRejectBtn" class="px-4 sm:px-5 py-2.5 rounded-xl bg-rose-100 hover:bg-rose-200 border border-rose-300 text-rose-900 font-bold text-xs sm:text-sm transition active:scale-95">
+            ✕ Reject &amp; Next Candidate
+          </button>
+          <button id="secHireBtn" class="px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm transition active:scale-95">
+            ✓ Hire Current Candidate
+          </button>
+        </div>
+
+        <!-- 37% Rule Funda, Why It Works & Calculus Derivation -->
+        <div class="pt-4 border-t border-slate-200 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="text-xs uppercase tracking-wider text-amber-800 font-bold">The Funda Behind 37% (1/e)</span>
+              <h4 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Why "Look at the First ~37%, Then Leap" Beats Blind Guessing</h4>
+            </div>
+            <span class="text-xs font-mono-num text-sky-800 font-semibold">Win Rate ≈ 37% (N→∞) · 39.9% at N = 10 · vs 10% Random</span>
+          </div>
+
+          <div id="secFundaTabs" class="flex flex-wrap gap-2">
+            <button data-funda="dilemma" class="funda-chip px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 transition">
+              1. The "No Going Back" Dilemma
+            </button>
+            <button data-funda="phases" class="funda-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+              2. Look vs. Leap Phases
+            </button>
+            <button data-funda="math" class="funda-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+              3. Where 1/e Comes From (Math)
+            </button>
+            <button data-funda="catch" class="funda-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+              4. Real-World Catch
+            </button>
+          </div>
+
+          <div id="secFundaDetail" class="rounded-2xl bg-slate-50 border border-slate-200/90 p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div class="md:col-span-8 space-y-1.5">
+              <div id="fundaTitle" class="text-sm sm:text-base font-bold text-amber-800">1. The "No Going Back" Dilemma — Blind vs. Late</div>
+              <p id="fundaBody" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                Suppose you interview 10 candidates one by one and cannot revisit someone you passed over. Pick #1 immediately and you have no idea what "great" looks like (10% win chance). Wait until #10 and you are stuck with whoever is left—even if the #1 candidate already passed by earlier.
+              </p>
+              <p id="fundaTakeaway" class="text-xs text-slate-600 leading-relaxed">
+                <strong class="text-sky-800">Core tension:</strong> Gathering information requires rejecting early options, while waiting too long risks letting the true #1 slip past before you start hiring.
+              </p>
+            </div>
+            <div class="md:col-span-4 rounded-xl bg-white border border-slate-200 p-3.5 text-center space-y-1">
+              <div class="text-[10px] font-mono-num uppercase tracking-wider text-slate-500">Optimal Cutoff</div>
+              <div id="fundaFormula" class="font-mono-num text-sm sm:text-base font-bold text-slate-900">p* = 1/e ≈ 36.79%</div>
+              <div id="fundaBadge" class="text-[11px] font-mono-num text-amber-800 font-semibold pt-1">For N = 10 → First ~3–4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- LAB 5: EULER'S IDENTITY & NATURE'S BLUEPRINT                          -->
+    <!-- ===================================================================== -->
+    <section id="lab-4" class="lab-panel space-y-5 sm:space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-3 sm:gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono-num font-semibold mb-2">
+            <span>LAB 05 // COMPLEX PLANE &amp; REAL-WORLD MODELS</span>
+          </div>
+          <h2 class="font-serif-math text-2xl sm:text-4xl font-bold text-slate-900">Euler’s Identity &amp; Nature’s Blueprint</h2>
+          <p class="text-slate-600 text-sm sm:text-base max-w-2xl mt-1.5">
+            Multiply an exponent by the imaginary unit <span class="font-mono-num text-sky-800 font-semibold">i</span> and growth turns into pure rotation around the unit circle: <span class="font-serif-math italic text-slate-900 font-semibold">e<sup>iθ</sup> = cos(θ) + i·sin(θ)</span>.
+          </p>
+        </div>
+
+        <button id="jumpToPiBtn" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-400 text-amber-950 text-xs sm:text-sm font-bold transition flex items-center gap-2 self-start lg:self-auto">
+          <span>✦ Rotate to θ = π (180°)</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+        <!-- Unit Circle Visualizer -->
+        <div class="lg:col-span-6 glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-4 min-w-0">
+          <!-- 1. Interactive Piece-by-Piece Breakdown at the very top -->
+          <div class="rounded-2xl bg-slate-50 border border-slate-200/90 p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[11px] font-mono-num uppercase tracking-wider text-sky-800 font-bold">
+                Tap a Piece of e^(iθ) = cos(θ) + i·sin(θ)
+              </span>
+              <span id="eithLiveEquation" class="font-mono-num text-xs text-amber-800 font-bold">
+                e^(i·0.79) = 0.71 + 0.71i
+              </span>
+            </div>
+
+            <div id="eithPartsButtons" class="grid grid-cols-3 gap-2">
+              <button data-eithpart="lhs" class="eith-part-btn rounded-xl p-2 text-center border bg-amber-100 border-amber-400 transition">
+                <div class="font-serif-math italic text-sm sm:text-base font-bold text-amber-900">e<sup>iθ</sup></div>
+                <div class="text-[10px] font-mono-num text-slate-700 mt-0.5">The Spin</div>
+              </button>
+              <button data-eithpart="cos" class="eith-part-btn rounded-xl p-2 text-center border bg-white border-slate-200 hover:border-sky-300 transition">
+                <div class="font-mono-num text-xs sm:text-sm font-bold text-sky-800">cos(θ)</div>
+                <div id="eithCosLiveVal" class="text-[10px] font-mono-num text-slate-500 mt-0.5">x = +0.71</div>
+              </button>
+              <button data-eithpart="sin" class="eith-part-btn rounded-xl p-2 text-center border bg-white border-slate-200 hover:border-emerald-300 transition">
+                <div class="font-mono-num text-xs sm:text-sm font-bold text-emerald-800">+ i·sin(θ)</div>
+                <div id="eithSinLiveVal" class="text-[10px] font-mono-num text-slate-500 mt-0.5">y = +0.71</div>
+              </button>
+            </div>
+
+            <div id="eithPartExplanation" class="rounded-xl bg-white border border-slate-200 p-3 text-xs text-slate-700 leading-relaxed">
+              <div id="eithPartTitle" class="font-bold text-amber-800 mb-0.5">e^(iθ) — "Start at 1, turn by angle θ, stay on radius 1"</div>
+              <p id="eithPartBody">
+                Normally e^t stretches along a straight number line. Putting <strong class="text-sky-800">i</strong> (a 90° turn) in the exponent turns stretching into spinning around a circle of radius 1 by angle <strong class="text-slate-900">θ</strong> (in radians).
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. High School Intuition Menu right above the Unit Circle & Slider -->
+          <div class="rounded-2xl bg-amber-50/50 border border-amber-300/70 p-3.5 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[10px] font-mono-num uppercase tracking-wider text-amber-900 font-bold">High School Intuition Menu</span>
+              <div id="lab5HsTabs" class="flex flex-wrap gap-1.5">
+                <button data-hs="spin" class="hs5-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-200 text-amber-950 border border-amber-400 transition">
+                  Spin ("i")
+                </button>
+                <button data-hs="identity" class="hs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+                  e^(iπ)+1=0
+                </button>
+                <button data-hs="decay" class="hs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+                  Decay e^(-kt)
+                </button>
+                <button data-hs="bridge" class="hs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+                  Waves Bridge
+                </button>
+              </div>
+            </div>
+
+            <div id="lab5HsDetail" class="rounded-xl bg-white border border-slate-200 p-3 space-y-1">
+              <div class="flex flex-wrap items-center justify-between gap-1">
+                <div id="hs5Title" class="text-xs font-bold text-amber-800">1. Why "i" Makes e Spin in a Circle — Turning Growth into Turning</div>
+                <span id="hs5Formula" class="font-mono-num text-[11px] font-bold text-sky-800">e^(iθ) = cos θ + i sin θ</span>
+              </div>
+              <p id="hs5Body" class="text-xs text-slate-700 leading-relaxed">
+                Think of a normal power like e^t as stretching along a straight line. In complex numbers, multiplying by <strong class="text-sky-800">i</strong> means making a <strong class="text-slate-900">90° left turn</strong>. Put <strong class="text-sky-800">i</strong> in the exponent and instead of growing bigger and bigger along a line, you walk around a circle of radius 1!
+              </p>
+              <p id="hs5Takeaway" class="text-[11px] text-slate-600 leading-relaxed">
+                <strong class="text-sky-800">Think of it this way:</strong> Regular exponents change <em>how big</em> you are; imaginary exponents change <em>which direction</em> you face. <span id="hs5Badge" class="text-amber-800 font-mono-num font-semibold">(Angle θ = radians around circle)</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs uppercase tracking-wider text-slate-600 font-bold">Complex Unit Circle</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900">Position of e<sup>iθ</sup></h3>
+            </div>
+            <span id="thetaRadDisplay" class="font-mono-num text-xs sm:text-sm text-sky-800 font-bold">0.79 rad (45°)</span>
+          </div>
+
+          <div class="relative w-full h-64 sm:h-80 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden">
+            <canvas id="eulerCircleCanvas" class="w-full h-full block"></canvas>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] sm:text-xs text-slate-600 font-medium mb-1.5 font-mono-num">
+              <span>0</span>
+              <span>π/2 (90°)</span>
+              <span class="text-amber-800 font-bold">π (180°)</span>
+              <span>2π (360°)</span>
+            </div>
+            <input id="thetaSlider" type="range" min="0" max="6.2831853" step="0.005" value="0.785" class="w-full cyan-slider" />
+          </div>
+
+          <div id="eulerIdentityCard" class="glass-panel rounded-2xl p-4 space-y-2 transition-all duration-300">
+            <div id="identityEquationBox" class="rounded-2xl bg-slate-50 border border-slate-200 p-3.5 text-center transition-all duration-500">
+              <div class="font-serif-math text-xl sm:text-2xl text-slate-900 font-semibold">
+                <i>e</i><sup><i>i</i>π</sup> + 1 = 0
+              </div>
+              <div class="text-[11px] text-slate-600 font-medium mt-1">Uniting <i>e</i>, <i>i</i>, π, 1, and 0 in one equation</div>
+            </div>
+            <div id="identityStatusText" class="text-xs text-slate-800 font-medium text-center">
+              Currently at <span class="font-mono-num text-sky-800 font-bold">0.71 + 0.71i</span> — rotate to π (180°) to hit -1!
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Exponential Simulator -->
+        <div class="lg:col-span-6 glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col justify-between space-y-4 min-w-0">
+          <div class="space-y-3">
+            <!-- 1. Interactive Piece-by-Piece Breakdown for N(t) = N0 · e^(±kt) at the top -->
+            <div class="rounded-2xl bg-slate-50 border border-slate-200/90 p-3.5 sm:p-4 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] font-mono-num uppercase tracking-wider text-emerald-800 font-bold">
+                  Tap a Piece of T(t) = 20 + 80 · e^(−kt)
+                </span>
+                <span id="nktLiveEquation" class="font-mono-num text-xs text-amber-800 font-bold">
+                  20 + 80 · e^(-0.35 × 3.0) = 48.0°C
+                </span>
+              </div>
+
+              <div id="nktPartsButtons" class="grid grid-cols-3 gap-2">
+                <button data-nktpart="n0" class="nkt-part-btn rounded-xl p-2 text-center border bg-emerald-100 border-emerald-400 transition">
+                  <div id="nktN0Main" class="font-mono-num text-xs sm:text-sm font-bold text-emerald-900">100°C → 20°C</div>
+                  <div id="nktN0Sub" class="text-[10px] font-mono-num text-slate-700 mt-0.5">80°C Gap Above Room</div>
+                </button>
+                <button data-nktpart="exp" class="nkt-part-btn rounded-xl p-2 text-center border bg-white border-slate-200 hover:border-amber-300 transition">
+                  <div class="font-serif-math italic text-sm sm:text-base font-bold text-amber-800">e<sup>±kt</sup></div>
+                  <div id="nktExpLiveVal" class="text-[10px] font-mono-num text-slate-500 mt-0.5">gap × 0.35</div>
+                </button>
+                <button data-nktpart="kt" class="nkt-part-btn rounded-xl p-2 text-center border bg-white border-slate-200 hover:border-sky-300 transition">
+                  <div class="font-mono-num text-xs sm:text-sm font-bold text-sky-800">k &amp; t</div>
+                  <div id="nktKtLiveVal" class="text-[10px] font-mono-num text-slate-500 mt-0.5">-0.35 × 3.0h</div>
+                </button>
+              </div>
+
+              <div id="nktPartExplanation" class="rounded-xl bg-white border border-slate-200 p-3 text-xs text-slate-700 leading-relaxed">
+                <div id="nktPartTitle" class="font-bold text-emerald-800 mb-0.5">100°C Start &amp; 20°C Room — The 80°C Temperature Gap</div>
+                <p id="nktPartBody">
+                  Boiling coffee starts at <strong class="text-slate-900">100°C</strong> in a <strong class="text-sky-800">20°C</strong> room. That gives an <strong class="text-emerald-800">80°C extra heat gap</strong> above room temperature—and as time <strong class="text-slate-900">t</strong> passes, that extra gap shrinks smoothly toward 0°C above the room (so coffee settles at 20°C).
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. High School Intuition Menu right above the Graph & Sliders -->
+            <div class="rounded-2xl bg-emerald-50/50 border border-emerald-300/70 p-3.5 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[10px] font-mono-num uppercase tracking-wider text-emerald-900 font-bold">Cooling &amp; Decay Intuition Menu</span>
+                <div id="lab5NatureHsTabs" class="flex flex-wrap gap-1.5">
+                  <button data-nhs="cooling" class="nhs5-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-200 text-emerald-950 border border-emerald-400 transition">
+                    100°C Coffee
+                  </button>
+                  <button data-nhs="decay" class="nhs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+                    Radioactive Decay
+                  </button>
+                  <button data-nhs="percent" class="nhs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+                    Why Percent Drops
+                  </button>
+                  <button data-nhs="growth" class="nhs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition">
+                    Flip to Growth +kt
+                  </button>
+                </div>
+              </div>
+
+              <div id="lab5NatureHsDetail" class="rounded-xl bg-white border border-slate-200 p-3 space-y-1">
+                <div class="flex flex-wrap items-center justify-between gap-1">
+                  <div id="nhs5Title" class="text-xs font-bold text-emerald-800">1. Coffee at 100°C — Drops Fast at First, Slows Near 20°C</div>
+                  <span id="nhs5Formula" class="font-mono-num text-[11px] font-bold text-amber-800">T(t) = 20 + 80 · e^(-kt)</span>
+                </div>
+                <p id="nhs5Body" class="text-xs text-slate-700 leading-relaxed">
+                  At t = 0, your coffee is boiling at <strong class="text-slate-900">100°C</strong> in a <strong class="text-sky-800">20°C</strong> room—an <strong class="text-emerald-800">80°C gap</strong>. Because the gap is huge at first, heat escapes fast; as it nears 20°C, cooling slows way down and never drops below room temperature.
+                </p>
+                <p id="nhs5Takeaway" class="text-[11px] text-slate-600 leading-relaxed">
+                  <strong class="text-sky-800">Everyday rule:</strong> Bigger gap or bigger <strong class="text-slate-900">k</strong> means faster cooling; near 20°C it barely changes. Newton’s law is an approximation; an open cup typically has k ≈ 1.5–2 per hour. <span id="nhs5Badge" class="text-emerald-800 font-mono-num font-semibold">(Starts at 100°C → settles at 20°C)</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <span class="text-xs uppercase tracking-wider text-emerald-800 font-bold">Real-World Dynamics</span>
+                <h3 id="phenomTitle" class="text-sm sm:text-lg font-bold text-slate-900">Coffee Cooling from 100°C (Room = 20°C)</h3>
+              </div>
+              <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs">
+                <button data-phenom="cooling" class="phenom-btn px-2.5 py-1 rounded-lg bg-emerald-200 text-emerald-950 font-bold transition">
+                  100°C Coffee
+                </button>
+                <button data-phenom="viral" class="phenom-btn px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-950 transition">
+                  Growth / Viral
+                </button>
+              </div>
+            </div>
+
+            <p id="phenomDesc" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Coffee starting at <strong class="text-slate-900">100°C</strong> in a <strong class="text-sky-800">20°C</strong> room follows <span class="font-mono-num text-slate-900 font-semibold">T(t) = 20 + 80 · e<sup>−kt</sup></span>. Each equal time step shrinks the remaining temperature gap above 20°C by the same fraction!
+            </p>
+          </div>
+
+          <div class="relative w-full h-52 sm:h-64 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden">
+            <canvas id="natureCanvas" class="w-full h-full block"></canvas>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 border border-slate-200/90 p-3.5 sm:p-4 space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-800 font-semibold">Cooling / Growth Rate (<i class="font-serif-math">k</i>)</span>
+                <span id="rateKDisplay" class="font-mono-num text-emerald-800 font-bold">0.35</span>
+              </div>
+              <input id="rateKSlider" type="range" min="0.05" max="1.2" step="0.01" value="0.35" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-800 font-semibold">Elapsed Time (<i class="font-serif-math">t</i>)</span>
+                <span id="timeTDisplay" class="font-mono-num text-sky-800 font-bold">3.0 hrs</span>
+              </div>
+              <input id="timeTSlider" type="range" min="0" max="10" step="0.1" value="3.0" class="w-full cyan-slider" />
+            </div>
+
+            <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-1 text-xs font-mono-num">
+              <span id="phenomOutputLabel" class="text-slate-700 font-medium">Coffee Temp at t = 3.0h (from 100°C):</span>
+              <span id="phenomOutputVal" class="text-base font-bold text-emerald-800">48.0°C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PERSISTENT BOTTOM DIGIT RIBBON & HISTORICAL EXPLORER -->
+  <footer class="border-t border-slate-200 bg-white/95 backdrop-blur-xl py-2.5 sm:py-3 px-3.5 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2 overflow-x-auto max-w-full no-scrollbar">
+        <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-950 border border-amber-300 font-serif-math italic font-bold shrink-0">e =</span>
+        <div id="digitRibbon" class="font-mono-num font-medium tracking-wider sm:tracking-widest text-slate-800 whitespace-nowrap select-all">
+          2.71828182845904523536028747135266249775724709369995...
+        </div>
+      </div>
+      <div class="text-slate-600 font-medium shrink-0 text-[11px] text-center sm:text-right">
+        Irrational &amp; Transcendental &bull; Named by Leonhard Euler (1731)
+      </div>
+    </div>
+  </footer>
+
+  <!-- EUREKA BADGES MODAL -->
+  <div id="badgeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="glass-panel rounded-2xl sm:rounded-3xl max-w-lg w-full p-5 sm:p-6 bg-white border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-serif-math text-xl sm:text-2xl font-bold text-slate-900">Your Eureka Discoveries</h3>
+        <button id="closeBadgeModalBtn" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700">✕</button>
+      </div>
+      <p class="text-xs text-slate-600">Interact with all 5 labs to unlock every mathematical insight about Euler’s number.</p>
+      <div id="badgeListContainer" class="space-y-2.5">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. PROCEDURAL WEB AUDIO SYNTHESIZER (TACTILE MATHEMATICAL FEEDBACK)
+    // =========================================================================
+    class ObservatoryAudio {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      ensureContext() {
+        if (!this.enabled) return null;
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+        return this.ctx;
+      }
+
+      playTick(freq = 440, duration = 0.045, gainVal = 0.045) {
+        const ctx = this.ensureContext();
+        if (!ctx) return;
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      playChime(baseFreq = 523.25) {
+        const ctx = this.ensureContext();
+        if (!ctx) return;
+        const ratios = [1, 1.25, 1.5, 2];
+        ratios.forEach((r, idx) => {
+          setTimeout(() => {
+            this.playTick(baseFreq * r, 0.22, 0.04);
+          }, idx * 75);
+        });
+      }
+    }
+
+    const sfx = new ObservatoryAudio();
+
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    if (soundToggleBtn) {
+      soundToggleBtn.addEventListener('click', () => {
+        sfx.enabled = !sfx.enabled;
+        document.getElementById('soundOnIcon').classList.toggle('hidden', !sfx.enabled);
+        document.getElementById('soundOffIcon').classList.toggle('hidden', sfx.enabled);
+        document.getElementById('soundLabel').textContent = sfx.enabled ? 'Sound On' : 'Muted';
+        if (sfx.enabled) sfx.playTick(587.33, 0.08, 0.05);
+      });
+    }
+
+    // =========================================================================
+    // 2. EUREKA DISCOVERY TRACKER & TAB NAVIGATION
+    // =========================================================================
+    const EUREKA_DEFS = [
+      {
+        id: 0,
+        title: 'The Natural Ceiling (e)',
+        desc: 'Approached the limit of (1 + 1/n)^n as compounding frequency surged.',
+        hint: 'Lab 01: Slide or jump n close to continuous compounding.'
+      },
+      {
+        id: 1,
+        title: 'Self-Cloning Derivative',
+        desc: 'Matched f(x) = a^x with its own slope f\'(x) at base a = e.',
+        hint: 'Lab 02: Tune base a to ~2.7183 or click Magnetic Snap.'
+      },
+      {
+        id: 2,
+        title: 'Factorial Warp Speed',
+        desc: 'Stacked 8+ reciprocal factorial terms to lock digits of e rapidly.',
+        hint: 'Lab 03: Add terms using + Add Next Term or Auto-Stack.'
+      },
+      {
+        id: 3,
+        title: 'Order Inside Chaos',
+        desc: 'Uncovered e in random sums or optimal 37% stopping decisions.',
+        hint: 'Lab 04: Run 100+ Monte Carlo trials or win the 37% game.'
+      },
+      {
+        id: 4,
+        title: 'Euler’s Crown Jewel',
+        desc: 'Rotated e^(iθ) to θ = π to reveal e^(iπ) + 1 = 0.',
+        hint: 'Lab 05: Drag θ to π (180°) or click Rotate to θ = π.'
+      }
+    ];
+
+    const unlockedEurekas = new Set();
+    let toastTimeout = null;
+
+    function renderEurekaStatus() {
+      const count = unlockedEurekas.size;
+      const countEl = document.getElementById('eurekaCountText');
+      if (countEl) countEl.textContent = `${count} / 5`;
+
+      document.querySelectorAll('#headerBadgeDots span[data-dot]').forEach(dot => {
+        const idx = parseInt(dot.dataset.dot, 10);
+        dot.className = unlockedEurekas.has(idx)
+          ? 'w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(217,119,6,0.6)]'
+          : 'w-2 h-2 rounded-full bg-slate-300';
+      });
+
+      document.querySelectorAll('.nav-pill').forEach(pill => {
+        const tabIdx = parseInt(pill.dataset.tab, 10);
+        const check = pill.querySelector('.badge-check');
+        if (check) {
+          check.classList.toggle('hidden', !unlockedEurekas.has(tabIdx));
+        }
+      });
+    }
+
+    function unlockEureka(id) {
+      if (unlockedEurekas.has(id)) return;
+      unlockedEurekas.add(id);
+      renderEurekaStatus();
+      sfx.playChime(587.33);
+
+      const def = EUREKA_DEFS[id];
+      const toast = document.getElementById('eurekaToast');
+      if (def && toast) {
+        document.getElementById('eurekaToastTitle').textContent = def.title;
+        document.getElementById('eurekaToastDesc').textContent = def.desc;
+        toast.classList.remove('translate-y-8', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('translate-y-0', 'opacity-100');
+          toast.classList.add('translate-y-8', 'opacity-0');
+        }, 4200);
+      }
+    }
+
+    function renderBadgeModalList() {
+      const container = document.getElementById('badgeListContainer');
+      if (!container) return;
+      container.innerHTML = EUREKA_DEFS.map(item => {
+        const done = unlockedEurekas.has(item.id);
+        return `
+          <div class="rounded-2xl p-3.5 border ${done ? 'bg-amber-50 border-amber-300' : 'bg-slate-50 border-slate-200'} flex items-start gap-3">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 ${done ? 'bg-amber-500 text-slate-950' : 'bg-slate-200 text-slate-500'}">
+              ${done ? '✓' : '✦'}
+            </div>
+            <div>
+              <div class="text-sm font-bold ${done ? 'text-amber-900' : 'text-slate-900'}">${item.title}</div>
+              <div class="text-xs text-slate-600 mt-0.5">${done ? item.desc : item.hint}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    const badgeModalBtn = document.getElementById('badgeModalBtn');
+    const closeBadgeModalBtn = document.getElementById('closeBadgeModalBtn');
+    const badgeModal = document.getElementById('badgeModal');
+    if (badgeModalBtn && badgeModal) {
+      badgeModalBtn.addEventListener('click', () => {
+        renderBadgeModalList();
+        badgeModal.classList.remove('hidden');
+        badgeModal.classList.add('flex');
+      });
+    }
+    if (closeBadgeModalBtn && badgeModal) {
+      closeBadgeModalBtn.addEventListener('click', () => {
+        badgeModal.classList.add('hidden');
+        badgeModal.classList.remove('flex');
+      });
+    }
+
+    function switchLab(tabIndex) {
+      document.querySelectorAll('.nav-pill').forEach(pill => {
+        const isActive = parseInt(pill.dataset.tab, 10) === tabIndex;
+        pill.className = isActive
+          ? 'nav-pill active px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 bg-amber-100 text-amber-900 border border-amber-300 shadow-xs'
+          : 'nav-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent hover:border-slate-200';
+        const check = pill.querySelector('.badge-check');
+        if (check) check.classList.toggle('hidden', !unlockedEurekas.has(parseInt(pill.dataset.tab, 10)));
+      });
+
+      document.querySelectorAll('.lab-panel').forEach((panel, idx) => {
+        panel.classList.toggle('active', idx === tabIndex);
+      });
+
+      sfx.playTick(440 + tabIndex * 55, 0.04, 0.035);
+      setTimeout(resizeAllCanvases, 30);
+    }
+
+    document.querySelectorAll('.nav-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        switchLab(parseInt(pill.dataset.tab, 10));
+      });
+    });
+
+    function setupCanvas(canvas) {
+      if (!canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(10, Math.floor(rect.width));
+      const h = Math.max(10, Math.floor(rect.height));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w, h };
+    }
+
+    // =========================================================================
+    // 2.5 LOCALE & CURRENCY HELPER (₹100 FOR INDIA, $1 ELSEWHERE)
+    // =========================================================================
+    function detectIsIndia() {
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        if (tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') return true;
+        const langs = Array.isArray(navigator.languages) ? navigator.languages : [navigator.language || ''];
+        return langs.some(l => typeof l === 'string' && (l.toUpperCase().includes('-IN') || l.toLowerCase() === 'hi'));
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const currencyState = {
+      isIndia: detectIsIndia()
+    };
+
+    function getCurrencyConfig() {
+      if (currencyState.isIndia) {
+        return {
+          symbol: '₹',
+          principal: 100,
+          ceiling: 100 * Math.E,
+          tolerance: 0.1
+        };
+      }
+      return {
+        symbol: '$',
+        principal: 1,
+        ceiling: Math.E,
+        tolerance: 0.001
+      };
+    }
+
+    function formatMoney(amount, decimals = 2) {
+      const { symbol } = getCurrencyConfig();
+      return `${symbol}${amount.toFixed(decimals)}`;
+    }
+
+    function applyCurrencyLabels() {
+      const cfg = getCurrencyConfig();
+      const pStr = formatMoney(cfg.principal, cfg.isIndia ? 0 : 2);
+      const c2Str = formatMoney(cfg.ceiling, 2);
+      const c7Str = formatMoney(cfg.ceiling, 7);
+      const floorStr = formatMoney(cfg.ceiling - cfg.tolerance, cfg.isIndia ? 2 : 5);
+
+      const principalLabel = document.getElementById('compPrincipalLabel');
+      if (principalLabel) principalLabel.textContent = pStr;
+
+      const legendP = document.getElementById('compLegendPrincipal');
+      if (legendP) legendP.textContent = `Principal (${pStr})`;
+
+      const symEl = document.getElementById('compCurrencySymbol');
+      if (symEl) symEl.textContent = cfg.symbol;
+
+      const multLabel = document.getElementById('compTargetMultiplierLabel');
+      if (multLabel) multLabel.textContent = cfg.isIndia ? '(100 × e)' : '(1 × e)';
+
+      const trueTargetEl = document.getElementById('compTrueTargetDisplay');
+      if (trueTargetEl) trueTargetEl.textContent = `${cfg.ceiling.toFixed(7)}...`;
+
+      const tolLabel = document.getElementById('compChallengeTolLabel');
+      if (tolLabel) tolLabel.textContent = `${cfg.symbol}${cfg.tolerance}`;
+
+      const floorLabel = document.getElementById('compChallengeFloorLabel');
+      if (floorLabel) floorLabel.textContent = floorStr;
+
+      const didYouKnowText = document.getElementById('compDidYouKnowText');
+      if (didYouKnowText) {
+        didYouKnowText.textContent = cfg.isIndia
+          ? `Jacob Bernoulli discovered this limit in 1683 while studying compound interest. Even if you compound every nanosecond, your ₹100 never reaches ${formatMoney(Math.ceil(cfg.ceiling), 0)} (ceiling is ${c2Str})!`
+          : `Jacob Bernoulli discovered this limit in 1683 while studying compound interest. Even if you compound every nanosecond, your $1 never reaches $2.72!`;
+      }
+
+      const p1 = document.getElementById('compPresetLabel1');
+      if (p1) p1.textContent = `n = 1 (${formatMoney(cfg.principal * 2, 2)})`;
+      const p2 = document.getElementById('compPresetLabel2');
+      if (p2) p2.textContent = `n = 2 (${formatMoney(cfg.principal * 2.25, 2)})`;
+      const p4 = document.getElementById('compPresetLabel4');
+      if (p4) p4.textContent = `n = 4 (${formatMoney(cfg.principal * Math.pow(1.25, 4), 2)})`;
+    }
+
+    // =========================================================================
+    // 3. LAB 1: BERNOULLI'S COMPOUNDING MACHINE (STEP-BY-STEP VISUALIZER)
+    // =========================================================================
+    const compSlider = document.getElementById('compSlider');
+    const compCanvas = document.getElementById('compoundingCanvas');
+    let currentN = 2;
+    let compVisibleStep = 2;
+    let compSelectedStep = 2;
+    let compReplayTimer = null;
+    let compNodeHitboxes = [];
+
+    function sliderToN(val) {
+      if (val <= 0) return 1;
+      if (val >= 99.5) return 100000000;
+      if (val < 18) {
+        return Math.max(1, Math.min(12, Math.round(1 + (val / 18) * 11)));
+      }
+      const norm = (val - 18) / 82;
+      return Math.round(12 * Math.pow(100000000 / 12, norm));
+    }
+
+    function nToSlider(n) {
+      if (n <= 1) return 0;
+      if (n <= 12) return ((n - 1) / 11) * 18;
+      return Math.min(100, 18 + (Math.log(n / 12) / Math.log(100000000 / 12)) * 82);
+    }
+
+    function computeCompounding(n) {
+      const { principal } = getCurrencyConfig();
+      if (n >= 100000000) return principal * Math.E;
+      return principal * Math.exp(n * Math.log1p(1 / n));
+    }
+
+    function getDisplayStepsCount(n) {
+      return n <= 24 ? n : 48;
+    }
+
+    function updatePeriodLedger(n, stepIdx) {
+      const cfg = getCurrencyConfig();
+      const P = cfg.principal;
+      const isDiscrete = n <= 24;
+      const totalSteps = getDisplayStepsCount(n);
+      const clampedStep = Math.max(0, Math.min(totalSteps, stepIdx));
+      const t = totalSteps > 0 ? clampedStep / totalSteps : 1;
+
+      const badge = document.getElementById('ledgerStepBadge');
+      const eqEl = document.getElementById('ledgerEquationText');
+      const simpleEl = document.getElementById('ledgerSimpleVal');
+      const bonusEl = document.getElementById('ledgerBonusVal');
+
+      if (clampedStep === 0) {
+        badge.textContent = `Start of Year (t = 0.00)`;
+        eqEl.innerHTML = `Initial Deposit = <span class="text-slate-950 font-bold">${formatMoney(P, 4)}</span> (0 payouts yet)`;
+        simpleEl.textContent = `+${formatMoney(0, 4)}`;
+        bonusEl.textContent = `+${formatMoney(0, 4)}`;
+        return;
+      }
+
+      if (isDiscrete) {
+        const ratePct = (100 / n).toFixed(n <= 4 ? 0 : 2);
+        const prevBal = P * Math.pow(1 + 1 / n, clampedStep - 1);
+        const newBal = P * Math.pow(1 + 1 / n, clampedStep);
+        const payoutThisStep = newBal - prevBal;
+        const simpleTotal = P * (1 + clampedStep / n);
+        const cumulativeSimpleInterest = P * (clampedStep / n);
+        const cumulativeBonus = Math.max(0, newBal - simpleTotal);
+
+        badge.textContent = `Period ${clampedStep} / ${n} (t = ${t.toFixed(2)})`;
+        eqEl.innerHTML = `${formatMoney(prevBal, 4)} + ${ratePct}% <span class="text-slate-600 font-semibold">(+${formatMoney(payoutThisStep, 4)})</span> = <span class="text-amber-800 font-bold">${formatMoney(newBal, 4)}</span>`;
+        simpleEl.textContent = `+${formatMoney(cumulativeSimpleInterest, 4)}`;
+        bonusEl.textContent = `+${formatMoney(cumulativeBonus, 4)}`;
+      } else {
+        const balAtT = n >= 100000000 ? P * Math.exp(t) : P * Math.exp(t * n * Math.log1p(1 / n));
+        const simpleAtT = P * (1 + t);
+        const cumulativeSimpleInterest = P * t;
+        const bonusAtT = Math.max(0, balAtT - simpleAtT);
+
+        badge.textContent = `Time t = ${t.toFixed(2)} yr (${n >= 100000000 ? 'n → ∞' : 'n = ' + n.toLocaleString()})`;
+        eqEl.innerHTML = `Smoothed balance at t = ${t.toFixed(2)}: <span class="text-amber-800 font-bold">${formatMoney(balAtT, 5)}</span>`;
+        simpleEl.textContent = `+${formatMoney(cumulativeSimpleInterest, 4)}`;
+        bonusEl.textContent = `+${formatMoney(bonusAtT, 5)}`;
+      }
+    }
+
+    function updateLab1(n, playAudio = false, autoRevealAll = true) {
+      if (autoRevealAll) {
+        clearInterval(compReplayTimer);
+        compReplayTimer = null;
+      }
+      applyCurrencyLabels();
+      currentN = n;
+      const totalSteps = getDisplayStepsCount(n);
+      if (autoRevealAll) {
+        compVisibleStep = totalSteps;
+        compSelectedStep = totalSteps;
+      }
+
+      const cfg = getCurrencyConfig();
+      const amount = computeCompounding(n);
+      const ratio = amount / cfg.principal;
+      const gap = Math.max(0, cfg.ceiling - amount);
+      const pctOfE = (amount / cfg.ceiling) * 100;
+
+      document.getElementById('compNDisplay').textContent = n >= 100000000 ? '∞ (Continuous)' : n.toLocaleString();
+      document.getElementById('compBalanceDisplay').textContent = amount.toFixed(7);
+      const ratioEl = document.getElementById('compRatioDisplay');
+      if (ratioEl) ratioEl.textContent = ratio.toFixed(7);
+      document.getElementById('compGapDisplay').textContent = formatMoney(gap, 7);
+      document.getElementById('compAccuracyBadge').textContent = `${pctOfE.toFixed(2)}% of e`;
+
+      document.querySelectorAll('.comp-preset').forEach(btn => {
+        const presetN = parseInt(btn.dataset.n, 10);
+        const isMatch = presetN === n;
+        btn.classList.toggle('ring-2', isMatch);
+        btn.classList.toggle('ring-amber-400/70', isMatch);
+      });
+
+      let label = `Custom (${n.toLocaleString()} periods/yr — ${(100 / n).toFixed(3)}% each)`;
+      if (n === 1) label = 'Annually (1 payout of 100% at t = 1.0)';
+      else if (n === 2) label = 'Semi-Annually (2 payouts of 50% at t = 0.5 & 1.0)';
+      else if (n === 4) label = 'Quarterly (4 payouts of 25% every 3 months)';
+      else if (n === 12) label = 'Monthly (12 payouts of 8.33% every month)';
+      else if (n === 365) label = 'Daily (365 payouts of 0.274% every day)';
+      else if (n >= 100000000) label = 'Continuous Growth (n → ∞ infinitesimal slices)';
+      document.getElementById('compFreqTitle').textContent = label;
+
+      const statusEl = document.getElementById('lab1ChallengeStatus');
+      if (gap < cfg.tolerance) {
+        statusEl.innerHTML = `<span class="text-emerald-700 font-bold">✓ Solved! At n = ${n >= 100000000 ? '∞' : n.toLocaleString()}, you're within ${cfg.symbol}${cfg.tolerance} of the e ceiling!</span>`;
+        unlockEureka(0);
+      } else {
+        statusEl.innerHTML = `<span>Status:</span> <span class="text-amber-800 font-semibold">Need ${formatMoney(gap - cfg.tolerance, 5)} more...</span>`;
+      }
+
+      if (playAudio) {
+        const pitch = 280 + (pctOfE - 73) * 14;
+        sfx.playTick(pitch, 0.03, 0.03);
+      }
+
+      updatePeriodLedger(n, compSelectedStep);
+      drawCompoundingCanvas(n, amount);
+    }
+
+    function replayCompoundingYear() {
+      clearInterval(compReplayTimer);
+      const totalSteps = getDisplayStepsCount(currentN);
+      compVisibleStep = 0;
+      compSelectedStep = 0;
+      updatePeriodLedger(currentN, 0);
+      drawCompoundingCanvas(currentN, computeCompounding(currentN));
+      sfx.playTick(340, 0.04, 0.04);
+
+      const stepInterval = currentN <= 4 ? 650 : currentN <= 12 ? 260 : 45;
+      compReplayTimer = setInterval(() => {
+        compVisibleStep++;
+        compSelectedStep = compVisibleStep;
+        updatePeriodLedger(currentN, compSelectedStep);
+        drawCompoundingCanvas(currentN, computeCompounding(currentN));
+
+        const progress = compVisibleStep / totalSteps;
+        if (compVisibleStep >= totalSteps) {
+          clearInterval(compReplayTimer);
+          compReplayTimer = null;
+          sfx.playChime(523.25);
+        } else {
+          sfx.playTick(360 + progress * 260, 0.04, 0.04);
+        }
+      }, stepInterval);
+    }
+
+    function drawCompoundingCanvas(n, finalAmount) {
+      const setup = setupCanvas(compCanvas);
+      if (!setup) return;
+      const { ctx, w, h } = setup;
+
+      ctx.clearRect(0, 0, w, h);
+      compNodeHitboxes = [];
+
+      const cfg = getCurrencyConfig();
+      const P = cfg.principal;
+      const sym = cfg.symbol;
+
+      const isCompact = w < 420;
+      const padLeft = isCompact ? (cfg.isIndia ? 48 : 40) : (cfg.isIndia ? 58 : 48);
+      const padRight = isCompact ? 16 : 28;
+      const padTop = 36;
+      const padBottom = 34;
+      const plotW = Math.max(40, w - padLeft - padRight);
+      const plotH = Math.max(40, h - padTop - padBottom);
+      const maxY = 3.0 * P;
+
+      const yToPx = (val) => padTop + plotH * (1 - val / maxY);
+      const tToPx = (t) => padLeft + t * plotW;
+
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.08)';
+      ctx.lineWidth = 1;
+      [0, 1, 2, 3].forEach(mult => {
+        const val = mult * P;
+        const y = yToPx(val);
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(w - padRight, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#475569';
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${sym}${val}`, padLeft - 6, y + 3.5);
+      });
+
+      const eY = yToPx(cfg.ceiling);
+      ctx.save();
+      ctx.setLineDash([6, 5]);
+      ctx.strokeStyle = 'rgba(217, 119, 6, 0.85)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, eY);
+      ctx.lineTo(w - padRight, eY);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = '#b45309';
+      ctx.font = 'bold 10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`e ceiling ≈ ${sym}${cfg.ceiling.toFixed(2)}`, padLeft + 6, eY - 6);
+
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(2, 132, 199, 0.5)';
+      ctx.lineWidth = 1.25;
+      ctx.beginPath();
+      ctx.moveTo(tToPx(0), yToPx(P));
+      ctx.lineTo(tToPx(1), yToPx(2 * P));
+      ctx.stroke();
+      ctx.restore();
+
+      const isDiscrete = n <= 24;
+      const totalSteps = getDisplayStepsCount(n);
+
+      if (isDiscrete) {
+        const slotW = plotW / n;
+        const barW = Math.min(64, Math.max(7, slotW * 0.56));
+
+        for (let k = 1; k <= n; k++) {
+          const isRevealed = k <= compVisibleStep;
+          const isSelected = k === compSelectedStep;
+          const t = k / n;
+          const cx = tToPx(t);
+          const bx = cx - barW / 2;
+
+          const totalVal = P * Math.pow(1 + 1 / n, k);
+          const simpleVal = P * (1 + k / n);
+
+          const zeroY = yToPx(0);
+          const oneY = yToPx(P);
+          const simpleY = yToPx(simpleVal);
+          const totalY = yToPx(totalVal);
+
+          ctx.save();
+          ctx.globalAlpha = isRevealed ? 1.0 : 0.2;
+
+          ctx.fillStyle = isSelected ? 'rgba(100, 116, 139, 0.45)' : 'rgba(148, 163, 184, 0.35)';
+          ctx.fillRect(bx, oneY, barW, zeroY - oneY);
+
+          ctx.fillStyle = isSelected ? 'rgba(2, 132, 199, 0.85)' : 'rgba(14, 165, 233, 0.58)';
+          ctx.fillRect(bx, simpleY, barW, oneY - simpleY);
+
+          if (totalVal > simpleVal + 0.0001 * P) {
+            const bonusGrad = ctx.createLinearGradient(0, totalY, 0, simpleY);
+            bonusGrad.addColorStop(0, '#f59e0b');
+            bonusGrad.addColorStop(1, '#d97706');
+            ctx.fillStyle = bonusGrad;
+            if (isSelected) {
+              ctx.shadowColor = 'rgba(217, 119, 6, 0.45)';
+              ctx.shadowBlur = 10;
+            }
+            ctx.fillRect(bx, totalY, barW, simpleY - totalY);
+            ctx.shadowBlur = 0;
+          }
+
+          if (isSelected && isRevealed) {
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(bx, totalY, barW, zeroY - totalY);
+          }
+          ctx.restore();
+
+          ctx.fillStyle = isSelected ? '#b45309' : '#475569';
+          ctx.font = isSelected ? 'bold 10px "JetBrains Mono", monospace' : '10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          const tLabel = n <= 4 ? `t=${(k / n).toFixed(2).replace(/\.00$/, '')}` : `${k}/${n}`;
+          ctx.fillText(tLabel, cx, h - 12);
+        }
+
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let k = 0; k <= Math.min(n, compVisibleStep); k++) {
+          const t = k / n;
+          const val = P * Math.pow(1 + 1 / n, k);
+          const px = tToPx(t);
+          const py = yToPx(val);
+          if (k === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        for (let k = 0; k <= n; k++) {
+          const t = k / n;
+          const val = P * Math.pow(1 + 1 / n, k);
+          const simpleVal = P * (1 + k / n);
+          const bonus = val - simpleVal;
+          const px = tToPx(t);
+          const py = yToPx(val);
+          const isRevealed = k <= compVisibleStep;
+          const isSelected = k === compSelectedStep;
+
+          compNodeHitboxes.push({ step: k, x: px, y: py });
+
+          if (!isRevealed) continue;
+
+          ctx.beginPath();
+          ctx.arc(px, py, isSelected ? 6 : 4, 0, Math.PI * 2);
+          ctx.fillStyle = isSelected ? '#0f172a' : '#d97706';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+
+          if (n <= 6 || isSelected) {
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.textAlign = k === 0 ? 'left' : (k === n ? 'right' : 'center');
+            const labelX = k === 0 ? px + 4 : (k === n ? px - 2 : px);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(`${sym}${val.toFixed(2)}`, labelX, py - 10);
+
+            if (bonus > 0.005 * P && (n <= 4 || isSelected)) {
+              ctx.font = 'bold 9.5px "JetBrains Mono", monospace';
+              ctx.fillStyle = '#b45309';
+              ctx.fillText(`+${sym}${bonus.toFixed(2)}`, labelX, py - 21);
+            }
+          }
+        }
+      } else {
+        const visibleRatio = compVisibleStep / totalSteps;
+        const maxDrawX = padLeft + plotW * visibleRatio;
+
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.35)';
+        ctx.fillRect(padLeft, yToPx(P), plotW * visibleRatio, yToPx(0) - yToPx(P));
+
+        ctx.fillStyle = 'rgba(14, 165, 233, 0.36)';
+        ctx.beginPath();
+        ctx.moveTo(padLeft, yToPx(P));
+        ctx.lineTo(maxDrawX, yToPx(P * (1 + visibleRatio)));
+        ctx.lineTo(maxDrawX, yToPx(P));
+        ctx.closePath();
+        ctx.fill();
+
+        const bonusGrad = ctx.createLinearGradient(0, yToPx(finalAmount), 0, yToPx(P));
+        bonusGrad.addColorStop(0, 'rgba(245, 158, 11, 0.75)');
+        bonusGrad.addColorStop(1, 'rgba(245, 158, 11, 0.22)');
+        ctx.fillStyle = bonusGrad;
+        ctx.beginPath();
+        for (let i = 0; i <= compVisibleStep; i++) {
+          const t = i / totalSteps;
+          const val = n >= 100000000 ? P * Math.exp(t) : P * Math.exp(t * n * Math.log1p(1 / n));
+          const px = tToPx(t);
+          const py = yToPx(val);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.lineTo(maxDrawX, yToPx(P * (1 + visibleRatio)));
+        ctx.lineTo(padLeft, yToPx(P));
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let i = 0; i <= compVisibleStep; i++) {
+          const t = i / totalSteps;
+          const val = n >= 100000000 ? P * Math.exp(t) : P * Math.exp(t * n * Math.log1p(1 / n));
+          const px = tToPx(t);
+          const py = yToPx(val);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        for (let i = 0; i <= totalSteps; i++) {
+          const t = i / totalSteps;
+          const val = n >= 100000000 ? P * Math.exp(t) : P * Math.exp(t * n * Math.log1p(1 / n));
+          compNodeHitboxes.push({ step: i, x: tToPx(t), y: yToPx(val) });
+        }
+
+        const selT = compSelectedStep / totalSteps;
+        const selVal = n >= 100000000 ? P * Math.exp(selT) : P * Math.exp(selT * n * Math.log1p(1 / n));
+        const sx = tToPx(selT);
+        const sy = yToPx(selVal);
+
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 10.5px "JetBrains Mono", monospace';
+        ctx.textAlign = selT > 0.7 ? 'right' : 'left';
+        ctx.fillText(`${sym}${selVal.toFixed(cfg.isIndia ? 2 : 4)}`, selT > 0.7 ? sx - 7 : sx + 7, sy - 8);
+
+        [0, 0.25, 0.5, 0.75, 1.0].forEach(t => {
+          ctx.fillStyle = '#475569';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`t=${t.toFixed(2)}`, tToPx(t), h - 12);
+        });
+      }
+    }
+
+    function inspectCompoundingPointer(clientX) {
+      if (compNodeHitboxes.length === 0) return;
+      const rect = compCanvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      let nearest = compNodeHitboxes[0];
+      let minDist = Math.abs(x - nearest.x);
+      for (const node of compNodeHitboxes) {
+        const d = Math.abs(x - node.x);
+        if (d < minDist) {
+          minDist = d;
+          nearest = node;
+        }
+      }
+      if (nearest.step <= compVisibleStep && nearest.step !== compSelectedStep) {
+        compSelectedStep = nearest.step;
+        updatePeriodLedger(currentN, compSelectedStep);
+        drawCompoundingCanvas(currentN, computeCompounding(currentN));
+        sfx.playTick(420 + (nearest.step / compNodeHitboxes.length) * 180, 0.02, 0.02);
+      }
+    }
+
+    compCanvas.addEventListener('pointermove', (e) => inspectCompoundingPointer(e.clientX));
+    compCanvas.addEventListener('pointerdown', (e) => inspectCompoundingPointer(e.clientX));
+
+    document.getElementById('compReplayBtn').addEventListener('click', replayCompoundingYear);
+    document.getElementById('compStepBtn').addEventListener('click', () => {
+      clearInterval(compReplayTimer);
+      compReplayTimer = null;
+      const totalSteps = getDisplayStepsCount(currentN);
+      if (compVisibleStep >= totalSteps) {
+        compVisibleStep = 0;
+      } else {
+        compVisibleStep++;
+      }
+      compSelectedStep = compVisibleStep;
+      sfx.playTick(380 + (compVisibleStep / totalSteps) * 240, 0.04, 0.04);
+      updatePeriodLedger(currentN, compSelectedStep);
+      drawCompoundingCanvas(currentN, computeCompounding(currentN));
+    });
+
+    compSlider.addEventListener('input', (e) => {
+      const n = sliderToN(parseFloat(e.target.value));
+      updateLab1(n, true, true);
+    });
+
+    document.querySelectorAll('.comp-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const n = parseInt(btn.dataset.n, 10);
+        compSlider.value = nToSlider(n);
+        updateLab1(n, true, true);
+      });
+    });
+
+    // =========================================================================
+    // 4. LAB 2: THE KING OF CALCULUS (SELF-CLONING SLOPE)
+    // =========================================================================
+    const calcCanvas = document.getElementById('calculusCanvas');
+    const baseASlider = document.getElementById('baseASlider');
+    const probeXSlider = document.getElementById('probeXSlider');
+    let baseA = 2.0;
+    let probeX = 1.0;
+    let isDraggingCalcPoint = false;
+    let lab2Mode = 'simple';
+
+    function renderLab2Explanation(heightVal, slopeVal, isSynced) {
+      const summaryEl = document.getElementById('lab2PlainSummary');
+      const stepsEl = document.getElementById('lab2ExplainSteps');
+      if (!summaryEl || !stepsEl) return;
+
+      if (isSynced) {
+        summaryEl.innerHTML = `<span class="text-emerald-800 font-bold">Matched! At a ≈ 2.7183 (e), Height (${heightVal.toFixed(3)}) = Slope (${slopeVal.toFixed(3)}) at every single x!</span>`;
+      } else if (slopeVal < heightVal) {
+        summaryEl.innerHTML = `At <span class="font-mono-num text-amber-800 font-bold">a = ${baseA.toFixed(2)}</span>, Height is <span class="font-mono-num text-amber-800 font-bold">${heightVal.toFixed(3)}</span>, but Slope is only <span class="font-mono-num text-sky-800 font-bold">${slopeVal.toFixed(3)}</span> (a bit too flat—slide <span class="font-mono-num font-bold">a</span> up toward <span class="text-amber-800 font-bold">2.72</span>).`;
+      } else {
+        summaryEl.innerHTML = `At <span class="font-mono-num text-amber-800 font-bold">a = ${baseA.toFixed(2)}</span>, Height is <span class="font-mono-num text-amber-800 font-bold">${heightVal.toFixed(3)}</span>, while Slope is steeper at <span class="font-mono-num text-sky-800 font-bold">${slopeVal.toFixed(3)}</span> (slide <span class="font-mono-num font-bold">a</span> down toward <span class="text-amber-800 font-bold">2.72</span>).`;
+      }
+
+      if (lab2Mode === 'simple') {
+        stepsEl.innerHTML = `
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-amber-800 mb-0.5">1. Height = How Tall It Is</div>
+            Look at the <strong class="text-slate-900">gold curve</strong> above your dot. That number is your current value or size.
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-sky-800 mb-0.5">2. Slope = How Steep It Climbs</div>
+            The <strong class="text-emerald-700">green line</strong> touches the curve like a ramp. The <strong class="text-sky-800">blue curve</strong> tracks that steepness across the graph.
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-emerald-800 mb-0.5">3. Match = The Magic of e</div>
+            When <strong class="text-amber-800">a = e (2.7183)</strong>, Height and Slope match everywhere—the curve clones its own steepness!
+          </div>
+        `;
+      } else {
+        stepsEl.innerHTML = `
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-amber-800 mb-0.5">1. Function f(x) = aˣ</div>
+            Evaluates the exponential curve at <span class="font-mono-num text-slate-900 font-semibold">x = ${probeX.toFixed(2)}</span> to give <span class="font-mono-num text-amber-800 font-bold">${heightVal.toFixed(3)}</span>.
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-sky-800 mb-0.5">2. Derivative f'(x) = ln(a)·aˣ</div>
+            The tangent line's slope equals <span class="font-mono-num text-emerald-800 font-bold">ln(${baseA.toFixed(2)}) ≈ ${Math.log(baseA).toFixed(3)}</span> times the curve height.
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200/90 p-3">
+            <div class="font-bold text-emerald-800 mb-0.5">3. Fixed Point at ln(e) = 1</div>
+            Only when <span class="font-mono-num text-amber-800 font-bold">a = e</span> does <span class="font-mono-num text-slate-900 font-semibold">ln(a) = 1</span>, making <span class="font-mono-num text-slate-900 font-semibold">f'(x) = f(x)</span>.
+          </div>
+        `;
+      }
+    }
+
+    const lab2SimpleBtn = document.getElementById('lab2ExplainSimpleBtn');
+    const lab2MathBtn = document.getElementById('lab2ExplainMathBtn');
+    if (lab2SimpleBtn && lab2MathBtn) {
+      lab2SimpleBtn.addEventListener('click', () => {
+        lab2Mode = 'simple';
+        lab2SimpleBtn.className = 'px-2.5 py-1 rounded-md bg-amber-500 text-slate-950 font-bold transition';
+        lab2MathBtn.className = 'px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-950 font-semibold transition';
+        renderLab2Explanation(Math.pow(baseA, probeX), Math.log(baseA) * Math.pow(baseA, probeX), Math.abs(baseA - Math.E) < 0.002);
+        sfx.playTick(480, 0.03, 0.03);
+      });
+      lab2MathBtn.addEventListener('click', () => {
+        lab2Mode = 'math';
+        lab2MathBtn.className = 'px-2.5 py-1 rounded-md bg-sky-600 text-white font-bold transition';
+        lab2SimpleBtn.className = 'px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-950 font-semibold transition';
+        renderLab2Explanation(Math.pow(baseA, probeX), Math.log(baseA) * Math.pow(baseA, probeX), Math.abs(baseA - Math.E) < 0.002);
+        sfx.playTick(520, 0.03, 0.03);
+      });
+    }
+
+    function updateLab2(newA, newX, playSound = false) {
+      if (Math.abs(newA - Math.E) < 0.018) {
+        newA = Math.E;
+      }
+      baseA = newA;
+      probeX = Math.max(-1.6, Math.min(2.1, newX));
+
+      baseASlider.value = baseA.toFixed(3);
+      probeXSlider.value = probeX.toFixed(2);
+
+      const heightVal = Math.pow(baseA, probeX);
+      const slopeVal = Math.log(baseA) * heightVal;
+      const isSynced = Math.abs(baseA - Math.E) < 0.002;
+
+      document.getElementById('baseAValue').textContent = isSynced ? '2.7183 (e!)' : baseA.toFixed(4);
+      document.getElementById('probeXValue').textContent = probeX.toFixed(2);
+      document.getElementById('gaugeHeightVal').textContent = heightVal.toFixed(3);
+      document.getElementById('gaugeSlopeVal').textContent = slopeVal.toFixed(3);
+
+      const resBadge = document.getElementById('resonanceBadge');
+      const ctrlCard = document.getElementById('calculusControlCard');
+      if (isSynced) {
+        resBadge.textContent = '✦ GOLDEN RESONANCE (f = f\')';
+        resBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-mono-num bg-amber-100 text-amber-900 border border-amber-400 font-bold';
+        ctrlCard.classList.add('gold-glow-box');
+        unlockEureka(1);
+      } else {
+        resBadge.textContent = baseA < Math.E ? 'Slope < Height' : 'Slope > Height';
+        resBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-mono-num bg-slate-100 text-slate-700 border border-slate-200';
+        ctrlCard.classList.remove('gold-glow-box');
+      }
+
+      renderLab2Explanation(heightVal, slopeVal, isSynced);
+
+      if (playSound) {
+        sfx.playTick(isSynced ? 660 : 340 + baseA * 60, 0.03, 0.03);
+      }
+
+      drawCalculusCanvas(isSynced);
+    }
+
+    function drawCalculusCanvas(isSynced) {
+      const setup = setupCanvas(calcCanvas);
+      if (!setup) return;
+      const { ctx, w, h } = setup;
+      ctx.clearRect(0, 0, w, h);
+
+      const xMin = -2.2, xMax = 2.5;
+      const yMin = -0.5, yMax = 8.5;
+
+      const xToPx = (x) => ((x - xMin) / (xMax - xMin)) * w;
+      const yToPx = (y) => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.07)';
+      ctx.lineWidth = 1;
+      for (let gx = -2; gx <= 2; gx++) {
+        ctx.beginPath();
+        ctx.moveTo(xToPx(gx), 0);
+        ctx.lineTo(xToPx(gx), h);
+        ctx.stroke();
+      }
+      for (let gy = 0; gy <= 8; gy += 2) {
+        ctx.beginPath();
+        ctx.moveTo(0, yToPx(gy));
+        ctx.lineTo(w, yToPx(gy));
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, yToPx(0));
+      ctx.lineTo(w, yToPx(0));
+      ctx.moveTo(xToPx(0), 0);
+      ctx.lineTo(xToPx(0), h);
+      ctx.stroke();
+
+      ctx.save();
+      ctx.strokeStyle = isSynced ? '#d97706' : '#0284c7';
+      ctx.lineWidth = isSynced ? 4 : 2.5;
+      if (!isSynced) ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      for (let px = 0; px <= w; px += 3) {
+        const x = xMin + (px / w) * (xMax - xMin);
+        const dy = Math.log(baseA) * Math.pow(baseA, x);
+        const py = yToPx(dy);
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 3;
+      if (isSynced) {
+        ctx.shadowColor = 'rgba(217, 119, 6, 0.45)';
+        ctx.shadowBlur = 12;
+      }
+      ctx.beginPath();
+      for (let px = 0; px <= w; px += 3) {
+        const x = xMin + (px / w) * (xMax - xMin);
+        const y = Math.pow(baseA, x);
+        const py = yToPx(y);
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      const pyVal = Math.pow(baseA, probeX);
+      const slope = Math.log(baseA) * pyVal;
+      const pScreenX = xToPx(probeX);
+      const pScreenY = yToPx(pyVal);
+
+      ctx.save();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = 'rgba(217, 119, 6, 0.55)';
+      ctx.beginPath();
+      ctx.moveTo(pScreenX, yToPx(0));
+      ctx.lineTo(pScreenX, pScreenY);
+      ctx.stroke();
+      ctx.restore();
+
+      const dxSpan = 0.85;
+      const x1 = probeX - dxSpan, y1 = pyVal - slope * dxSpan;
+      const x2 = probeX + dxSpan, y2 = pyVal + slope * dxSpan;
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(xToPx(x1), yToPx(y1));
+      ctx.lineTo(xToPx(x2), yToPx(y2));
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.shadowColor = 'rgba(217, 119, 6, 0.5)';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(pScreenX, pScreenY, 6.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Clear on-canvas badge for the active probe dot
+      const badgeLabel = `H ${pyVal.toFixed(2)} | S ${slope.toFixed(2)}`;
+      ctx.font = 'bold 10.5px "JetBrains Mono", monospace';
+      const textW = ctx.measureText(badgeLabel).width + 14;
+      const boxX = Math.min(w - textW - 8, Math.max(8, pScreenX - textW / 2));
+      const boxY = Math.max(8, pScreenY - 32);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect(boxX, boxY, textW, 20, 6);
+      ctx.fill();
+      ctx.strokeStyle = isSynced ? '#d97706' : 'rgba(15, 23, 42, 0.18)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.fillStyle = isSynced ? '#b45309' : '#0f172a';
+      ctx.textAlign = 'left';
+      ctx.fillText(badgeLabel, boxX + 7, boxY + 13.5);
+    }
+
+    function handleCalcPointer(clientX) {
+      const rect = calcCanvas.getBoundingClientRect();
+      const relX = (clientX - rect.left) / rect.width;
+      const xVal = -2.2 + relX * (2.5 - (-2.2));
+      updateLab2(baseA, xVal, false);
+    }
+
+    calcCanvas.addEventListener('pointerdown', (e) => {
+      isDraggingCalcPoint = true;
+      calcCanvas.setPointerCapture(e.pointerId);
+      handleCalcPointer(e.clientX);
+    });
+    calcCanvas.addEventListener('pointermove', (e) => {
+      if (!isDraggingCalcPoint) return;
+      handleCalcPointer(e.clientX);
+    });
+    calcCanvas.addEventListener('pointerup', () => {
+      isDraggingCalcPoint = false;
+    });
+
+    baseASlider.addEventListener('input', (e) => updateLab2(parseFloat(e.target.value), probeX, true));
+    probeXSlider.addEventListener('input', (e) => updateLab2(baseA, parseFloat(e.target.value), false));
+    document.getElementById('snapToEBtn').addEventListener('click', () => {
+      updateLab2(Math.E, probeX, true);
+    });
+
+    const LAB2_PRACTICAL_USES = {
+      viral: {
+        copy: '<strong class="text-emerald-900">Viral posts &amp; bacteria:</strong> If 10,000 people see a post and each person shares at rate <i>r</i>, new shares per hour equal <i>r × 10,000</i>. Using base <i>e</i> means you write <i>N(t) = N₀e^(rt)</i> directly—no awkward extra constant needed to find how fast it’s climbing right now.'
+      },
+      meds: {
+        copy: '<strong class="text-emerald-900">Medicine leaving your body:</strong> Your liver or kidneys clear a steady fraction of whatever drug is currently in your blood. High dose right after taking a pill = fast drop; low dose hours later = gentle drop—modeled cleanly by <i>D(t) = D₀e^(-kt)</i>.'
+      },
+      tea: {
+        copy: '<strong class="text-emerald-900">100°C tea cooling in a 20°C room:</strong> Heat leaves faster when the tea is 80°C above room temperature than when it’s only 5°C above. Because rate matches remaining heat gap, <i>e</i> gives a good model of the curve (Newton’s law of cooling is an approximation) without extra conversion factors.'
+      }
+    };
+
+    document.querySelectorAll('#lab2UseCaseMiniTabs .l2use-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.l2use;
+        const item = LAB2_PRACTICAL_USES[key];
+        if (!item) return;
+        document.querySelectorAll('#lab2UseCaseMiniTabs .l2use-btn').forEach(b => {
+          b.className = 'l2use-btn px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white text-slate-700 border border-slate-200 transition';
+        });
+        btn.className = 'l2use-btn px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-600 text-white transition';
+        const copyEl = document.getElementById('lab2UseCaseCopy');
+        if (copyEl) copyEl.innerHTML = item.copy;
+        sfx.playTick(500, 0.03, 0.03);
+      });
+    });
+
+    const SELF_CLONE_DOMAINS = {
+      bio: {
+        title: 'Biology & Epidemics — Why Bigger Crowds Spread Faster',
+        why: '10 dividing cells create 20; 1,000,000 create 2,000,000. Because each active case or organism can reproduce, the rate of new growth is proportional to the current population size.',
+        use: 'Epidemiologists use exponential curves in early outbreak modeling to estimate doubling time and reproduction rates.',
+        formula: 'P(t) = P₀ · e^(rt)',
+        phenom: 'viral'
+      },
+      decay: {
+        title: 'Radioactive Decay & Carbon Dating — Constant Per-Atom Chance',
+        why: 'Every unstable atom has a fixed probability of decaying per unit time. With more atoms present, more decay events happen per second; as atoms dwindle, decay slows proportionally.',
+        use: 'Archaeologists measure remaining Carbon-14 in ancient organic matter, and doctors track how fast medicine clears from your bloodstream.',
+        formula: 'N(t) = N₀ · e^(-kt)',
+        phenom: 'cooling'
+      },
+      cooling: {
+        title: 'Thermodynamics & Forensics — Newton’s Law of Cooling',
+        why: 'A piping-hot cup of coffee loses heat quickly at first because the temperature gap with the room is large; as it approaches room temperature, cooling slows down.',
+        use: 'Forensic scientists estimate time of death from cooling rates, and engineers design thermal management for electronics.',
+        formula: 'T(t) = T_env + ΔT₀ · e^(-kt)',
+        phenom: 'cooling'
+      },
+      circuits: {
+        title: 'Electronics & Shock Absorbers — Self-Regulating Response',
+        why: 'When a capacitor discharges through a resistor or a car damper absorbs a bump, the restoring or discharging force scales with the current state.',
+        use: 'Every camera flash, touch sensor, filter circuit, and suspension system relies on differential equations solved by e^(±at).',
+        formula: 'V(t) = V₀ · e^(-t / RC)',
+        phenom: 'cooling'
+      },
+      finance: {
+        title: 'Continuous Finance & Option Pricing — Instantaneous Yield',
+        why: 'When interest or discount factors apply continuously rather than in discrete jumps, value evolves at a rate proportional to the current balance.',
+        use: 'Quantitative finance models—including Black-Scholes option pricing—use e^(rt) and e^(-rt) for continuous compounding and discounting.',
+        formula: 'A(t) = P · e^(rt)',
+        phenom: 'viral'
+      }
+    };
+
+    document.querySelectorAll('#selfCloneDomainTabs .domain-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const key = chip.dataset.domain;
+        const info = SELF_CLONE_DOMAINS[key];
+        if (!info) return;
+
+        document.querySelectorAll('#selfCloneDomainTabs .domain-chip').forEach(c => {
+          c.className = 'domain-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition';
+        });
+        chip.className = 'domain-chip px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 transition';
+
+        document.getElementById('domainDetailTitle').textContent = info.title;
+        document.getElementById('domainDetailWhy').textContent = info.why;
+        document.getElementById('domainDetailUse').innerHTML = `<strong class="text-sky-800">In practice:</strong> ${info.use}`;
+        document.getElementById('domainDetailFormula').textContent = info.formula;
+        document.getElementById('domainTryLab5Btn').dataset.targetPhenom = info.phenom;
+        sfx.playTick(500, 0.03, 0.03);
+      });
+    });
+
+    document.getElementById('domainTryLab5Btn').addEventListener('click', (e) => {
+      const target = e.currentTarget.dataset.targetPhenom || 'cooling';
+      switchLab(4);
+      const phenomBtn = document.querySelector(`.phenom-btn[data-phenom="${target}"]`);
+      if (phenomBtn) phenomBtn.click();
+    });
+
+    // =========================================================================
+    // 5. LAB 3: THE FACTORIAL STAIRCASE
+    // =========================================================================
+    let factorialTerms = [1];
+    let autoSeriesTimer = null;
+
+    function factorial(n) {
+      let res = 1;
+      for (let i = 2; i <= n; i++) res *= i;
+      return res;
+    }
+
+    function renderFactorialLab() {
+      const sum = factorialTerms.reduce((acc, v) => acc + v, 0);
+      const sumStr = sum.toFixed(12);
+      const eStr = Math.E.toFixed(12);
+
+      let matchedHtml = '';
+      let stillMatching = true;
+      for (let i = 0; i < sumStr.length; i++) {
+        if (stillMatching && sumStr[i] === eStr[i]) {
+          matchedHtml += `<span class="text-amber-700">${sumStr[i]}</span>`;
+        } else {
+          stillMatching = false;
+          matchedHtml += `<span class="text-slate-400">${sumStr[i]}</span>`;
+        }
+      }
+      document.getElementById('factorialDigitDisplay').innerHTML = matchedHtml;
+      document.getElementById('factorialTermCount').textContent = factorialTerms.length;
+
+      const nextIdx = factorialTerms.length;
+      const addBtn = document.getElementById('addTermBtn');
+      if (nextIdx <= 15) {
+        addBtn.disabled = false;
+        addBtn.textContent = `+ Add Next Term (1/${nextIdx}!)`;
+        addBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else {
+        addBtn.disabled = true;
+        addBtn.textContent = '12 Digits Locked!';
+        addBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+
+      const colors = [
+        'bg-sky-500', 'bg-amber-500', 'bg-emerald-500', 'bg-purple-500',
+        'bg-rose-500', 'bg-cyan-500', 'bg-amber-400', 'bg-teal-500'
+      ];
+      const barContainer = document.getElementById('factorialBarContainer');
+      barContainer.innerHTML = factorialTerms.map((val, idx) => {
+        const widthPct = (val / 3.0) * 100;
+        const color = colors[idx % colors.length];
+        return `<div style="width: ${widthPct}%" class="h-full ${color} border-r-2 border-white transition-all duration-300 flex items-center justify-center text-[10px] font-mono-num font-bold text-white overflow-hidden" title="1/${idx}! = ${val.toFixed(6)}">${widthPct > 6 ? `1/${idx}!` : ''}</div>`;
+      }).join('');
+
+      const grid = document.getElementById('factorialCardsGrid');
+      grid.innerHTML = factorialTerms.map((val, idx) => `
+        <div class="rounded-xl bg-slate-50 border border-slate-200 p-2.5 text-center">
+          <div class="text-xs font-serif-math text-amber-800 font-bold">1 / ${idx}!</div>
+          <div class="font-mono-num text-[11px] text-slate-800 mt-0.5">${val >= 0.0001 ? val.toFixed(5) : val.toExponential(1)}</div>
+        </div>
+      `).join('');
+
+      if (factorialTerms.length >= 8) {
+        unlockEureka(2);
+      }
+    }
+
+    function addNextFactorialTerm() {
+      const idx = factorialTerms.length;
+      if (idx > 15) {
+        clearInterval(autoSeriesTimer);
+        return;
+      }
+      factorialTerms.push(1 / factorial(idx));
+      sfx.playTick(320 + idx * 45, 0.05, 0.05);
+      renderFactorialLab();
+    }
+
+    document.getElementById('addTermBtn').addEventListener('click', addNextFactorialTerm);
+    document.getElementById('autoSeriesBtn').addEventListener('click', () => {
+      clearInterval(autoSeriesTimer);
+      autoSeriesTimer = setInterval(() => {
+        if (factorialTerms.length > 15) {
+          clearInterval(autoSeriesTimer);
+          return;
+        }
+        addNextFactorialTerm();
+      }, 240);
+    });
+    document.getElementById('resetSeriesBtn').addEventListener('click', () => {
+      clearInterval(autoSeriesTimer);
+      factorialTerms = [1];
+      renderFactorialLab();
+    });
+
+    const FACTORIAL_USE_CASES = {
+      calculators: {
+        title: 'Calculators & Compilers — Computing e^x Using Only +, −, ×, ÷',
+        body: 'Microprocessors do not natively know what an irrational constant like e or e^x is—they execute basic arithmetic. Using the Taylor series e^x = 1 + x + x²/2! + x³/3! + …, software computes exponentials to full precision in just a handful of steps.',
+        takeaway: 'Because factorials in the denominator explode (12! = 479,001,600), the remainder shrinks faster than almost any other series.',
+        formula: 'e^x = Σ (x^n / n!)',
+        badge: '~12 terms → 9+ digits'
+      },
+      physics: {
+        title: 'Physics & ODE Solvers — Stepping Time Forward in Simulations',
+        body: 'In game engines, orbital mechanics, and molecular dynamics, systems evolve via linear differential equations (dx/dt = Ax). The matrix exponential e^(At)—built directly from the 1 + At + (At)²/2! + … staircase—propagates states cleanly across time steps.',
+        takeaway: 'Replacing tiny shaky steps with series/exponential integrators keeps simulated orbits and oscillators from drifting apart.',
+        formula: 'e^(At) = I + At + (At)²/2! + …',
+        badge: 'Used in aerospace & physics engines'
+      },
+      signals: {
+        title: 'Control Systems & Signal Processing — Time Delays & Filters',
+        body: 'Pure time delays in control loops, audio filters, and radar correspond to transfer functions like e^(-sT). Expanding them as polynomials/series lets engineers approximate delays with standard filters and check system stability.',
+        takeaway: 'Turning an infinite exponential into a controlled polynomial makes real-time embedded hardware tractable.',
+        formula: 'e^(-sT) ≈ 1 − sT + (sT)²/2! − …',
+        badge: 'Real-time embedded & control math'
+      },
+      why: {
+        title: 'Why Learn This Series? — Speed, Error Bounds & Mathematical Intuition',
+        body: 'Learning ∑ 1/n! teaches you three transferable superpowers: (1) how infinite processes can converge rapidly, (2) how to bound worst-case error using the next omitted term, and (3) how adding all the Taylor series for cos(x) and sin(x) unifies with e^(ix) into Euler’s formula.',
+        takeaway: 'You stop memorizing formulas as magic—and start seeing how complicated functions are built out of simple building blocks.',
+        formula: 'Error < next term = 1/(k+1)!',
+        badge: 'Builds quantitative & engineering intuition'
+      }
+    };
+
+    document.querySelectorAll('#factorialUseCaseTabs .fcase-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const key = chip.dataset.fcase;
+        const item = FACTORIAL_USE_CASES[key];
+        if (!item) return;
+
+        document.querySelectorAll('#factorialUseCaseTabs .fcase-chip').forEach(c => {
+          c.className = 'fcase-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition';
+        });
+        chip.className = 'fcase-chip px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 transition';
+
+        document.getElementById('fcaseTitle').textContent = item.title;
+        document.getElementById('fcaseBody').textContent = item.body;
+        document.getElementById('fcaseTakeaway').innerHTML = `<strong class="text-amber-800">Key insight:</strong> ${item.takeaway}`;
+        document.getElementById('fcaseFormula').textContent = item.formula;
+        document.getElementById('fcaseBadge').textContent = item.badge;
+        sfx.playTick(540, 0.03, 0.03);
+      });
+    });
+
+    // =========================================================================
+    // 6. LAB 4: MONTE CARLO DARTBOARD & THE 37% OPTIMAL STOPPING RULE
+    // =========================================================================
+    const mcCanvas = document.getElementById('monteCarloCanvas');
+    let mcCurrentDrops = [];
+    let mcTotalTrialsCount = 0;
+    let mcTotalDrawsSum = 0;
+    let mcBuckets = { 2: 0, 3: 0, 4: 0, 5: 0, '6+': 0 };
+
+    function updateMonteCarloUI() {
+      const currentSum = mcCurrentDrops.reduce((a, b) => a + b, 0);
+      document.getElementById('mcCurrentSum').textContent = `${currentSum.toFixed(3)} / 1.000`;
+      document.getElementById('mcCurrentDraws').textContent = mcCurrentDrops.length;
+
+      const bar = document.getElementById('mcCurrentDropsBar');
+      if (mcCurrentDrops.length === 0) {
+        bar.innerHTML = `<span class="text-[11px] text-slate-500 px-2">Click "Draw Random Number" below...</span>`;
+      } else {
+        const segColors = ['bg-sky-500', 'bg-amber-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500'];
+        bar.innerHTML = mcCurrentDrops.map((val, i) => {
+          const pct = Math.min(100, val * 100);
+          return `<div style="width: ${pct}%" class="h-full ${segColors[i % segColors.length]} rounded-lg flex items-center justify-center text-[10px] font-mono-num font-bold text-white overflow-hidden">${val.toFixed(2)}</div>`;
+        }).join('');
+      }
+
+      const avg = mcTotalTrialsCount > 0 ? mcTotalDrawsSum / mcTotalTrialsCount : 0;
+      document.getElementById('mcAvgDisplay').textContent = avg.toFixed(4);
+      document.getElementById('mcTotalTrials').textContent = mcTotalTrialsCount.toLocaleString();
+      const topAvgEl = document.getElementById('mcTopAvgDisplay');
+      if (topAvgEl) topAvgEl.textContent = avg.toFixed(4);
+      const topTrialsEl = document.getElementById('mcTopTotalTrials');
+      if (topTrialsEl) topTrialsEl.textContent = mcTotalTrialsCount.toLocaleString();
+
+      if (mcTotalTrialsCount >= 100) {
+        unlockEureka(3);
+      }
+
+      drawMonteCarloHistogram();
+    }
+
+    function drawMonteCarloHistogram() {
+      const setup = setupCanvas(mcCanvas);
+      if (!setup) return;
+      const { ctx, w, h } = setup;
+      ctx.clearRect(0, 0, w, h);
+
+      const keys = ['2', '3', '4', '5', '6+'];
+      const vals = keys.map(k => mcBuckets[k]);
+      const maxVal = Math.max(10, ...vals);
+
+      const padL = w < 420 ? 24 : 32, padR = 14, padT = 22, padB = 28;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+      const colW = plotW / keys.length;
+
+      keys.forEach((k, idx) => {
+        const count = mcBuckets[k];
+        const barH = (count / maxVal) * plotH;
+        const x = padL + idx * colW + colW * 0.16;
+        const bw = colW * 0.68;
+        const y = padT + plotH - barH;
+
+        const grad = ctx.createLinearGradient(0, y, 0, padT + plotH);
+        grad.addColorStop(0, k === '2' || k === '3' ? '#d97706' : '#0284c7');
+        grad.addColorStop(1, k === '2' || k === '3' ? 'rgba(245, 158, 11, 0.35)' : 'rgba(14, 165, 233, 0.3)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(x, y, bw, barH, [6, 6, 0, 0]);
+        ctx.fill();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 10.5px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(count, x + bw / 2, y - 5);
+
+        ctx.fillStyle = '#475569';
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.fillText(w < 380 ? k : `${k} draws`, x + bw / 2, h - 9);
+      });
+    }
+
+    document.getElementById('mcDrawStepBtn').addEventListener('click', () => {
+      const curSum = mcCurrentDrops.reduce((a, b) => a + b, 0);
+      if (curSum > 1.0) {
+        mcCurrentDrops = [];
+        document.getElementById('mcRoundResult').textContent = '';
+      }
+      const r = Math.random();
+      mcCurrentDrops.push(r);
+      const newSum = mcCurrentDrops.reduce((a, b) => a + b, 0);
+
+      if (newSum > 1.0) {
+        const draws = mcCurrentDrops.length;
+        mcTotalTrialsCount++;
+        mcTotalDrawsSum += draws;
+        const bucketKey = draws >= 6 ? '6+' : String(draws);
+        mcBuckets[bucketKey]++;
+        document.getElementById('mcRoundResult').textContent = `Exceeded 1.0 in ${draws} draws!`;
+        sfx.playChime(440);
+      } else {
+        sfx.playTick(360 + newSum * 240, 0.04, 0.04);
+      }
+      updateMonteCarloUI();
+    });
+
+    function runBatchMonteCarlo(count) {
+      for (let i = 0; i < count; i++) {
+        let s = 0;
+        let draws = 0;
+        while (s <= 1.0) {
+          s += Math.random();
+          draws++;
+        }
+        mcTotalTrialsCount++;
+        mcTotalDrawsSum += draws;
+        const bucketKey = draws >= 6 ? '6+' : String(draws);
+        mcBuckets[bucketKey]++;
+      }
+      sfx.playChime(523.25);
+      updateMonteCarloUI();
+    }
+
+    document.getElementById('mcSim100Btn').addEventListener('click', () => runBatchMonteCarlo(100));
+    document.getElementById('mcSim5000Btn').addEventListener('click', () => runBatchMonteCarlo(5000));
+    document.getElementById('mcResetBtn').addEventListener('click', () => {
+      mcCurrentDrops = [];
+      mcTotalTrialsCount = 0;
+      mcTotalDrawsSum = 0;
+      mcBuckets = { 2: 0, 3: 0, 4: 0, 5: 0, '6+': 0 };
+      document.getElementById('mcRoundResult').textContent = '';
+      updateMonteCarloUI();
+    });
+
+    const modeMcBtn = document.getElementById('modeMonteCarloBtn');
+    const modeSecBtn = document.getElementById('modeSecretaryBtn');
+    if (modeMcBtn) {
+      modeMcBtn.addEventListener('click', () => {
+        document.getElementById('subLabMonteCarlo').classList.remove('hidden');
+        document.getElementById('subLabSecretary').classList.add('hidden');
+        modeMcBtn.className = 'px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-amber-500 text-slate-950 transition';
+        if (modeSecBtn) modeSecBtn.className = 'px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-950 transition';
+        drawMonteCarloHistogram();
+      });
+    }
+
+    if (modeSecBtn) {
+      modeSecBtn.addEventListener('click', () => {
+        document.getElementById('subLabMonteCarlo').classList.add('hidden');
+        document.getElementById('subLabSecretary').classList.remove('hidden');
+        modeSecBtn.className = 'px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-amber-500 text-slate-950 transition';
+        if (modeMcBtn) modeMcBtn.className = 'px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-950 transition';
+      });
+    }
+
+    let secScores = [];
+    let secIndex = 0;
+    let secGameOver = false;
+
+    function initSecretaryGame() {
+      const pool = new Set();
+      while (pool.size < 10) {
+        pool.add(Math.floor(42 + Math.random() * 58));
+      }
+      secScores = Array.from(pool);
+      secIndex = 0;
+      secGameOver = false;
+      document.getElementById('secActionBtns').classList.remove('hidden');
+      document.getElementById('secFeedbackText').innerHTML = `Candidate #1 is ready. Remember: reject the first <span class="text-amber-800 font-bold">37% (Cards 1–4)</span> to calibrate your standard!`;
+      renderSecretaryCards();
+    }
+
+    function renderSecretaryCards() {
+      const maxScore = Math.max(...secScores);
+      const grid = document.getElementById('secretaryCardsGrid');
+      grid.innerHTML = secScores.map((score, idx) => {
+        const isBenchmarkZone = idx < 4;
+        const isCurrent = !secGameOver && idx === secIndex;
+        const isRevealed = secGameOver || idx <= secIndex;
+        const isBest = score === maxScore;
+
+        let cardStyle = 'bg-slate-50 border-slate-200 opacity-60';
+        if (isCurrent) cardStyle = 'bg-amber-50 border-amber-400 ring-2 ring-amber-300 scale-[1.01]';
+        else if (isRevealed) cardStyle = 'bg-white border-slate-300';
+
+        return `
+          <div class="rounded-2xl p-3 border ${cardStyle} transition-all flex flex-col justify-between">
+            <div class="flex items-center justify-between text-[11px] font-mono-num">
+              <span class="text-slate-500 font-semibold">#${idx + 1}</span>
+              ${isBenchmarkZone ? '<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-semibold text-[9px]">37% Zone</span>' : ''}
+            </div>
+            <div class="my-2.5 text-center">
+              ${isRevealed
+                ? `<div class="font-mono-num text-xl sm:text-2xl font-bold ${isBest && secGameOver ? 'text-emerald-700' : 'text-slate-900'}">${score}</div>
+                   <div class="text-[10px] text-slate-500">Talent Score</div>`
+                : `<div class="font-mono-num text-xl sm:text-2xl font-bold text-slate-300">?</div>
+                   <div class="text-[10px] text-slate-400">Locked</div>`
+              }
+            </div>
+            <div class="text-[10px] text-center font-mono-num ${isCurrent ? 'text-amber-800 font-bold' : 'text-slate-500'}">
+              ${isCurrent ? 'INTERVIEWING' : (idx < secIndex ? 'REJECTED' : (secGameOver && isBest ? '★ #1 BEST' : ''))}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('secRejectBtn').addEventListener('click', () => {
+      if (secGameOver) return;
+      if (secIndex >= 9) {
+        finishSecretaryGame(9);
+        return;
+      }
+      secIndex++;
+      sfx.playTick(400, 0.03, 0.04);
+      const bestSoFar = Math.max(...secScores.slice(0, secIndex));
+      const curScore = secScores[secIndex];
+      document.getElementById('secFeedbackText').innerHTML =
+        `Candidate #${secIndex + 1} scored <strong class="text-slate-950">${curScore}</strong> (Best seen before: <span class="text-sky-800 font-bold">${bestSoFar}</span>). ${curScore > bestSoFar && secIndex >= 4 ? '<span class="text-emerald-800 font-bold">New Record after 37% zone!</span>' : ''}`;
+      renderSecretaryCards();
+    });
+
+    document.getElementById('secHireBtn').addEventListener('click', () => {
+      if (secGameOver) return;
+      finishSecretaryGame(secIndex);
+    });
+
+    function finishSecretaryGame(hiredIdx) {
+      secGameOver = true;
+      const hiredScore = secScores[hiredIdx];
+      const maxScore = Math.max(...secScores);
+      document.getElementById('secActionBtns').classList.add('hidden');
+      if (hiredScore === maxScore) {
+        sfx.playChime(659.25);
+        unlockEureka(3);
+        document.getElementById('secFeedbackText').innerHTML =
+          `<span class="text-emerald-700 font-bold">🎉 Bullseye! You hired Candidate #${hiredIdx + 1} with the #1 top score (${hiredScore})!</span>`;
+      } else {
+        sfx.playTick(240, 0.12, 0.05);
+        document.getElementById('secFeedbackText').innerHTML =
+          `You hired Candidate #${hiredIdx + 1} (Score: <strong class="text-slate-900">${hiredScore}</strong>), but the #1 best was <strong class="text-amber-800">${maxScore}</strong>. Try again using the 37% benchmark rule!`;
+      }
+      renderSecretaryCards();
+    }
+
+    document.getElementById('secNewGameBtn').addEventListener('click', initSecretaryGame);
+
+    const SECRETARY_FUNDA_ITEMS = {
+      dilemma: {
+        title: '1. The "No Going Back" Dilemma — Blind vs. Late',
+        body: 'Suppose you interview 10 candidates one by one and cannot revisit someone you passed over. Pick #1 immediately and you have no idea what "great" looks like (10% win chance). Wait until #10 and you are stuck with whoever is left—even if the #1 candidate already passed by earlier.',
+        takeaway: 'Gathering information requires rejecting early options, while waiting too long risks letting the true #1 slip past before you start hiring.',
+        formula: 'p* = 1/e ≈ 36.79%',
+        badge: 'For N = 10 → First ~3–4'
+      },
+      phases: {
+        title: '2. Look vs. Leap — Calibrate First, Then Commit on a Record',
+        body: 'Reject the first ~37% of candidates (Cards 1–4 out of 10) no matter how good they look—their top score sets your benchmark bar. From the 37% mark onward, hire the very first candidate who beats everyone you saw during the look phase.',
+        takeaway: 'If you stop too early (say 10%), your bar is uncalibrated; if you wait too late (say 70%), the best option has likely already passed.',
+        formula: 'Rule: Reject first k ≈ N/e',
+        badge: 'Then pick first > benchmark'
+      },
+      math: {
+        title: '3. Where 1/e Comes From — Maximizing -p·ln(p)',
+        body: 'Skip the first fraction p. The overall best candidate sits at some relative position x > p, and you win if the best of everyone before x was in your skipped sample, which has probability p/x. Averaging over x from p to 1 gives P(win) ≈ ∫ p/x dx = -p·ln(p). Taking the derivative with respect to p and setting it to 0 gives -ln(p) - 1 = 0, so ln(p) = -1 and p = 1/e ≈ 36.8%.',
+        takeaway: 'Plugging p = 1/e back into -p·ln(p) gives -(1/e)·ln(1/e) = 1/e ≈ 36.8%—the best achievable rate as N grows large (for N = 10 it is about 39.9%).',
+        formula: 'd/dp[-p ln(p)] = 0 ⇒ p = 1/e',
+        badge: 'Max P(win) → 1/e ≈ 36.8% as N grows'
+      },
+      catch: {
+        title: '4. Real-World Catch — When Rules Bend in Life',
+        body: 'In apartment hunting, job offers, or dating, you sometimes can go back (unless someone else takes the offer) or you already know the rough score scale ahead of time (such as knowing a 98/100 score is already near the top).',
+        takeaway: 'Even when rules bend, the 37% rule is a sharp mental model for balancing exploration (learning the market) against exploitation (deciding before options vanish).',
+        formula: 'Explore ~37% → Exploit',
+        badge: 'Mental model for sequential choices'
+      }
+    };
+
+    document.querySelectorAll('#secFundaTabs .funda-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const key = chip.dataset.funda;
+        const item = SECRETARY_FUNDA_ITEMS[key];
+        if (!item) return;
+
+        document.querySelectorAll('#secFundaTabs .funda-chip').forEach(c => {
+          c.className = 'funda-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:text-slate-950 border border-slate-200 transition';
+        });
+        chip.className = 'funda-chip px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 transition';
+
+        document.getElementById('fundaTitle').textContent = item.title;
+        document.getElementById('fundaBody').textContent = item.body;
+        document.getElementById('fundaTakeaway').innerHTML = `<strong class="text-sky-800">Key takeaway:</strong> ${item.takeaway}`;
+        document.getElementById('fundaFormula').textContent = item.formula;
+        document.getElementById('fundaBadge').textContent = item.badge;
+        sfx.playTick(520, 0.03, 0.03);
+      });
+    });
+
+    // =========================================================================
+    // 7. LAB 5: EULER'S IDENTITY & REAL-WORLD EXPONENTIALS
+    // =========================================================================
+    const circleCanvas = document.getElementById('eulerCircleCanvas');
+    const thetaSlider = document.getElementById('thetaSlider');
+    let theta = 0.785;
+
+    function updateEulerCircle(newTheta, playAudio = false) {
+      if (Math.abs(newTheta - Math.PI) < 0.06) {
+        newTheta = Math.PI;
+      }
+      theta = newTheta;
+      thetaSlider.value = theta;
+
+      const deg = Math.round((theta * 180) / Math.PI);
+      const isPi = Math.abs(theta - Math.PI) < 0.01;
+      const cosVal = Math.abs(Math.cos(theta)) < 0.005 ? 0 : Math.cos(theta);
+      const sinVal = Math.abs(Math.sin(theta)) < 0.005 ? 0 : Math.sin(theta);
+
+      document.getElementById('thetaRadDisplay').textContent = isPi
+        ? 'π rad (180°)'
+        : `${theta.toFixed(2)} rad (${deg}°)`;
+
+      const liveEqEl = document.getElementById('eithLiveEquation');
+      const cosLiveEl = document.getElementById('eithCosLiveVal');
+      const sinLiveEl = document.getElementById('eithSinLiveVal');
+      if (liveEqEl) {
+        const thetaLabel = isPi ? 'π' : theta.toFixed(2);
+        const signStr = sinVal >= 0 ? '+' : '−';
+        liveEqEl.textContent = `e^(i·${thetaLabel}) = ${cosVal.toFixed(2)} ${signStr} ${Math.abs(sinVal).toFixed(2)}i`;
+      }
+      if (cosLiveEl) {
+        cosLiveEl.textContent = `x = ${cosVal >= 0 ? '+' : ''}${cosVal.toFixed(2)}`;
+      }
+      if (sinLiveEl) {
+        sinLiveEl.textContent = `y = ${sinVal >= 0 ? '+' : ''}${sinVal.toFixed(2)}`;
+      }
+
+      const eqBox = document.getElementById('identityEquationBox');
+      const card = document.getElementById('eulerIdentityCard');
+      const statusText = document.getElementById('identityStatusText');
+
+      if (isPi) {
+        eqBox.className = 'rounded-2xl bg-amber-100 border border-amber-400 p-3.5 text-center transition-all duration-500 eureka-pulse';
+        card.classList.add('gold-glow-box');
+        statusText.innerHTML = `<span class="text-amber-900 font-bold">✦ EULER'S IDENTITY ACHIEVED! e^(iπ) = -1, so -1 + 1 = 0!</span>`;
+        unlockEureka(4);
+      } else {
+        eqBox.className = 'rounded-2xl bg-slate-50 border border-slate-200 p-3.5 text-center transition-all duration-500';
+        card.classList.remove('gold-glow-box');
+        const sign = sinVal >= 0 ? '+' : '-';
+        statusText.innerHTML = `Currently at <span class="font-mono-num text-sky-800 font-semibold">${cosVal.toFixed(2)} ${sign} ${Math.abs(sinVal).toFixed(2)}i</span> — rotate to π (180°) to hit -1!`;
+      }
+
+      if (playAudio) {
+        sfx.playTick(isPi ? 784 : 320 + theta * 50, 0.03, 0.03);
+      }
+
+      drawEulerCircle(isPi);
+    }
+
+    function drawEulerCircle(isPi) {
+      const setup = setupCanvas(circleCanvas);
+      if (!setup) return;
+      const { ctx, w, h } = setup;
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const r = Math.min(w, h) * 0.35;
+
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.16)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx - r * 1.32, cy);
+      ctx.lineTo(cx + r * 1.32, cy);
+      ctx.moveTo(cx, cy - r * 1.32);
+      ctx.lineTo(cx, cy + r * 1.32);
+      ctx.stroke();
+
+      ctx.fillStyle = '#475569';
+      ctx.font = '10.5px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('+1', cx + r + 14, cy + 4);
+      ctx.fillStyle = isPi ? '#b45309' : '#334155';
+      ctx.fillText('-1', cx - r - 14, cy + 4);
+      ctx.fillStyle = '#475569';
+      ctx.fillText('+i', cx, cy - r - 9);
+      ctx.fillText('-i', cx, cy + r + 15);
+
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.16)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = isPi ? '#d97706' : '#0284c7';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, -theta, true);
+      ctx.stroke();
+
+      const px = cx + r * Math.cos(theta);
+      const py = cy - r * Math.sin(theta);
+
+      ctx.strokeStyle = isPi ? '#b45309' : '#0369a1';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+
+      ctx.fillStyle = isPi ? '#d97706' : '#0284c7';
+      ctx.shadowColor = isPi ? 'rgba(217, 119, 6, 0.45)' : 'rgba(2, 132, 199, 0.45)';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(px, py, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    if (thetaSlider) thetaSlider.addEventListener('input', (e) => updateEulerCircle(parseFloat(e.target.value), true));
+    const jumpToPiBtn = document.getElementById('jumpToPiBtn');
+    if (jumpToPiBtn) jumpToPiBtn.addEventListener('click', () => updateEulerCircle(Math.PI, true));
+
+    const natureCanvas = document.getElementById('natureCanvas');
+    const rateKSlider = document.getElementById('rateKSlider');
+    const timeTSlider = document.getElementById('timeTSlider');
+    let phenomMode = 'cooling';
+    let rateK = 0.35;
+    let timeT = 3.0;
+
+    function updateNatureLab() {
+      rateK = rateKSlider ? parseFloat(rateKSlider.value) : 0.35;
+      timeT = timeTSlider ? parseFloat(timeTSlider.value) : 3.0;
+
+      document.getElementById('rateKDisplay').textContent = rateK.toFixed(2);
+      document.getElementById('timeTDisplay').textContent = `${timeT.toFixed(1)} hrs`;
+
+      const isDecay = phenomMode === 'cooling';
+      const factor = isDecay ? Math.exp(-rateK * timeT) : Math.exp(rateK * timeT);
+      const signSymbol = isDecay ? '-' : '+';
+      const n0Main = document.getElementById('nktN0Main');
+      const n0Sub = document.getElementById('nktN0Sub');
+      if (n0Main) n0Main.textContent = isDecay ? '100°C → 20°C' : 'P₀ (start size)';
+      if (n0Sub) n0Sub.textContent = isDecay ? '80°C Gap Above Room' : 'Starting Population';
+
+      const nktHeaderEl = document.querySelector('#nktPartsButtons')?.previousElementSibling?.querySelector('span:first-child');
+      if (nktHeaderEl) {
+        nktHeaderEl.textContent = isDecay
+          ? 'Tap a Piece of T(t) = 20 + 80 · e^(−kt)'
+          : 'Tap a Piece of P(t) = P₀ · e^(+kt)';
+      }
+
+      if (phenomMode === 'cooling') {
+        const roomTemp = 20;
+        const startGap = 80; // 100°C start - 20°C room
+        const tempC = roomTemp + startGap * factor;
+
+        const nktLiveEqEl = document.getElementById('nktLiveEquation');
+        if (nktLiveEqEl) {
+          nktLiveEqEl.textContent = `20 + 80 · e^(-${rateK.toFixed(2)} × ${timeT.toFixed(1)}) = ${tempC.toFixed(1)}°C`;
+        }
+        const nktExpLiveEl = document.getElementById('nktExpLiveVal');
+        if (nktExpLiveEl) {
+          nktExpLiveEl.textContent = `gap × ${factor.toFixed(2)}`;
+        }
+        const nktKtLiveEl = document.getElementById('nktKtLiveVal');
+        if (nktKtLiveEl) {
+          nktKtLiveEl.textContent = `-${rateK.toFixed(2)} × ${timeT.toFixed(1)}h`;
+        }
+
+        document.getElementById('phenomOutputLabel').textContent = `Coffee Temp at t = ${timeT.toFixed(1)}h (from 100°C):`;
+        document.getElementById('phenomOutputVal').textContent = `${tempC.toFixed(1)}°C`;
+        document.getElementById('phenomOutputVal').className = 'text-base font-bold text-emerald-800';
+      } else {
+        const nktLiveEqEl = document.getElementById('nktLiveEquation');
+        if (nktLiveEqEl) {
+          nktLiveEqEl.textContent = `e^(${signSymbol}${rateK.toFixed(2)} × ${timeT.toFixed(1)}) = ${factor.toFixed(4)}×`;
+        }
+        const nktExpLiveEl = document.getElementById('nktExpLiveVal');
+        if (nktExpLiveEl) {
+          nktExpLiveEl.textContent = `factor = ${factor.toFixed(2)}×`;
+        }
+        const nktKtLiveEl = document.getElementById('nktKtLiveVal');
+        if (nktKtLiveEl) {
+          nktKtLiveEl.textContent = `${signSymbol}${rateK.toFixed(2)} × ${timeT.toFixed(1)}h`;
+        }
+
+        document.getElementById('phenomOutputLabel').textContent = `Population Multiplier at t = ${timeT.toFixed(1)}h:`;
+        document.getElementById('phenomOutputVal').textContent = `${factor.toFixed(2)}× initial`;
+        document.getElementById('phenomOutputVal').className = 'text-base font-bold text-amber-800';
+      }
+
+      drawNatureCanvas();
+    }
+
+    function drawNatureCanvas() {
+      const setup = setupCanvas(natureCanvas);
+      if (!setup) return;
+      const { ctx, w, h } = setup;
+      ctx.clearRect(0, 0, w, h);
+
+      const padL = w < 420 ? 38 : 46, padR = 16, padT = 22, padB = 26;
+      const plotW = Math.max(30, w - padL - padR);
+      const plotH = Math.max(30, h - padT - padB);
+      const maxT = 10;
+      const isDecay = phenomMode === 'cooling';
+      const maxVal = isDecay ? 105 : Math.max(10, Math.exp(rateK * maxT));
+      const minVal = isDecay ? 0 : 0;
+
+      const tToPx = (t) => padL + (t / maxT) * plotW;
+      const vToPx = (v) => padT + plotH * (1 - (v - minVal) / (maxVal - minVal));
+
+      // Axes & temperature ticks
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.16)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padL, padT);
+      ctx.lineTo(padL, padT + plotH);
+      ctx.lineTo(padL + plotW, padT + plotH);
+      ctx.stroke();
+
+      if (isDecay) {
+        [20, 50, 100].forEach(tempTick => {
+          const ty = vToPx(tempTick);
+          ctx.fillStyle = tempTick === 20 ? '#0369a1' : '#475569';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${tempTick}°`, padL - 6, ty + 3);
+        });
+
+        // Room temperature (20°C) reference line
+        const roomY = vToPx(20);
+        ctx.save();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = 'rgba(2, 132, 199, 0.65)';
+        ctx.lineWidth = 1.25;
+        ctx.beginPath();
+        ctx.moveTo(padL, roomY);
+        ctx.lineTo(padL + plotW, roomY);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = '#0369a1';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText('20°C Room', padL + plotW - 4, roomY - 5);
+      }
+
+      const strokeColor = isDecay ? '#059669' : '#d97706';
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i <= 100; i++) {
+        const t = (i / 100) * maxT;
+        const val = isDecay ? (20 + 80 * Math.exp(-rateK * t)) : Math.exp(rateK * t);
+        const px = tToPx(t);
+        const py = vToPx(val);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      const curVal = isDecay ? (20 + 80 * Math.exp(-rateK * timeT)) : Math.exp(rateK * timeT);
+      const cx = tToPx(timeT);
+      const cy = vToPx(curVal);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.25)';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 10.5px "JetBrains Mono", monospace';
+      ctx.textAlign = timeT > 7.5 ? 'right' : 'left';
+      const ptLabel = isDecay ? `${curVal.toFixed(1)}°C` : `${curVal.toFixed(2)}×`;
+      ctx.fillText(ptLabel, timeT > 7.5 ? cx - 8 : cx + 8, Math.max(padT + 12, cy - 8));
+    }
+
+    document.querySelectorAll('.phenom-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        phenomMode = btn.dataset.phenom;
+        document.querySelectorAll('.phenom-btn').forEach(b => {
+          b.className = 'phenom-btn px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-950 transition';
+        });
+        btn.className = 'phenom-btn px-2.5 py-1 rounded-lg bg-emerald-200 text-emerald-950 font-bold transition';
+        if (phenomMode === 'cooling') {
+          document.getElementById('phenomTitle').textContent = 'Coffee Cooling from 100°C (Room = 20°C)';
+          document.getElementById('phenomDesc').innerHTML = 'Coffee starting at <strong class="text-slate-900">100°C</strong> in a <strong class="text-sky-800">20°C</strong> room follows <span class="font-mono-num text-slate-900 font-semibold">T(t) = 20 + 80 · e<sup>−kt</sup></span>. Each equal time step shrinks the remaining temperature gap above 20°C by the same fraction!';
+        } else {
+          document.getElementById('phenomTitle').textContent = 'Unconstrained Bacterial & Viral Growth';
+          document.getElementById('phenomDesc').innerHTML = 'When cells divide continuously without resource limits, population explodes according to <span class="font-serif-math text-slate-900 font-semibold">P(t) = P₀ · e<sup>kt</sup></span>.';
+        }
+        sfx.playTick(480, 0.03, 0.03);
+        updateNatureLab();
+      });
+    });
+
+    if (rateKSlider) rateKSlider.addEventListener('input', updateNatureLab);
+    if (timeTSlider) timeTSlider.addEventListener('input', updateNatureLab);
+
+    // Piece-by-Piece Breakdown for T(t) = 20 + 80 · e^(-kt)
+    const NKT_PARTS = {
+      n0: {
+        title: '100°C Start & 20°C Room — The 80°C Temperature Gap',
+        body: 'Boiling coffee starts at <strong class="text-slate-900">100°C</strong> in a <strong class="text-sky-800">20°C</strong> room. That gives an <strong class="text-emerald-800">80°C extra heat gap</strong> above room temperature—and as time <strong class="text-slate-900">t</strong> passes, that extra gap shrinks toward 0°C above the room (so coffee settles at 20°C).',
+        colorClass: 'text-emerald-800',
+        activeBtnClass: 'nkt-part-btn rounded-xl p-2 text-center border bg-emerald-100 border-emerald-400 transition'
+      },
+      exp: {
+        title: 'e^(±kt) — The "Same Fraction Every Step" Multiplier',
+        body: 'With a <strong class="text-amber-800">minus sign</strong> (e^(−kt)), every equal slice of time multiplies the 80°C heat gap by the same fraction—so cooling starts fast and slows down gently toward 20°C. With a <strong class="text-amber-800">plus sign</strong> (e^(+kt)), growth multiplies upward.',
+        colorClass: 'text-amber-800',
+        activeBtnClass: 'nkt-part-btn rounded-xl p-2 text-center border bg-amber-100 border-amber-400 transition'
+      },
+      kt: {
+        title: 'k & t — How Fast It Cools (k) × How Long It Sits (t)',
+        body: '<strong class="text-sky-800">k</strong> is the cooling/growth pace (a bigger <strong class="text-slate-900">k</strong> or uncovered cup cools faster), and <strong class="text-slate-900">t</strong> is elapsed time in hours. Multiplying <strong class="text-sky-800">k × t</strong> sets how far along the curve you are.',
+        colorClass: 'text-sky-800',
+        activeBtnClass: 'nkt-part-btn rounded-xl p-2 text-center border bg-sky-100 border-sky-400 transition'
+      }
+    };
+
+    const NKT_N0_VIRAL = {
+      title: 'P₀ — The Starting Size',
+      body: 'P₀ is how many cells, users or dollars you start with. Growth then multiplies this starting amount by <strong class="text-amber-800">e<sup>kt</sup></strong>, so a bigger P₀ means a bigger result at every time t.',
+      colorClass: 'text-emerald-800',
+      activeBtnClass: 'nkt-part-btn rounded-xl p-2 text-center border bg-emerald-100 border-emerald-400 transition'
+    };
+    document.querySelectorAll('#nktPartsButtons .nkt-part-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.nktpart;
+        const info = (key === 'n0' && phenomMode === 'viral') ? NKT_N0_VIRAL : NKT_PARTS[key];
+        if (!info) return;
+
+        document.querySelectorAll('#nktPartsButtons .nkt-part-btn').forEach(b => {
+          b.className = 'nkt-part-btn rounded-xl p-2 text-center border bg-white border-slate-200 hover:border-slate-300 transition';
+        });
+        btn.className = info.activeBtnClass;
+
+        const titleEl = document.getElementById('nktPartTitle');
+        const bodyEl = document.getElementById('nktPartBody');
+        if (titleEl) {
+          titleEl.className = `font-bold ${info.colorClass} mb-0.5`;
+          titleEl.textContent = info.title;
+        }
+        if (bodyEl) {
+          bodyEl.innerHTML = info.body;
+        }
+        sfx.playTick(520, 0.03, 0.03);
+      });
+    });
+
+    // High School Intuition Tabs for Cooling & Decay
+    const LAB5_NATURE_HS_ITEMS = {
+      cooling: {
+        title: '1. Coffee at 100°C — Drops Fast at First, Slows Near 20°C',
+        body: 'At t = 0, your coffee is boiling at 100°C in a 20°C room—an 80°C gap. Because the gap is huge at first, heat escapes fast; as it nears 20°C, cooling slows way down and never drops below room temperature.',
+        takeaway: 'Bigger gap or bigger k means faster cooling; near 20°C it barely changes. Newton’s law is an approximation; an open cup typically has k ≈ 1.5–2 per hour.',
+        formula: 'T(t) = 20 + 80 · e^(-kt)',
+        badge: 'Starts at 100°C → settles at 20°C'
+      },
+      decay: {
+        title: '2. Radioactive Decay & Half-Life — Constant Chance Per Atom',
+        body: 'Just like the 80°C temperature gap shrinks by a steady percentage each step, each radioactive atom has a fixed chance of decaying in any given minute—so remaining atoms drop smoothly along an exponential curve.',
+        takeaway: 'More remaining items = faster change; fewer remaining items = slower change.',
+        formula: 'N(t) = N₀ · e^(-kt)',
+        badge: 'Half-life = ln(2) / k'
+      },
+      percent: {
+        title: '3. Why It’s a Curve Instead of a Straight Line',
+        body: 'If coffee dropped by a fixed 20°C every hour from 100°C, it would hit 0°C in 5 hours—colder than the room! Instead, cooling is proportional to the gap above 20°C, creating a smooth curve using e.',
+        takeaway: 'A shrinking gap gives a gentler and gentler drop.',
+        formula: 'ΔT(t) = 80 · e^(-kt)',
+        badge: 'Never drops below 20°C room'
+      },
+      growth: {
+        title: '4. Flipping the Sign to +kt — From Cooling to Snowballing',
+        body: 'Change −kt to +kt and the exact same formula flips from cooling down to snowballing upward. When each active cell, user, or dollar helps create more, growth speeds up as the total gets larger.',
+        takeaway: 'Same constant e, same rate k—just shrinking (−kt) vs. growing (+kt).',
+        formula: 'P(t) = P₀ · e^(+kt)',
+        badge: 'Snowballing exponential curve'
+      }
+    };
+
+    document.querySelectorAll('#lab5NatureHsTabs .nhs5-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const key = chip.dataset.nhs;
+        const item = LAB5_NATURE_HS_ITEMS[key];
+        if (!item) return;
+
+        document.querySelectorAll('#lab5NatureHsTabs .nhs5-chip').forEach(c => {
+          c.className = 'nhs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition';
+        });
+        chip.className = 'nhs5-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-200 text-emerald-950 border border-emerald-400 transition';
+
+        document.getElementById('nhs5Title').textContent = item.title;
+        document.getElementById('nhs5Body').textContent = item.body;
+        document.getElementById('nhs5Takeaway').innerHTML = `<strong class="text-sky-800">Everyday rule:</strong> ${item.takeaway} <span id="nhs5Badge" class="text-emerald-800 font-mono-num font-semibold">(${item.badge})</span>`;
+        document.getElementById('nhs5Formula').textContent = item.formula;
+        sfx.playTick(520, 0.03, 0.03);
+      });
+    });
+
+    // Piece-by-Piece Breakdown for e^(iθ) = cos(θ) + i·sin(θ)
+    const EITH_PARTS = {
+      lhs: {
+        title: 'e^(iθ) — "Start at 1, turn by angle θ, stay on radius 1"',
+        body: 'Normally e^t stretches along a straight line. Putting <strong class="text-sky-800">i</strong> (a 90° turn) in the exponent turns stretching into spinning around a circle of radius 1 by angle <strong class="text-slate-900">θ</strong> (in radians).',
+        colorClass: 'text-amber-800',
+        activeBtnClass: 'eith-part-btn rounded-xl p-2.5 text-center border bg-amber-100 border-amber-400 transition'
+      },
+      cos: {
+        title: 'cos(θ) — Your Left-Right (Horizontal) Position on the Circle',
+        body: 'Cosine reads the <strong class="text-sky-800">horizontal (x)</strong> coordinate of your dot on the unit circle. At θ = 0 it is <strong class="text-slate-900">+1</strong> (far right); at θ = π/2 it is <strong class="text-slate-900">0</strong> (center); at θ = π it is <strong class="text-slate-900">−1</strong> (far left).',
+        colorClass: 'text-sky-800',
+        activeBtnClass: 'eith-part-btn rounded-xl p-2.5 text-center border bg-sky-100 border-sky-400 transition'
+      },
+      sin: {
+        title: '+ i·sin(θ) — Your Up-Down (Vertical) Height Tag "i"',
+        body: 'Sine gives the <strong class="text-emerald-800">vertical (y)</strong> height on the circle, while <strong class="text-slate-900">i</strong> acts as a label keeping vertical/imaginary steps separate from horizontal/real numbers. At θ = π (180°), sin(π) = <strong class="text-slate-900">0</strong>, so the vertical part vanishes and leaves just <strong class="text-amber-800">−1</strong>!',
+        colorClass: 'text-emerald-800',
+        activeBtnClass: 'eith-part-btn rounded-xl p-2.5 text-center border bg-emerald-100 border-emerald-400 transition'
+      }
+    };
+
+    document.querySelectorAll('#eithPartsButtons .eith-part-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.eithpart;
+        const info = EITH_PARTS[key];
+        if (!info) return;
+
+        document.querySelectorAll('#eithPartsButtons .eith-part-btn').forEach(b => {
+          b.className = 'eith-part-btn rounded-xl p-2.5 text-center border bg-white border-slate-200 hover:border-slate-300 transition';
+        });
+        btn.className = info.activeBtnClass;
+
+        const titleEl = document.getElementById('eithPartTitle');
+        const bodyEl = document.getElementById('eithPartBody');
+        if (titleEl) {
+          titleEl.className = `font-bold ${info.colorClass} mb-0.5`;
+          titleEl.textContent = info.title;
+        }
+        if (bodyEl) {
+          bodyEl.innerHTML = info.body;
+        }
+        sfx.playTick(520, 0.03, 0.03);
+      });
+    });
+
+    // High School Intuition Tabs for Lab 05
+    const LAB5_HS_ITEMS = {
+      spin: {
+        title: '1. Why "i" Makes e Spin in a Circle — Turning Growth into Turning',
+        body: 'Think of a normal power like e^t as stretching along a straight line. In complex numbers, multiplying by i means making a 90° left turn. Put i in the exponent and instead of growing bigger and bigger along a line, you walk around a circle of radius 1!',
+        takeaway: 'Regular exponents change how big you are; imaginary exponents change which direction you face.',
+        formula: 'e^(iθ) = cos θ + i sin θ',
+        badge: 'Angle θ = radians around circle'
+      },
+      identity: {
+        title: '2. Making Sense of e^(iπ) + 1 = 0 — A Half-Turn Around the Circle',
+        body: 'Start at θ = 0 (at +1 on the right). A quarter-turn (θ = π/2) takes you to +i at the top. A half-turn (θ = π, or 180°) lands you directly on the left at −1! That means e^(iπ) = −1, and adding 1 gives 0.',
+        takeaway: 'Five big math constants—e, i, π, 1, and 0—all meet cleanly in one equation.',
+        formula: 'e^(iπ) = −1 ⇒ e^(iπ) + 1 = 0',
+        badge: '180° half-circle lands at −1'
+      },
+      decay: {
+        title: '3. Why Cooling & Decay Use e^(-kt) — Percent Change Every Step',
+        body: 'Imagine hot cocoa cooling in a room or a radioactive sample decaying. Because the rate of change depends on what is left right now, each equal slice of time multiplies the remaining amount by the same fraction—giving a smooth curve that drops fast at first and levels off.',
+        takeaway: 'A minus sign in the exponent means shrinking/decay; a plus sign (e^(kt)) means fast compounding growth.',
+        formula: 'N(t) = N₀ · e^(-kt)',
+        badge: 'Shrinks by same factor each step'
+      },
+      bridge: {
+        title: '4. How the Two Halves Connect — Waves, AC Power & Sound',
+        body: 'On the left, e^(iθ) handles circular motion (cosine and sine waves). On the right, e^(-kt) handles fading or growing strength. Put them together in physics and engineering, and you get waves that gradually die out—like a plucked guitar string or shock absorber.',
+        takeaway: 'Circles and exponential growth aren’t separate topics—they’re two sides of the same function.',
+        formula: 'e^(-kt) · e^(iωt) = fading wave',
+        badge: 'Used in music, radio & physics'
+      }
+    };
+
+    document.querySelectorAll('#lab5HsTabs .hs5-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const key = chip.dataset.hs;
+        const item = LAB5_HS_ITEMS[key];
+        if (!item) return;
+
+        document.querySelectorAll('#lab5HsTabs .hs5-chip').forEach(c => {
+          c.className = 'hs5-chip px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-700 hover:text-slate-950 border border-slate-200 transition';
+        });
+        chip.className = 'hs5-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-200 text-amber-950 border border-amber-400 transition';
+
+        document.getElementById('hs5Title').textContent = item.title;
+        document.getElementById('hs5Body').textContent = item.body;
+        document.getElementById('hs5Takeaway').innerHTML = `<strong class="text-sky-800">Think of it this way:</strong> ${item.takeaway} <span id="hs5Badge" class="text-amber-800 font-mono-num font-semibold">(${item.badge})</span>`;
+        document.getElementById('hs5Formula').textContent = item.formula;
+        sfx.playTick(520, 0.03, 0.03);
+      });
+    });
+
+    // =========================================================================
+    // 8. INITIALIZATION & RESIZE HANDLERS
+    // =========================================================================
+    function resizeAllCanvases() {
+      drawCompoundingCanvas(currentN, computeCompounding(currentN));
+      drawCalculusCanvas(Math.abs(baseA - Math.E) < 0.002);
+      drawMonteCarloHistogram();
+      drawEulerCircle(Math.abs(theta - Math.PI) < 0.01);
+      drawNatureCanvas();
+    }
+
+    window.addEventListener('resize', resizeAllCanvases);
+
+    window.onload = function () {
+      compSlider.value = nToSlider(2);
+      updateLab1(2, false, true);
+      updateLab2(2.0, 1.0, false);
+      renderFactorialLab();
+      updateMonteCarloUI();
+      initSecretaryGame();
+      updateEulerCircle(0.785, false);
+      updateNatureLab();
+    };
+  </script>
+</body>
+</html>
