@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unboring STEM — Interactive Math & Science Explorations</title>
-  <meta name="description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, and Circle Theorems." />
+  <meta name="description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, and Euler's Constant (e)." />
 
   <!-- Open Graph / Social Media Meta Tags -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Unboring STEM" />
   <meta property="og:url" content="https://unboringstem.pages.dev/" />
   <meta property="og:title" content="Unboring STEM — Interactive Math & Science Explorations" />
-  <meta property="og:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, and Circle Theorems." />
+  <meta property="og:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, and Euler's Constant (e)." />
   <meta property="og:image" content="https://unboringstem.pages.dev/social.png" />
   <meta property="og:image:alt" content="Unboring STEM — Interactive STEM Modules Preview" />
 
@@ -20,7 +20,7 @@
   <meta name="twitter:creator" content="@nikhilnarayanan" />
   <meta name="twitter:url" content="https://unboringstem.pages.dev/" />
   <meta name="twitter:title" content="Unboring STEM — Interactive Math & Science Explorations" />
-  <meta name="twitter:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, and Circle Theorems." />
+  <meta name="twitter:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, and Euler's Constant (e)." />
   <meta name="twitter:image" content="https://unboringstem.pages.dev/social.png" />
 
   <!-- Fonts: Instrument Serif, Inter & JetBrains Mono -->
@@ -95,7 +95,7 @@
             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <span class="font-mono text-[11px] uppercase tracking-wider text-slate-600">
-            Interactive Workbench · 07 Modules Live
+            Interactive Workbench · 08 Modules Live
           </span>
         </div>
 
@@ -117,7 +117,7 @@
           aria-selected="true"
           class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-slate-900 text-white transition-colors"
         >
-          All (7)
+          All (8)
         </button>
         <button
           type="button"
@@ -436,6 +436,57 @@
         </div>
       </a>
 
+      <!-- 08 · Euler's Constant (e) -->
+      <a
+        href="https://unboringstem.pages.dev/e"
+        data-domain="algebra"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-orange-950/5 hover:border-orange-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-orange-600 transition-colors">08</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-orange-50 text-orange-700 border border-orange-200/70">
+              Limits, Compounding &amp; e
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram: Compounding & Limit Approaching e -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-orange-50/75 to-amber-50/45 border border-orange-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-orange-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <!-- Axes -->
+              <line x1="24" y1="64" x2="158" y2="64" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+              <line x1="24" y1="14" x2="24" y2="64" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+
+              <!-- Asymptote / Limit line at y = e -->
+              <line x1="24" y1="24" x2="156" y2="24" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3.5 3" stroke-opacity="0.7" />
+
+              <!-- Discrete compounding steps -->
+              <path d="M24 46 L52 38 L84 31 L118 27 L154 25" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.45" stroke-linecap="round" stroke-linejoin="round" />
+
+              <!-- Continuous exponential / compounding curve converging toward e -->
+              <path d="M24 46 C54 34, 88 26.5, 154 24.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" class="group-hover:stroke-[2.4] transition-all" />
+
+              <!-- Limit point near e -->
+              <circle cx="154" cy="24.3" r="3" fill="currentColor" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-orange-700 transition-colors mb-2">
+            Euler&apos;s Constant (e)
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Explore continuous compound growth, watch the limit of (1 + 1/n)<sup>n</sup> converge to <em>e</em>, and see why natural rates of change match their own value.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-orange-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
     </div>
 
     <!-- Future Lab Strip -->
@@ -445,7 +496,7 @@
         <p class="text-xs text-slate-500">New visual simulations are added steadily across physics, calculus, and number intuition.</p>
       </div>
       <span class="font-mono text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 self-start sm:self-auto">
-        7 / ∞ Shipped
+        8 / ∞ Shipped
       </span>
     </div>
   </main>
