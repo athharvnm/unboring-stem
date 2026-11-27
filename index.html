@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unboring STEM — Interactive Math & Science Explorations</title>
-  <meta name="description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, Euler's Constant (e), and Pi (π)." />
+  <meta name="description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, Euler's Constant (e), Pi (π), and Prime Numbers." />
 
   <!-- Open Graph / Social Media Meta Tags -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Unboring STEM" />
   <meta property="og:url" content="https://unboringstem.pages.dev/" />
   <meta property="og:title" content="Unboring STEM — Interactive Math & Science Explorations" />
-  <meta property="og:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, Euler's Constant (e), and Pi (π)." />
+  <meta property="og:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, Euler's Constant (e), Pi (π), and Prime Numbers." />
   <meta property="og:image" content="https://unboringstem.pages.dev/social.png" />
   <meta property="og:image:alt" content="Unboring STEM — Interactive STEM Modules Preview" />
 
@@ -20,7 +20,7 @@
   <meta name="twitter:creator" content="@nikhilnarayanan" />
   <meta name="twitter:url" content="https://unboringstem.pages.dev/" />
   <meta name="twitter:title" content="Unboring STEM — Interactive Math & Science Explorations" />
-  <meta name="twitter:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, Euler's Constant (e), and Pi (π)." />
+  <meta name="twitter:description" content="Hands-on, visual simulations across Optics, Mensuration, Trigonometry, Projectiles, Polynomials, Logarithms, Circle Theorems, Euler's Constant (e), Pi (π), and Prime Numbers." />
   <meta name="twitter:image" content="https://unboringstem.pages.dev/social.png" />
 
   <!-- Fonts: Instrument Serif, Inter & JetBrains Mono -->
@@ -95,7 +95,7 @@
             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <span class="font-mono text-[11px] uppercase tracking-wider text-slate-600">
-            Interactive Workbench · 09 Modules Live
+            Interactive Workbench · 10 Modules Live
           </span>
         </div>
 
@@ -108,7 +108,7 @@
         </p>
       </div>
 
-      <!-- Subtle Domain Filter -->
+      <!-- Domain Filter -->
       <div class="flex flex-wrap items-center gap-1.5 bg-white/80 backdrop-blur-xs p-1.5 rounded-xl border border-slate-200/80 shadow-2xs self-start lg:self-auto" role="tablist" aria-label="Filter modules by topic">
         <button
           type="button"
@@ -117,7 +117,16 @@
           aria-selected="true"
           class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-slate-900 text-white transition-colors"
         >
-          All (9)
+          All (10)
+        </button>
+        <button
+          type="button"
+          data-filter="math"
+          role="tab"
+          aria-selected="false"
+          class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors"
+        >
+          Math (8)
         </button>
         <button
           type="button"
@@ -126,35 +135,17 @@
           aria-selected="false"
           class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors"
         >
-          Physics
-        </button>
-        <button
-          type="button"
-          data-filter="geometry"
-          role="tab"
-          aria-selected="false"
-          class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors"
-        >
-          Geometry
-        </button>
-        <button
-          type="button"
-          data-filter="algebra"
-          role="tab"
-          aria-selected="false"
-          class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors"
-        >
-          Algebra & Log
+          Physics (2)
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Grid -->
+  <!-- Main Grid: Physics (01–02) followed by Math (03–10) -->
   <main class="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-8 pb-20">
     <div id="modules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      <!-- 01 · Optics -->
+      <!-- 01 · Optics (Physics) -->
       <a
         href="https://unboringstem.pages.dev/optics"
         data-domain="physics"
@@ -195,86 +186,7 @@
         </div>
       </a>
 
-      <!-- 02 · Mensuration -->
-      <a
-        href="https://unboringstem.pages.dev/mensuration"
-        data-domain="geometry"
-        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-emerald-950/5 hover:border-emerald-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-      >
-        <div>
-          <div class="flex items-center justify-between mb-6">
-            <span class="font-mono text-xs text-slate-400 group-hover:text-emerald-600 transition-colors">02</span>
-            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/70">
-              3D & Solids
-            </span>
-          </div>
-
-          <!-- Custom Micro-Diagram -->
-          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-emerald-50/70 to-teal-50/40 border border-emerald-100/80 flex items-center justify-center overflow-hidden">
-            <svg class="w-44 h-20 text-emerald-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
-              <polygon points="90,14 124,33 90,52 56,33" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.1" />
-              <polyline points="56,33 56,57 90,74 124,57 124,33" stroke="currentColor" stroke-width="1.6" fill="none" />
-              <line x1="90" y1="52" x2="90" y2="74" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.5 2.5" />
-            </svg>
-          </div>
-
-          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors mb-2">
-            Mensuration
-          </h2>
-          <p class="text-sm text-slate-600 leading-relaxed">
-            Stretch dimensions, unfold 3D solids, and build lasting intuition for perimeter, surface area, and volume.
-          </p>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-emerald-700">
-          <span>OPEN LAB</span>
-          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
-            →
-          </span>
-        </div>
-      </a>
-
-      <!-- 03 · Trigonometry -->
-      <a
-        href="https://unboringstem.pages.dev/trigonometry"
-        data-domain="geometry"
-        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-indigo-950/5 hover:border-indigo-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-      >
-        <div>
-          <div class="flex items-center justify-between mb-6">
-            <span class="font-mono text-xs text-slate-400 group-hover:text-indigo-600 transition-colors">03</span>
-            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/70">
-              Unit Circle & Waves
-            </span>
-          </div>
-
-          <!-- Custom Micro-Diagram -->
-          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-indigo-50/70 to-blue-50/40 border border-indigo-100/80 flex items-center justify-center overflow-hidden">
-            <svg class="w-44 h-20 text-indigo-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
-              <circle cx="52" cy="40" r="22" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.35" />
-              <line x1="52" y1="40" x2="70" y2="27" stroke="currentColor" stroke-width="1.8" />
-              <line x1="70" y1="27" x2="70" y2="40" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 2" />
-              <path d="M84 40 C98 14, 112 14, 126 40 S154 66, 168 40" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-            </svg>
-          </div>
-
-          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors mb-2">
-            Trigonometry
-          </h2>
-          <p class="text-sm text-slate-600 leading-relaxed">
-            Link right triangles and the unit circle directly to sine, cosine, and tangent waves as angles rotate smoothly.
-          </p>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-indigo-700">
-          <span>OPEN LAB</span>
-          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
-            →
-          </span>
-        </div>
-      </a>
-
-      <!-- 04 · Projectiles -->
+      <!-- 02 · Projectiles (Physics) -->
       <a
         href="https://unboringstem.pages.dev/projectiles"
         data-domain="physics"
@@ -282,7 +194,7 @@
       >
         <div>
           <div class="flex items-center justify-between mb-6">
-            <span class="font-mono text-xs text-slate-400 group-hover:text-rose-600 transition-colors">04</span>
+            <span class="font-mono text-xs text-slate-400 group-hover:text-rose-600 transition-colors">02</span>
             <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200/70">
               Kinematics
             </span>
@@ -314,10 +226,89 @@
         </div>
       </a>
 
-      <!-- 05 · Polynomials -->
+      <!-- 03 · Mensuration (Math) -->
+      <a
+        href="https://unboringstem.pages.dev/mensuration"
+        data-domain="math"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-emerald-950/5 hover:border-emerald-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-emerald-600 transition-colors">03</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+              3D & Solids
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-emerald-50/70 to-teal-50/40 border border-emerald-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-emerald-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <polygon points="90,14 124,33 90,52 56,33" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.1" />
+              <polyline points="56,33 56,57 90,74 124,57 124,33" stroke="currentColor" stroke-width="1.6" fill="none" />
+              <line x1="90" y1="52" x2="90" y2="74" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.5 2.5" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors mb-2">
+            Mensuration
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Stretch dimensions, unfold 3D solids, and build lasting intuition for perimeter, surface area, and volume.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-emerald-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+      <!-- 04 · Trigonometry (Math) -->
+      <a
+        href="https://unboringstem.pages.dev/trigonometry"
+        data-domain="math"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-indigo-950/5 hover:border-indigo-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-indigo-600 transition-colors">04</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+              Unit Circle & Waves
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-indigo-50/70 to-blue-50/40 border border-indigo-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-indigo-600" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <circle cx="52" cy="40" r="22" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.35" />
+              <line x1="52" y1="40" x2="70" y2="27" stroke="currentColor" stroke-width="1.8" />
+              <line x1="70" y1="27" x2="70" y2="40" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 2" />
+              <path d="M84 40 C98 14, 112 14, 126 40 S154 66, 168 40" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors mb-2">
+            Trigonometry
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Link right triangles and the unit circle directly to sine, cosine, and tangent waves as angles rotate smoothly.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-indigo-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
+      <!-- 05 · Polynomials (Math) -->
       <a
         href="https://unboringstem.pages.dev/polynomials/"
-        data-domain="algebra"
+        data-domain="math"
         class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-violet-950/5 hover:border-violet-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
       >
         <div>
@@ -355,10 +346,10 @@
         </div>
       </a>
 
-      <!-- 06 · Logarithms -->
+      <!-- 06 · Logarithms (Math) -->
       <a
         href="https://unboringstem.pages.dev/log/"
-        data-domain="algebra"
+        data-domain="math"
         class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-cyan-950/5 hover:border-cyan-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2"
       >
         <div>
@@ -395,10 +386,10 @@
         </div>
       </a>
 
-      <!-- 07 · Circle Theorems -->
+      <!-- 07 · Circle Theorems (Math) -->
       <a
         href="https://unboringstem.pages.dev/circle-theorems/"
-        data-domain="geometry"
+        data-domain="math"
         class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-teal-950/5 hover:border-teal-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
       >
         <div>
@@ -436,10 +427,10 @@
         </div>
       </a>
 
-      <!-- 08 · Euler's Constant (e) -->
+      <!-- 08 · Euler's Constant (e) (Math) -->
       <a
         href="https://unboringstem.pages.dev/e"
-        data-domain="algebra"
+        data-domain="math"
         class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-orange-950/5 hover:border-orange-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
       >
         <div>
@@ -487,10 +478,10 @@
         </div>
       </a>
 
-      <!-- 09 · Pi (π) -->
+      <!-- 09 · Pi (π) (Math) -->
       <a
         href="https://unboringstem.pages.dev/pi"
-        data-domain="geometry"
+        data-domain="math"
         class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-sky-950/5 hover:border-sky-400/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
       >
         <div>
@@ -539,6 +530,63 @@
         </div>
       </a>
 
+      <!-- 10 · Primes (Math) -->
+      <a
+        href="https://unboringstem.pages.dev/primes/"
+        data-domain="math"
+        class="module-card group relative flex flex-col justify-between rounded-2xl bg-white/95 border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-lime-950/5 hover:border-lime-500/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2"
+      >
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-mono text-xs text-slate-400 group-hover:text-lime-700 transition-colors">10</span>
+            <span class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-lime-50 text-lime-800 border border-lime-200/70">
+              Spirals, Sieves & Goldbach
+            </span>
+          </div>
+
+          <!-- Custom Micro-Diagram: Ulam Spiral & Goldbach Arch -->
+          <div class="h-24 mb-5 rounded-xl bg-gradient-to-br from-lime-50/75 to-emerald-50/45 border border-lime-100/80 flex items-center justify-center overflow-hidden">
+            <svg class="w-44 h-20 text-lime-700" viewBox="0 0 180 80" fill="none" aria-hidden="true">
+              <!-- Spiral path -->
+              <path
+                d="M90 40 H98 V32 H82 V48 H106 V24 H74 V56 H112"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-opacity="0.35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <!-- Highlighted prime nodes along spiral -->
+              <circle cx="98" cy="40" r="2.6" fill="currentColor" />
+              <circle cx="98" cy="32" r="2.6" fill="currentColor" />
+              <circle cx="82" cy="32" r="2.6" fill="currentColor" />
+              <circle cx="106" cy="48" r="2.6" fill="currentColor" />
+              <circle cx="74" cy="24" r="2.6" fill="currentColor" />
+
+              <!-- Goldbach-style prime pair arch on right -->
+              <line x1="122" y1="62" x2="160" y2="62" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.4" />
+              <path d="M128 62 Q141 18 154 62" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" class="group-hover:stroke-[2.2] transition-all" />
+              <circle cx="128" cy="62" r="2.6" fill="currentColor" />
+              <circle cx="154" cy="62" r="2.6" fill="currentColor" />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-semibold text-slate-900 group-hover:text-lime-700 transition-colors mb-2">
+            Primes
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Explore 3D Ulam spirals and sieve waves, replay factor trees, inspect Goldbach arches, and test number intuition with quests and streaks.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-medium text-slate-700 group-hover:text-lime-700">
+          <span>OPEN LAB</span>
+          <span class="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+
     </div>
 
     <!-- Future Lab Strip -->
@@ -548,7 +596,7 @@
         <p class="text-xs text-slate-500">New visual simulations are added steadily across physics, calculus, and number intuition.</p>
       </div>
       <span class="font-mono text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 self-start sm:self-auto">
-        9 / ∞ Shipped
+        10 / ∞ Shipped
       </span>
     </div>
   </main>
