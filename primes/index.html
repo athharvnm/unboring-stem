@@ -1029,7 +1029,8 @@
             return { x: x * spacing, z: z * spacing };
         }
 
-        function buildSpiralScene() {
+        function buildSpiralScene(opts = {}) {
+            const animate = opts.animate !== false;
             clearGroup(spiralGroup);
             clearGroup(labelsGroup);
             selectionRing.visible = false;
@@ -1110,15 +1111,17 @@
                 if (showLabels) {
                     labelSprite = addNumberLabel(n, { x: coord.x, y: yPos, z: coord.z }, prime, 0.82);
                 }
-                attachFlowInAnimation(
-                    mesh,
-                    { x: coord.x, y: yPos, z: coord.z },
-                    scale,
-                    colorHex,
-                    flowIndex++,
-                    labelSprite,
-                    0.82
-                );
+                if (animate) {
+                    attachFlowInAnimation(
+                        mesh,
+                        { x: coord.x, y: yPos, z: coord.z },
+                        scale,
+                        colorHex,
+                        flowIndex++,
+                        labelSprite,
+                        0.82
+                    );
+                }
             }
             updateLabelScalesForCamera();
 
@@ -1174,7 +1177,7 @@
             return primes;
         }
 
-        function resetSieve() {
+        function resetSieve(animate = true) {
             state.sieve.active = false;
             state.sieve.currentPrimeIndex = 0;
             state.sieve.primeList = [];
@@ -1184,7 +1187,7 @@
             document.getElementById('sieve-status-badge').textContent = 'Ready';
             document.getElementById('sieve-explanation').textContent =
                 'Step or run through prime multiples right on the spiral to see which diagonal rays survive.';
-            if (state.mode === 'spiral') buildSpiralScene();
+            if (state.mode === 'spiral') buildSpiralScene({ animate });
         }
 
         function stepSieve() {
@@ -1203,7 +1206,7 @@
                 document.getElementById('sieve-status-badge').textContent = 'Complete';
                 document.getElementById('sieve-explanation').textContent =
                     `All multiples up to ${state.spiralRange} are filtered—surviving nodes are prime!`;
-                buildSpiralScene();
+                buildSpiralScene({ animate: false });
                 return false;
             }
 
@@ -1227,7 +1230,7 @@
                     ? `Filtered ${newlyEliminated.length} multiple(s) of ${p} (starting at ${p * p}).`
                     : `All multiples of ${p} up to ${state.spiralRange} were already filtered.`;
 
-            buildSpiralScene();
+            buildSpiralScene({ animate: false });
             return true;
         }
 
@@ -1238,7 +1241,7 @@
                 sieveIntervalId = null;
             }
             if (!state.sieve.active || state.sieve.currentPrimeIndex >= state.sieve.primeList.length) {
-                resetSieve();
+                resetSieve(false);
                 stepSieve();
             }
             sieveIntervalId = setInterval(() => {
@@ -1532,56 +1535,83 @@
 
             const safeNum = Math.max(1, Math.min(9999, Math.round(Number(n) || 1)));
             const prime = isPrime(safeNum);
+
+            // Most "square" rectangle: largest divisor <= sqrt(n) gives rows; primes (and 1) are 1 x n.
             let rows = 1;
             let cols = safeNum;
-
             if (!prime && safeNum > 1) {
-                for (let d = Math.floor(Math.sqrt(safeNum)); d >= 2; d--) {
-                    if (safeNum % d === 0) {
-                        rows = d;
-                        cols = safeNum / d;
+                for (let dv = Math.floor(Math.sqrt(safeNum)); dv >= 2; dv--) {
+                    if (safeNum % dv === 0) {
+                        rows = dv;
+                        cols = safeNum / dv;
                         break;
                     }
                 }
             }
 
-            const maxCols = Math.min(cols, 18);
-            const maxRows = Math.min(rows, 5);
-            const isTruncated = (cols > maxCols) || (rows > maxRows);
-            caption.textContent = isTruncated
-                ? `${rows} × ${cols} (showing ${maxRows}×${maxCols})`
-                : `${rows} × ${cols}`;
-
             const svgNS = 'http://www.w3.org/2000/svg';
             const viewW = 240;
             const viewH = 72;
-            const padX = 12;
-            const padY = 8;
-            const usableW = viewW - padX * 2;
-            const usableH = viewH - padY * 2;
+            const pad = 8;
+            const usableW = viewW - pad * 2;
+            const usableH = viewH - pad * 2;
+            const gapRatio = 0.22;
 
-            const gap = maxCols > 12 || maxRows > 3 ? 1.5 : 2.5;
-            const cellW = Math.max(2, Math.min(12, (usableW - gap * (maxCols - 1)) / maxCols));
-            const cellH = Math.max(2, Math.min(12, (usableH - gap * (maxRows - 1)) / maxRows));
-            const totalW = maxCols * cellW + Math.max(0, maxCols - 1) * gap;
-            const totalH = maxRows * cellH + Math.max(0, maxRows - 1) * gap;
-            const startX = (viewW - totalW) / 2;
+            // Square cells sized so the WHOLE rows x cols grid fits (exact dot count = n)
+            const fitCell = Math.min(
+                12,
+                usableW / (cols + (cols - 1) * gapRatio),
+                usableH / (rows + (rows - 1) * gapRatio)
+            );
+
+            let drawRows = rows;
+            let drawCols = cols;
+            let cell = fitCell;
+            let truncated = false;
+
+            if (fitCell < 2.5) {
+                // Too many dots to draw honestly: draw a readable preview and mark it with an ellipsis
+                truncated = true;
+                cell = 5;
+                const step = cell * (1 + gapRatio);
+                drawCols = Math.min(cols, Math.max(1, Math.floor((usableW + cell * gapRatio) / step) - 1));
+                drawRows = Math.min(rows, Math.max(1, Math.floor((usableH + cell * gapRatio) / step)));
+            }
+
+            const gap = cell * gapRatio;
+            const totalW = drawCols * cell + (drawCols - 1) * gap;
+            const totalH = drawRows * cell + (drawRows - 1) * gap;
+            const startX = truncated ? pad : (viewW - totalW) / 2;
             const startY = (viewH - totalH) / 2;
-
             const fillColor = safeNum === 1 ? '#64748B' : (prime ? '#10B981' : '#4F46E5');
 
-            for (let r = 0; r < maxRows; r++) {
-                for (let c = 0; c < maxCols; c++) {
+            caption.textContent = truncated
+                ? `${rows} × ${cols} = ${safeNum} (preview)`
+                : `${rows} × ${cols} = ${safeNum}`;
+
+            for (let r = 0; r < drawRows; r++) {
+                for (let c = 0; c < drawCols; c++) {
                     const rect = document.createElementNS(svgNS, 'rect');
-                    rect.setAttribute('x', (startX + c * (cellW + gap)).toFixed(2));
-                    rect.setAttribute('y', (startY + r * (cellH + gap)).toFixed(2));
-                    rect.setAttribute('width', cellW.toFixed(2));
-                    rect.setAttribute('height', cellH.toFixed(2));
-                    rect.setAttribute('rx', Math.min(2.5, Math.min(cellW, cellH) * 0.25).toFixed(2));
+                    rect.setAttribute('x', (startX + c * (cell + gap)).toFixed(2));
+                    rect.setAttribute('y', (startY + r * (cell + gap)).toFixed(2));
+                    rect.setAttribute('width', cell.toFixed(2));
+                    rect.setAttribute('height', cell.toFixed(2));
+                    rect.setAttribute('rx', Math.min(2.5, cell * 0.25).toFixed(2));
                     rect.setAttribute('fill', fillColor);
                     rect.setAttribute('fill-opacity', prime ? '0.92' : '0.84');
                     svg.appendChild(rect);
                 }
+            }
+
+            if (truncated) {
+                const dots = document.createElementNS(svgNS, 'text');
+                dots.setAttribute('x', (startX + totalW + 4).toFixed(2));
+                dots.setAttribute('y', (viewH / 2 + 4).toFixed(2));
+                dots.setAttribute('fill', '#64748B');
+                dots.setAttribute('font-size', '14');
+                dots.setAttribute('font-weight', '700');
+                dots.textContent = '…';
+                svg.appendChild(dots);
             }
         }
 
@@ -1707,7 +1737,7 @@
                 document.getElementById('game-out-reason').textContent = reason;
                 updateInspector(target);
                 if (state.mode === 'spiral' && target <= state.spiralRange) {
-                    buildSpiralScene();
+                    buildSpiralScene({ animate: false });
                 }
             }
         }
@@ -1868,7 +1898,7 @@
                         );
                     }
                     if (state.mode === 'spiral') {
-                        buildSpiralScene();
+                        buildSpiralScene({ animate: false });
                     }
                 } else if (state.mode === 'goldbach' && goldbachArchMeshes.length > 0 && e.pointerType === 'touch') {
                     const archHit = raycaster.intersectObjects(goldbachArchMeshes, false)[0];
@@ -2025,10 +2055,13 @@
             }
             updateInspector(val);
             if (state.mode === 'spiral') {
-                const coord = getSpiralCoordinates(val);
-                orbitCenter.set(coord.x, 0, coord.z);
-                updateCameraFromSpherical();
-                buildSpiralScene();
+                if (val <= state.spiralRange) {
+                    const coord = getSpiralCoordinates(val);
+                    orbitCenter.set(coord.x, 0, coord.z);
+                    updateCameraFromSpherical();
+                }
+                // Numbers above the spiral's 400 maximum are still inspected, but not drawn
+                buildSpiralScene({ animate: false });
             } else if (state.mode === 'tree' && val >= 2) {
                 state.treeNumber = val;
                 buildFactorTreeScene();
