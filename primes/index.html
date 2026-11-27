@@ -422,12 +422,12 @@
             <p id="inspector-grade-note" class="text-xs text-slate-600 leading-relaxed"></p>
 
             <!-- Rectangular Array SVG Visual Model -->
-            <div class="rounded-xl bg-white border border-slate-200/80 p-2.5 space-y-1.5">
+            <div id="array-card" class="rounded-xl bg-white border border-slate-200/80 p-2.5 space-y-1.5">
                 <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     <span>Rectangular Array Model</span>
                     <span id="array-caption" class="font-mono-code text-slate-700">1 × 29</span>
                 </div>
-                <svg id="array-svg" viewBox="0 0 240 72" class="w-full h-16 rounded-lg bg-slate-50 border border-slate-100"></svg>
+                <svg id="array-svg" viewBox="0 0 240 96" class="w-full h-24 rounded-lg bg-slate-50 border border-slate-100"></svg>
             </div>
 
             <!-- Prime Factorization & Divisibility X-Ray -->
@@ -1551,46 +1551,38 @@
 
             const svgNS = 'http://www.w3.org/2000/svg';
             const viewW = 240;
-            const viewH = 72;
+            const viewH = 96;
             const pad = 8;
             const usableW = viewW - pad * 2;
             const usableH = viewH - pad * 2;
             const gapRatio = 0.22;
 
             // Square cells sized so the WHOLE rows x cols grid fits (exact dot count = n)
-            const fitCell = Math.min(
+            const cell = Math.min(
                 12,
                 usableW / (cols + (cols - 1) * gapRatio),
                 usableH / (rows + (rows - 1) * gapRatio)
             );
 
-            let drawRows = rows;
-            let drawCols = cols;
-            let cell = fitCell;
-            let truncated = false;
-
-            if (fitCell < 2.5) {
-                // Too many dots to draw honestly: draw a readable preview and mark it with an ellipsis
-                truncated = true;
-                cell = 5;
-                const step = cell * (1 + gapRatio);
-                drawCols = Math.min(cols, Math.max(1, Math.floor((usableW + cell * gapRatio) / step) - 1));
-                drawRows = Math.min(rows, Math.max(1, Math.floor((usableH + cell * gapRatio) / step)));
+            // Only show the model when every dot is drawn at a readable size
+            const card = document.getElementById('array-card');
+            if (cell < 3.5) {
+                if (card) card.classList.add('hidden');
+                return;
             }
+            if (card) card.classList.remove('hidden');
 
             const gap = cell * gapRatio;
-            const totalW = drawCols * cell + (drawCols - 1) * gap;
-            const totalH = drawRows * cell + (drawRows - 1) * gap;
-            const startX = truncated ? pad : (viewW - totalW) / 2;
+            const totalW = cols * cell + (cols - 1) * gap;
+            const totalH = rows * cell + (rows - 1) * gap;
+            const startX = (viewW - totalW) / 2;
             const startY = (viewH - totalH) / 2;
             const fillColor = safeNum === 1 ? '#64748B' : (prime ? '#10B981' : '#4F46E5');
 
-            caption.textContent = truncated
-                ? `${rows} × ${cols} = ${safeNum} (preview)`
-                : `${rows} × ${cols} = ${safeNum}`;
+            caption.textContent = `${rows} × ${cols} = ${safeNum}`;
 
-            for (let r = 0; r < drawRows; r++) {
-                for (let c = 0; c < drawCols; c++) {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
                     const rect = document.createElementNS(svgNS, 'rect');
                     rect.setAttribute('x', (startX + c * (cell + gap)).toFixed(2));
                     rect.setAttribute('y', (startY + r * (cell + gap)).toFixed(2));
@@ -1601,17 +1593,6 @@
                     rect.setAttribute('fill-opacity', prime ? '0.92' : '0.84');
                     svg.appendChild(rect);
                 }
-            }
-
-            if (truncated) {
-                const dots = document.createElementNS(svgNS, 'text');
-                dots.setAttribute('x', (startX + totalW + 4).toFixed(2));
-                dots.setAttribute('y', (viewH / 2 + 4).toFixed(2));
-                dots.setAttribute('fill', '#64748B');
-                dots.setAttribute('font-size', '14');
-                dots.setAttribute('font-weight', '700');
-                dots.textContent = '…';
-                svg.appendChild(dots);
             }
         }
 
