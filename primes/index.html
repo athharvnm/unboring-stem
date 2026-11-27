@@ -37,7 +37,7 @@
 
     <style>
         :root {
-            --header-offset: 5.25rem;
+            --header-offset: 5.5rem;
             --dock-offset: 4.5rem;
         }
         body {
@@ -63,6 +63,10 @@
             bottom: calc(var(--dock-offset) + env(safe-area-inset-bottom, 0px));
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
+            display: none;
+        }
+        .side-drawer[data-open="true"] {
+            display: block;
         }
         @media (min-width: 1024px) {
             .side-drawer {
@@ -122,15 +126,15 @@
 
     <!-- Floating Hover / Tap Tooltip for 3D Nodes & Goldbach Arches -->
     <div id="hover-tooltip"
-         class="pointer-events-none fixed z-30 hidden rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg px-3 py-2 text-xs text-slate-800 max-w-[16rem]">
+         class="pointer-events-none fixed z-40 hidden rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg px-3 py-2 text-xs text-slate-800 max-w-[16rem]">
     </div>
 
-    <!-- Top Header Bar -->
+    <!-- Top Header Bar (z-30 so it is ALWAYS above drawers and backdrop) -->
     <header id="studio-header"
-            class="fixed top-0 left-0 right-0 z-20 pt-[max(0.5rem,env(safe-area-inset-top))] px-2 sm:px-3 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
+            class="fixed top-0 left-0 right-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top))] px-2 sm:px-3 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
 
         <!-- Row 1 Left: Brand + Grade Band Switcher -->
-        <div class="pointer-events-auto flex items-center justify-between sm:justify-start gap-2 rounded-2xl bg-white/92 backdrop-blur-md border border-slate-200/80 shadow-sm px-2.5 py-1.5 sm:px-3.5 sm:py-2 w-full sm:w-auto">
+        <div class="pointer-events-auto flex items-center justify-between sm:justify-start gap-2 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-sm px-2.5 py-1.5 sm:px-3.5 sm:py-2 w-full sm:w-auto">
             <div class="flex items-center gap-2 min-w-0">
                 <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-500 text-white shadow-sm shrink-0" aria-hidden="true">
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -172,7 +176,7 @@
 
         <!-- Mode Switcher Pills + Panel Drawer Toggles -->
         <div class="pointer-events-auto flex items-center justify-between gap-1.5 w-full sm:w-auto flex-1 sm:flex-initial">
-            <nav class="flex items-center gap-1 overflow-x-auto no-scrollbar rounded-2xl bg-white/92 backdrop-blur-md border border-slate-200/80 shadow-sm p-1 max-w-full" aria-label="Exploration Modes">
+            <nav class="flex items-center gap-1 overflow-x-auto no-scrollbar rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-sm p-1 max-w-full" aria-label="Exploration Modes">
                 <button data-mode="spiral" type="button"
                         class="mode-btn whitespace-nowrap rounded-xl px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all">
                     Ulam Spiral
@@ -190,11 +194,11 @@
             <!-- Panel Collapse Toggles -->
             <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 <button id="toggle-left-panel" type="button" aria-expanded="false" aria-controls="left-panel"
-                        class="rounded-xl bg-white/92 backdrop-blur-md border border-slate-200/80 shadow-sm px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all">
+                        class="cursor-pointer rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-sm px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all">
                     Controls
                 </button>
                 <button id="toggle-right-panel" type="button" aria-expanded="false" aria-controls="right-panel"
-                        class="rounded-xl bg-white/92 backdrop-blur-md border border-slate-200/80 shadow-sm px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all">
+                        class="cursor-pointer rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-sm px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all">
                     <span class="sm:hidden">Inspect</span>
                     <span class="hidden sm:inline">Inspector & Game</span>
                 </button>
@@ -204,7 +208,7 @@
 
     <!-- Bottom-Center Zoom & Pan Navigation Dock -->
     <div id="zoom-dock"
-         class="fixed bottom-[max(0.5rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-1 max-w-[calc(100vw-0.75rem)] rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/85 shadow-md px-1.5 sm:px-2 py-1 sm:py-1.5"
+         class="fixed bottom-[max(0.5rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-30 flex items-center justify-center gap-1 max-w-[calc(100vw-0.75rem)] rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/85 shadow-md px-1.5 sm:px-2 py-1 sm:py-1.5"
          role="group" aria-label="3D Camera Zoom and Pan Controls">
         <button id="pan-down-btn" type="button" title="Move Camera Downward (Down Arrow / S)"
                 class="flex items-center justify-center gap-1 min-h-[34px] rounded-xl bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 font-semibold text-[11px] px-2 sm:px-2.5 py-1 transition-colors">
@@ -224,14 +228,14 @@
         </button>
         <div class="h-5 w-px bg-slate-200 mx-0.5"></div>
         <button id="zoom-out-btn" type="button" title="Zoom Out (−)" aria-label="Zoom Out"
-                class="flex h-8 w-8 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 active:bg-indigo-100 hover:text-indigo-700 text-slate-700 font-bold text-base transition-colors">
+                class="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 active:bg-indigo-100 hover:text-indigo-700 text-slate-700 font-bold text-base transition-colors">
             −
         </button>
         <span id="zoom-percent-badge" class="min-w-[2.75rem] sm:min-w-[3.25rem] text-center font-mono-code text-[11px] sm:text-xs font-semibold text-slate-700 px-0.5">
             100%
         </span>
         <button id="zoom-in-btn" type="button" title="Zoom In (+)" aria-label="Zoom In"
-                class="flex h-8 w-8 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 active:bg-indigo-100 hover:text-indigo-700 text-slate-700 font-bold text-base transition-colors">
+                class="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 active:bg-indigo-100 hover:text-indigo-700 text-slate-700 font-bold text-base transition-colors">
             +
         </button>
         <div class="h-5 w-px bg-slate-200 mx-0.5"></div>
@@ -241,11 +245,11 @@
         </button>
     </div>
 
-    <!-- Left Control Dock (Drawer on mobile/tablet, pinned dock on lg+) -->
-    <aside id="left-panel"
-           class="side-drawer hidden lg:block fixed left-2 sm:left-3 z-20 lg:z-10 w-[calc(100vw-1rem)] max-w-sm lg:w-80 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/85 shadow-xl lg:shadow-lg p-3.5 sm:p-4 overflow-y-auto panel-scroll space-y-4">
+    <!-- Left Control Dock -->
+    <aside id="left-panel" data-open="false"
+           class="side-drawer fixed left-2 sm:left-3 z-20 w-[calc(100vw-1rem)] max-w-sm lg:w-80 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/85 shadow-xl lg:shadow-lg p-3.5 sm:p-4 overflow-y-auto panel-scroll space-y-4">
 
-        <!-- Mobile Drawer Header -->
+        <!-- Drawer Header -->
         <div class="flex items-center justify-between lg:hidden pb-2 border-b border-slate-200/80">
             <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Lab Controls</span>
             <button type="button" data-close-panel="left-panel"
@@ -448,11 +452,11 @@
         </div>
     </aside>
 
-    <!-- Right Inspector & Prime or Not Game Dock (Drawer on mobile/tablet, pinned dock on lg+) -->
-    <aside id="right-panel"
-           class="side-drawer hidden lg:block fixed right-2 sm:right-3 z-20 lg:z-10 w-[calc(100vw-1rem)] max-w-sm lg:w-80 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/85 shadow-xl lg:shadow-lg p-3.5 sm:p-4 overflow-y-auto panel-scroll space-y-4">
+    <!-- Right Inspector & Prime or Not Game Dock -->
+    <aside id="right-panel" data-open="false"
+           class="side-drawer fixed right-2 sm:right-3 z-20 w-[calc(100vw-1rem)] max-w-sm lg:w-80 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/85 shadow-xl lg:shadow-lg p-3.5 sm:p-4 overflow-y-auto panel-scroll space-y-4">
 
-        <!-- Mobile Drawer Header -->
+        <!-- Drawer Header -->
         <div class="flex items-center justify-between lg:hidden pb-2 border-b border-slate-200/80">
             <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Inspector & Game</span>
             <button type="button" data-close-panel="right-panel"
@@ -571,6 +575,14 @@
             return window.innerWidth >= DESKTOP_BREAKPOINT;
         }
 
+        function isPanelOpen(panelEl) {
+            return panelEl.dataset.open === 'true';
+        }
+
+        function setPanelOpen(panelEl, open) {
+            panelEl.dataset.open = open ? 'true' : 'false';
+        }
+
         function syncLayoutOffsets() {
             if (studioHeaderEl) {
                 const headerRect = studioHeaderEl.getBoundingClientRect();
@@ -584,16 +596,21 @@
         }
 
         function syncDrawerUIState() {
-            const leftOpen = !leftPanelEl.classList.contains('hidden');
-            const rightOpen = !rightPanelEl.classList.contains('hidden');
+            const leftOpen = isPanelOpen(leftPanelEl);
+            const rightOpen = isPanelOpen(rightPanelEl);
 
             toggleLeftBtn.setAttribute('aria-expanded', String(leftOpen));
             toggleRightBtn.setAttribute('aria-expanded', String(rightOpen));
 
-            toggleLeftBtn.classList.toggle('ring-2', leftOpen && !isDesktopViewport());
-            toggleLeftBtn.classList.toggle('ring-indigo-500', leftOpen && !isDesktopViewport());
-            toggleRightBtn.classList.toggle('ring-2', rightOpen && !isDesktopViewport());
-            toggleRightBtn.classList.toggle('ring-indigo-500', rightOpen && !isDesktopViewport());
+            toggleLeftBtn.classList.toggle('bg-indigo-600', leftOpen);
+            toggleLeftBtn.classList.toggle('text-white', leftOpen);
+            toggleLeftBtn.classList.toggle('bg-white/95', !leftOpen);
+            toggleLeftBtn.classList.toggle('text-slate-700', !leftOpen);
+
+            toggleRightBtn.classList.toggle('bg-indigo-600', rightOpen);
+            toggleRightBtn.classList.toggle('text-white', rightOpen);
+            toggleRightBtn.classList.toggle('bg-white/95', !rightOpen);
+            toggleRightBtn.classList.toggle('text-slate-700', !rightOpen);
 
             if (!isDesktopViewport() && (leftOpen || rightOpen)) {
                 drawerBackdropEl.classList.remove('hidden');
@@ -604,41 +621,51 @@
 
         function closeMobileDrawers() {
             if (isDesktopViewport()) return;
-            leftPanelEl.classList.add('hidden');
-            rightPanelEl.classList.add('hidden');
+            setPanelOpen(leftPanelEl, false);
+            setPanelOpen(rightPanelEl, false);
             syncDrawerUIState();
         }
 
         function toggleDrawer(panelToToggle, otherPanel) {
-            const willOpen = panelToToggle.classList.contains('hidden');
+            const willOpen = !isPanelOpen(panelToToggle);
             if (!isDesktopViewport() && willOpen) {
-                otherPanel.classList.add('hidden');
+                setPanelOpen(otherPanel, false);
             }
-            panelToToggle.classList.toggle('hidden');
+            setPanelOpen(panelToToggle, willOpen);
             syncLayoutOffsets();
             syncDrawerUIState();
         }
 
-        toggleLeftBtn.addEventListener('click', () => toggleDrawer(leftPanelEl, rightPanelEl));
-        toggleRightBtn.addEventListener('click', () => toggleDrawer(rightPanelEl, leftPanelEl));
+        toggleLeftBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDrawer(leftPanelEl, rightPanelEl);
+        });
+        toggleRightBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDrawer(rightPanelEl, leftPanelEl);
+        });
         drawerBackdropEl.addEventListener('click', closeMobileDrawers);
         document.querySelectorAll('[data-close-panel]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const target = document.getElementById(btn.dataset.closePanel);
-                if (target) target.classList.add('hidden');
+                if (target) setPanelOpen(target, false);
                 syncDrawerUIState();
             });
         });
 
+        // Initial panel visibility: open on desktop, collapsed on mobile/tablet
         let wasDesktop = isDesktopViewport();
+        setPanelOpen(leftPanelEl, wasDesktop);
+        setPanelOpen(rightPanelEl, wasDesktop);
+
         function handleBreakpointTransition() {
             const nowDesktop = isDesktopViewport();
             if (nowDesktop && !wasDesktop) {
-                leftPanelEl.classList.remove('hidden');
-                rightPanelEl.classList.remove('hidden');
+                setPanelOpen(leftPanelEl, true);
+                setPanelOpen(rightPanelEl, true);
             } else if (!nowDesktop && wasDesktop) {
-                leftPanelEl.classList.add('hidden');
-                rightPanelEl.classList.add('hidden');
+                setPanelOpen(leftPanelEl, false);
+                setPanelOpen(rightPanelEl, false);
             }
             wasDesktop = nowDesktop;
             syncLayoutOffsets();
@@ -1923,7 +1950,6 @@
                 activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
             }
 
-            // Two-finger pinch zoom + two-finger drag pan on touch screens
             if (activeTouches.size === 2) {
                 const pts = Array.from(activeTouches.values());
                 const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
@@ -2220,8 +2246,8 @@
                 buildFactorTreeScene();
             }
             if (!isDesktopViewport()) {
-                leftPanelEl.classList.add('hidden');
-                rightPanelEl.classList.remove('hidden');
+                setPanelOpen(leftPanelEl, false);
+                setPanelOpen(rightPanelEl, true);
                 syncDrawerUIState();
             }
         });
