@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prime Cosmos — Interactive 3D Prime Numbers Studio</title>
+    <meta name="description" content="Explore prime numbers, the Sieve of Eratosthenes on the Ulam spiral, 3D factor trees, and Goldbach arches in an interactive 3D math lab for Grades 5–12." />
+    <link rel="canonical" href="https://unboringstem.pages.dev/primes" />
+
+    <!-- Open Graph & Twitter Social Metadata -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Unboring STEM" />
+    <meta property="og:title" content="Prime Cosmos — Interactive 3D Prime Numbers Studio" />
+    <meta property="og:description" content="Interactive 3D prime numbers lab for Grades 5–12: Ulam Spiral & Sieve, 3D Factor Trees, Goldbach Conjecture arches, and Prime or Not." />
+    <meta property="og:url" content="https://unboringstem.pages.dev/primes" />
+    <meta property="og:image" content="https://unboringstem.pages.dev/primes/social.png" />
+    <meta property="og:image:alt" content="Prime Cosmos 3D prime numbers visualization preview" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Prime Cosmos — Interactive 3D Prime Numbers Studio" />
+    <meta name="twitter:description" content="Interactive 3D prime numbers lab for Grades 5–12: Ulam Spiral & Sieve, 3D Factor Trees, Goldbach Conjecture arches, and Prime or Not." />
+    <meta name="twitter:image" content="https://unboringstem.pages.dev/primes/social.png" />
+
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Load Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Load Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #F8FAFC;
+            color: #0F172A;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        #canvas-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            touch-action: none;
+        }
+        .panel-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .panel-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .panel-scroll::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
+        .panel-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+        input[type="range"].studio-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 9999px;
+            background: #E2E8F0;
+            outline: none;
+        }
+        input[type="range"].studio-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 9999px;
+            background: #4F46E5;
+            cursor: pointer;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 select-none">
+
+    <!-- 3D Viewport Container -->
+    <div id="canvas-container" aria-label="Interactive 3D Prime Numbers Canvas"></div>
+
+    <!-- Floating Hover Tooltip for 3D Nodes & Goldbach Arches -->
+    <div id="hover-tooltip"
+         class="pointer-events-none fixed z-30 hidden rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg px-3 py-2 text-xs text-slate-800 max-w-xs">
+    </div>
+
+    <!-- Top Header Bar -->
+    <header class="fixed top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-20 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
+        <!-- Brand + Breadcrumb + Grade Band Switcher -->
+        <div class="pointer-events-auto flex flex-wrap items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm px-3 py-1.5 sm:px-3.5 sm:py-2">
+            <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-sm shrink-0">
+                P
+            </div>
+            <div>
+                <nav aria-label="Breadcrumb" class="flex items-center gap-1 text-[10px] font-medium text-slate-500 leading-none mb-0.5">
+                    <a href="https://unboringstem.pages.dev" class="hover:text-indigo-600 transition-colors underline-offset-2 hover:underline">
+                        unboringstem.pages.dev
+                    </a>
+                    <span aria-hidden="true">/</span>
+                    <span class="text-slate-700 font-semibold">primes</span>
+                </nav>
+                <div class="flex items-center gap-1.5">
+                    <h1 class="text-sm font-bold tracking-tight text-slate-900">Prime Cosmos</h1>
+                    <span class="hidden lg:inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                        3D Math Lab
+                    </span>
+                </div>
+            </div>
+
+            <div class="h-6 w-px bg-slate-200 mx-0.5 hidden sm:block"></div>
+
+            <!-- Grade Band Selector -->
+            <div class="flex items-center rounded-xl bg-slate-100 p-0.5 text-xs font-semibold" role="group" aria-label="Grade Level Band">
+                <button id="grade-5-8-btn" type="button"
+                        class="grade-btn rounded-lg px-2.5 py-1 bg-white text-indigo-600 shadow-sm transition-all">
+                    Grades 5–8
+                </button>
+                <button id="grade-9-12-btn" type="button"
+                        class="grade-btn rounded-lg px-2.5 py-1 text-slate-600 hover:text-slate-900 transition-all">
+                    Grades 9–12
+                </button>
+            </div>
+        </div>
+
+        <!-- Mode Switcher Pills -->
+        <nav class="pointer-events-auto flex items-center flex-wrap gap-1 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm p-1" aria-label="Exploration Modes">
+            <button data-mode="spiral" type="button"
+                    class="mode-btn rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all">
+                Ulam Spiral &amp; Sieve
+            </button>
+            <button data-mode="tree" type="button"
+                    class="mode-btn rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+                Factor Tree
+            </button>
+            <button data-mode="goldbach" type="button"
+                    class="mode-btn rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+                Goldbach Lab
+            </button>
+        </nav>
+
+        <!-- Panel Collapse Toggles -->
+        <div class="pointer-events-auto flex items-center gap-1.5">
+            <button id="toggle-left-panel" type="button"
+                    class="rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all">
+                Controls
+            </button>
+            <button id="toggle-right-panel" type="button"
+                    class="rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all">
+                Inspector &amp; Game
+            </button>
+        </div>
+    </header>
+
+    <!-- Bottom-Center Zoom & Pan Navigation Dock -->
+    <div id="zoom-dock"
+         class="fixed bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-wrap items-center justify-center gap-1 max-w-[calc(100vw-1rem)] rounded-2xl bg-white/92 backdrop-blur-md border border-slate-200/85 shadow-md px-2 py-1.5"
+         role="group" aria-label="3D Camera Zoom and Pan Controls">
+        <button id="pan-down-btn" type="button" title="Move Camera Downward (Down Arrow / S)"
+                class="flex items-center gap-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-[11px] px-2.5 py-1.5 transition-colors">
+            <span>↓ Down</span>
+        </button>
+        <button id="pan-up-btn" type="button" title="Move Camera Upward (Up Arrow / W)"
+                class="flex items-center gap-1 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 font-semibold text-[11px] px-2 py-1.5 transition-colors">
+            <span>↑ Up</span>
+        </button>
+        <button id="pan-left-btn" type="button" title="Move Camera Left (Left Arrow / A)"
+                class="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 font-bold text-xs transition-colors">
+            ←
+        </button>
+        <button id="pan-right-btn" type="button" title="Move Camera Right (Right Arrow / D)"
+                class="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 font-bold text-xs transition-colors">
+            →
+        </button>
+        <div class="h-5 w-px bg-slate-200 mx-0.5"></div>
+        <button id="zoom-out-btn" type="button" title="Zoom Out (−)"
+                class="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 font-bold text-sm transition-colors">
+            −
+        </button>
+        <span id="zoom-percent-badge" class="min-w-[3.25rem] text-center font-mono-code text-xs font-semibold text-slate-700 px-1">
+            100%
+        </span>
+        <button id="zoom-in-btn" type="button" title="Zoom In (+)"
+                class="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 font-bold text-sm transition-colors">
+            +
+        </button>
+        <div class="h-5 w-px bg-slate-200 mx-0.5"></div>
+        <button id="zoom-reset-btn" type="button" title="Reset Camera View (0)"
+                class="rounded-xl bg-white hover:bg-slate-100 border border-slate-200/80 px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition-colors">
+            Reset
+        </button>
+    </div>
+
+    <!-- Left Control Dock -->
+    <aside id="left-panel"
+           class="fixed top-24 sm:top-20 left-2 sm:left-3 bottom-16 sm:bottom-3 z-10 w-[calc(100vw-1rem)] max-w-xs sm:w-80 rounded-2xl bg-white/92 backdrop-blur-md border border-slate-200/85 shadow-lg p-3.5 sm:p-4 overflow-y-auto panel-scroll space-y-4 transition-transform duration-200">
+
+        <!-- 1. Ulam Spiral & Sieve Controls -->
+        <div id="controls-spiral" class="mode-controls space-y-3">
+            <div class="flex items-center justify-between">
+                <label for="range-slider" class="text-xs font-bold uppercase tracking-wider text-slate-600">
+                    Spiral Range (1–N)
+                </label>
+                <span id="range-value-badge" class="font-mono-code text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                    225
+                </span>
+            </div>
+            <input id="range-slider" type="range" min="25" max="400" step="1" value="225" class="studio-slider w-full" />
+
+            <!-- Sieve of Eratosthenes Integrated Directly into the Ulam Spiral -->
+            <div class="rounded-xl bg-indigo-50/70 border border-indigo-100 p-3 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-900">
+                        Sieve on the Spiral
+                    </span>
+                    <span id="sieve-status-badge" class="font-mono-code text-[11px] font-semibold text-indigo-700 bg-white/90 px-2 py-0.5 rounded-md border border-indigo-100">
+                        Ready
+                    </span>
+                </div>
+                <p id="sieve-explanation" class="text-[11px] text-slate-600 leading-snug">
+                    Step or run through prime multiples right on the spiral to see which diagonal rays survive.
+                </p>
+                <div class="flex items-center gap-1.5 pt-0.5">
+                    <button id="sieve-step-btn" type="button"
+                            class="flex-1 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold py-1.5 px-2.5 shadow-2xs transition-all">
+                        Step Wave
+                    </button>
+                    <button id="sieve-run-btn" type="button"
+                            class="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-1.5 px-2.5 shadow-2xs transition-all">
+                        Run Sieve
+                    </button>
+                    <button id="sieve-reset-btn" type="button"
+                            class="rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold py-1.5 px-2.5 transition-all">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visual Layers (Checkbox accent colors matched to each icon) -->
+            <div class="space-y-1.5 pt-1">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Visual Layers &amp; Legend</div>
+
+                <label class="flex items-center justify-between gap-2 rounded-xl px-2.5 py-1.5 hover:bg-slate-100/80 cursor-pointer transition-colors">
+                    <span class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                        <span class="h-3 w-3 rounded-full bg-emerald-500 inline-block shrink-0"></span>
+                        Prime Numbers
+                    </span>
+                    <input id="toggle-primes" type="checkbox" checked class="h-4 w-4 rounded accent-emerald-500 cursor-pointer" />
+                </label>
+
+                <label class="flex items-center justify-between gap-2 rounded-xl px-2.5 py-1.5 hover:bg-slate-100/80 cursor-pointer transition-colors">
+                    <span class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                        <span class="h-3 w-3 rounded-full bg-slate-300 inline-block shrink-0"></span>
+                        Composite Numbers
+                    </span>
+                    <input id="toggle-composites" type="checkbox" checked class="h-4 w-4 rounded accent-slate-400 cursor-pointer" />
+                </label>
+
+                <label class="flex items-center justify-between gap-2 rounded-xl px-2.5 py-1.5 hover:bg-slate-100/80 cursor-pointer transition-colors">
+                    <span class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                        <span class="h-3 w-3 rotate-45 bg-amber-400 inline-block shrink-0"></span>
+                        Mersenne Primes (2ᵖ − 1)
+                    </span>
+                    <input id="toggle-mersenne" type="checkbox" checked class="h-4 w-4 rounded accent-amber-500 cursor-pointer" />
+                </label>
+
+                <label class="flex items-center justify-between gap-2 rounded-xl px-2.5 py-1.5 hover:bg-slate-100/80 cursor-pointer transition-colors">
+                    <span class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                        <span class="h-3 w-3 rounded-full bg-indigo-500 inline-block shrink-0"></span>
+                        Twin Primes (p, p + 2)
+                    </span>
+                    <input id="toggle-twins" type="checkbox" checked class="h-4 w-4 rounded accent-indigo-600 cursor-pointer" />
+                </label>
+
+                <label class="flex items-center justify-between gap-2 rounded-xl px-2.5 py-1.5 hover:bg-slate-100/80 cursor-pointer transition-colors">
+                    <span class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                        <span class="h-3 w-3 rounded-full bg-rose-500 inline-block shrink-0"></span>
+                        Euler Diagonal (n² + n + 41)
+                    </span>
+                    <input id="toggle-euler" type="checkbox" class="h-4 w-4 rounded accent-rose-500 cursor-pointer" />
+                </label>
+
+                <label class="flex items-center justify-between gap-2 rounded-xl px-2.5 py-1.5 hover:bg-slate-100/80 cursor-pointer transition-colors">
+                    <span class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                        <span class="font-mono-code text-[10px] font-bold text-slate-700 bg-slate-200/80 px-1.5 py-0.5 rounded shrink-0">#</span>
+                        3D Number Labels
+                    </span>
+                    <input id="toggle-labels" type="checkbox" checked class="h-4 w-4 rounded accent-slate-700 cursor-pointer" />
+                </label>
+            </div>
+        </div>
+
+        <!-- 2. Factor Tree Controls -->
+        <div id="controls-tree" class="mode-controls hidden rounded-xl bg-slate-50/90 border border-slate-200/80 p-3 space-y-2.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-600">Prime Factorization Tree</div>
+            <p class="text-[11px] text-slate-500 leading-snug">
+                Deep trees grow downward—use <strong>↓ Down</strong>, right-drag, or Arrow keys to pan down to prime leaves.
+            </p>
+            <div class="flex items-center gap-1.5">
+                <input id="tree-number-input" type="number" min="2" max="9999" value="360"
+                       class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-mono-code text-sm font-semibold text-slate-800 focus:border-indigo-500 focus:outline-none" />
+                <button id="tree-build-btn" type="button"
+                        class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3.5 py-2 transition-colors shrink-0">
+                    Build
+                </button>
+                <button id="tree-replay-btn" type="button" title="Replay step-by-step factorization"
+                        class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 transition-colors shrink-0">
+                    Replay
+                </button>
+            </div>
+            <div id="tree-replay-status" class="text-[11px] font-medium text-indigo-700 bg-indigo-50/80 border border-indigo-100 rounded-lg px-2.5 py-1.5">
+                Ready to replay factorization steps.
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+                <button type="button" data-tree-preset="60" class="tree-preset rounded-lg bg-white hover:bg-indigo-50 border border-slate-200 px-2 py-1 font-mono-code text-[11px] font-semibold text-slate-700">60</button>
+                <button type="button" data-tree-preset="180" class="tree-preset rounded-lg bg-white hover:bg-indigo-50 border border-slate-200 px-2 py-1 font-mono-code text-[11px] font-semibold text-slate-700">180</button>
+                <button type="button" data-tree-preset="360" class="tree-preset rounded-lg bg-white hover:bg-indigo-50 border border-slate-200 px-2 py-1 font-mono-code text-[11px] font-semibold text-slate-700">360</button>
+                <button type="button" data-tree-preset="840" class="tree-preset rounded-lg bg-white hover:bg-indigo-50 border border-slate-200 px-2 py-1 font-mono-code text-[11px] font-semibold text-slate-700">840</button>
+                <button type="button" data-tree-preset="97" class="tree-preset rounded-lg bg-white hover:bg-indigo-50 border border-slate-200 px-2 py-1 font-mono-code text-[11px] font-semibold text-slate-700">97 (Prime)</button>
+            </div>
+        </div>
+
+        <!-- 3. Goldbach Conjecture Controls -->
+        <div id="controls-goldbach" class="mode-controls hidden rounded-xl bg-slate-50/90 border border-slate-200/80 p-3 space-y-2.5">
+            <div class="flex items-center justify-between">
+                <label for="goldbach-slider" class="text-xs font-bold uppercase tracking-wider text-slate-600">
+                    Even Sum (N)
+                </label>
+                <span id="goldbach-value-badge" class="font-mono-code text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                    100
+                </span>
+            </div>
+            <input id="goldbach-slider" type="range" min="4" max="200" step="2" value="100" class="studio-slider w-full" />
+            <div id="goldbach-summary" class="text-xs text-slate-600 font-medium"></div>
+
+            <!-- How to Read the Colored Arches -->
+            <div class="rounded-xl bg-white border border-slate-200/80 p-2.5 space-y-1.5 text-[11px] text-slate-600">
+                <div class="font-bold text-slate-800 flex items-center justify-between">
+                    <span>How to Read the Arches</span>
+                    <span class="font-mono-code text-[10px] text-indigo-600">p + q = N</span>
+                </div>
+                <p class="leading-snug">
+                    Each colored arch links two primes <strong>p</strong> and <strong>q</strong> that add up to <strong>N</strong>. Hover any arch in 3D to inspect its pair.
+                </p>
+                <div class="flex items-center gap-2 pt-0.5">
+                    <span class="h-2.5 flex-1 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-emerald-500"></span>
+                </div>
+                <div class="flex justify-between text-[10px] font-medium text-slate-500">
+                    <span>Wide span (tall arch)</span>
+                    <span>Near N/2 (low arch)</span>
+                </div>
+                <p class="text-[10px] text-emerald-700 font-medium leading-snug">
+                    When N/2 is prime (such as 5 + 5 = 10), a glowing emerald dot marks the center pair.
+                </p>
+            </div>
+        </div>
+
+        <!-- Quick Number Lookup -->
+        <div class="rounded-xl bg-slate-50/90 border border-slate-200/80 p-3 space-y-2">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Inspect Any Number</div>
+            <div class="flex items-center gap-1.5">
+                <input id="lookup-number-input" type="number" min="1" max="9999" value="29"
+                       class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-mono-code text-xs font-semibold text-slate-800 focus:border-indigo-500 focus:outline-none" />
+                <button id="lookup-number-btn" type="button"
+                        class="rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 transition-colors shrink-0">
+                    Focus
+                </button>
+            </div>
+        </div>
+
+        <!-- Guided Discovery Quest -->
+        <div class="rounded-xl bg-emerald-50/70 border border-emerald-200/80 p-3 space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-900">Discovery Quest</span>
+                <span id="quest-step-badge" class="font-mono-code text-[11px] font-bold text-emerald-700">1 / 3</span>
+            </div>
+            <p id="quest-prompt" class="text-xs text-slate-700 leading-relaxed"></p>
+            <div class="flex items-center justify-between gap-2 pt-0.5">
+                <button id="quest-hint-btn" type="button"
+                        class="rounded-lg bg-white hover:bg-emerald-100/60 border border-emerald-200 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 transition-colors">
+                    Show Hint
+                </button>
+                <button id="quest-next-btn" type="button"
+                        class="rounded-lg bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors">
+                    Next Quest →
+                </button>
+            </div>
+            <p id="quest-hint-text" class="hidden text-[11px] text-emerald-800 bg-white/80 rounded-lg p-2 border border-emerald-100"></p>
+        </div>
+    </aside>
+
+    <!-- Right Inspector & Prime or Not Game Dock -->
+    <aside id="right-panel"
+           class="fixed top-24 sm:top-20 right-2 sm:right-3 bottom-16 sm:bottom-3 z-10 w-[calc(100vw-1rem)] max-w-xs sm:w-80 rounded-2xl bg-white/92 backdrop-blur-md border border-slate-200/85 shadow-lg p-3.5 sm:p-4 overflow-y-auto panel-scroll space-y-4 transition-transform duration-200">
+
+        <!-- Number Inspector Card -->
+        <div id="inspector-card" class="rounded-xl bg-slate-50/90 border border-slate-200/80 p-3.5 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Number Inspector</div>
+                    <div id="inspector-number" class="font-mono-code text-2xl font-extrabold text-slate-900">29</div>
+                </div>
+                <span id="inspector-badge" class="rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold">
+                    Prime
+                </span>
+            </div>
+
+            <p id="inspector-grade-note" class="text-xs text-slate-600 leading-relaxed"></p>
+
+            <!-- Rectangular Array SVG Visual Model -->
+            <div class="rounded-xl bg-white border border-slate-200/80 p-2.5 space-y-1.5">
+                <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    <span>Rectangular Array Model</span>
+                    <span id="array-caption" class="font-mono-code text-slate-700">1 × 29</span>
+                </div>
+                <svg id="array-svg" viewBox="0 0 240 72" class="w-full h-16 rounded-lg bg-slate-50 border border-slate-100"></svg>
+            </div>
+
+            <!-- Prime Factorization & Divisibility X-Ray -->
+            <div class="space-y-1.5 text-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-slate-500 font-medium">Prime Factors:</span>
+                    <span id="inspector-factors" class="font-mono-code font-semibold text-slate-800 text-right">29</span>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-slate-500 font-medium">Divisors:</span>
+                    <span id="inspector-divisors" class="font-mono-code font-semibold text-slate-800 text-right">1, 29</span>
+                </div>
+                <div id="inspector-xray" class="rounded-lg bg-white border border-slate-200/80 p-2 text-[11px] text-slate-600 leading-snug"></div>
+            </div>
+        </div>
+
+        <!-- Prime or Not? Sudden-Death Survival Game -->
+        <div class="rounded-xl bg-indigo-50/70 border border-indigo-200/80 p-3.5 space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-bold text-indigo-950">Prime or Not?</div>
+                    <div class="text-[11px] text-indigo-700/80">One wrong call and you’re out!</div>
+                </div>
+                <div class="text-right font-mono-code">
+                    <div class="text-xs font-extrabold text-indigo-700">Streak: <span id="game-streak">0</span></div>
+                    <div class="text-[10px] font-semibold text-slate-500">Best: <span id="game-best">0</span></div>
+                </div>
+            </div>
+
+            <!-- Range Selector -->
+            <div class="flex items-center justify-between gap-2">
+                <label for="game-range-select" class="text-[11px] font-semibold text-slate-600">Number Range:</label>
+                <select id="game-range-select"
+                        class="rounded-lg border border-slate-200 bg-white px-2 py-1 font-mono-code text-xs font-semibold text-slate-800 focus:border-indigo-500 focus:outline-none">
+                    <option value="50">2 – 50</option>
+                    <option value="100" selected>2 – 100</option>
+                    <option value="250">2 – 250</option>
+                    <option value="500">2 – 500</option>
+                </select>
+            </div>
+
+            <!-- Active Challenge Arena -->
+            <div id="game-active-box" class="rounded-xl bg-white border border-indigo-100 p-3 text-center space-y-2.5">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Is this number Prime or Composite?</div>
+                <div id="game-target-number" class="font-mono-code text-3xl font-extrabold text-slate-900">37</div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="choose-prime-btn" type="button"
+                            class="rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-xs font-bold py-2.5 px-3 shadow-xs transition-all">
+                        Prime (P)
+                    </button>
+                    <button id="choose-composite-btn" type="button"
+                            class="rounded-xl bg-slate-800 hover:bg-slate-900 active:scale-[0.99] text-white text-xs font-bold py-2.5 px-3 shadow-xs transition-all">
+                        Composite (C)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Out / Game Over Breakdown -->
+            <div id="game-over-box" class="hidden rounded-xl bg-rose-50 border border-rose-200 p-3 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold text-rose-700 uppercase tracking-wide">You’re Out!</span>
+                    <span id="game-final-score" class="font-mono-code text-xs font-bold text-rose-800">Score: 0</span>
+                </div>
+                <p id="game-out-reason" class="text-xs text-rose-900 leading-snug"></p>
+                <button id="game-restart-btn" type="button"
+                        class="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2 px-3 transition-colors">
+                    Play Again in Chosen Range
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // =========================================================================
+        // 1. PURE NUMBER THEORY UTILITIES
+        // =========================================================================
+        function isPrime(n) {
+            if (!Number.isInteger(n) || n < 2) return false;
+            if (n === 2 || n === 3) return true;
+            if (n % 2 === 0 || n % 3 === 0) return false;
+            for (let i = 5; i * i <= n; i += 6) {
+                if (n % i === 0 || n % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+
+        function getPrimeFactors(n) {
+            if (n < 2) return [];
+            const factors = [];
+            let rem = n;
+            while (rem % 2 === 0) {
+                factors.push(2);
+                rem /= 2;
+            }
+            let d = 3;
+            while (d * d <= rem) {
+                while (rem % d === 0) {
+                    factors.push(d);
+                    rem /= d;
+                }
+                d += 2;
+            }
+            if (rem > 1) factors.push(rem);
+            return factors;
+        }
+
+        function getDivisors(n) {
+            if (!Number.isInteger(n) || n < 1) return [];
+            const small = [];
+            const large = [];
+            for (let d = 1; d * d <= n; d++) {
+                if (n % d === 0) {
+                    small.push(d);
+                    if (d * d !== n) large.push(n / d);
+                }
+            }
+            return small.concat(large.reverse());
+        }
+
+        // Mersenne primes of form 2^p - 1 where p is prime and result is prime
+        const KNOWN_MERSENNE = new Set([3, 7, 31, 127, 8191]);
+        function isMersennePrime(n) {
+            return KNOWN_MERSENNE.has(n);
+        }
+
+        function isTwinPrime(n) {
+            return isPrime(n) && (isPrime(n - 2) || isPrime(n + 2));
+        }
+
+        function isEulerPrimeValue(n) {
+            // Matches n^2 + n + 41 for integer n >= 0
+            const disc = 1 - 4 * (41 - n);
+            if (disc < 0) return false;
+            const sqrtDisc = Math.round(Math.sqrt(disc));
+            if (sqrtDisc * sqrtDisc !== disc) return false;
+            const candidate = (-1 + sqrtDisc) / 2;
+            return candidate >= 0 && Number.isInteger(candidate);
+        }
+
+        function getGoldbachPairs(evenN) {
+            const pairs = [];
+            for (let p = 2; p <= evenN / 2; p++) {
+                const q = evenN - p;
+                if (isPrime(p) && isPrime(q)) {
+                    pairs.push([p, q]);
+                }
+            }
+            return pairs;
+        }
+
+        function formatFactorizationString(factors) {
+            if (!factors.length) return 'None (Unit / 1)';
+            const counts = new Map();
+            factors.forEach(f => counts.set(f, (counts.get(f) || 0) + 1));
+            const superscripts = { '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+            return Array.from(counts.entries()).map(([base, exp]) => {
+                if (exp === 1) return String(base);
+                const sup = String(exp).split('').map(ch => superscripts[ch] || `^${ch}`).join('');
+                return `${base}${sup}`;
+            }).join(' × ');
+        }
+
+        // =========================================================================
+        // 2. APPLICATION STATE & QUEST DATA
+        // =========================================================================
+        const state = {
+            mode: 'spiral',        // 'spiral' | 'tree' | 'goldbach'
+            gradeBand: '5-8',      // '5-8' | '9-12'
+            spiralRange: 225,
+            selectedNumber: 29,
+            treeNumber: 360,
+            goldbachSum: 100,
+            layers: {
+                primes: true,
+                composites: true,
+                mersenne: true,
+                twins: true,
+                euler: false,
+                labels: true
+            },
+            sieve: {
+                active: false,
+                currentPrimeIndex: 0,
+                primeList: [],
+                eliminated: new Set(),
+                lastActivePrime: null,
+                lastEliminated: []
+            },
+            game: {
+                rangeMax: 100,
+                currentNumber: 37,
+                streak: 0,
+                bestStreak: 0,
+                isOut: false,
+                usedNumbers: new Set()
+            },
+            questIndex: 0
+        };
+
+        const QUESTS = [
+            {
+                prompt: 'Set the Ulam Spiral range to 100+ and turn on Twin Primes. Click a prime pair separated by 2—like 11 and 13—to inspect their twin relationship.',
+                hint: 'Look for indigo spheres connected by a thin violet filament on the spiral.'
+            },
+            {
+                prompt: 'Switch to Factor Tree and build 360. Notice how 360 splits into prime leaves (2, 3, 5) no matter which factor pair you start with.',
+                hint: 'Click the "360" preset button under Factor Tree, then use ↓ Down or right-drag to follow branches.'
+            },
+            {
+                prompt: 'Open Goldbach Lab and slide N to 100. Compare wide arches like 3 + 97 against tighter arches like 47 + 53.',
+                hint: 'Wide arches span farther across the number line; arches near the middle have smaller gaps (q − p).'
+            }
+        ];
+
+        // =========================================================================
+        // 3. THREE.JS SCENE, LIGHTING & CAMERA SETUP
+        // =========================================================================
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#F8FAFC');
+        scene.fog = new THREE.FogExp2('#F8FAFC', 0.0055);
+
+        const camera = new THREE.PerspectiveCamera(
+            48,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            400
+        );
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Studio Lighting (Bright Alabaster Theme)
+        const ambientLight = new THREE.AmbientLight('#FFFFFF', 0.82);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight('#FFFBEB', 0.95);
+        dirLight.position.set(28, 46, 32);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        dirLight.shadow.camera.near = 5;
+        dirLight.shadow.camera.far = 140;
+        const d = 38;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
+
+        const rimLight = new THREE.DirectionalLight('#C7D2FE', 0.45);
+        rimLight.position.set(-25, 18, -28);
+        scene.add(rimLight);
+
+        // Subtle Architectural Grid Floor
+        const gridHelper = new THREE.GridHelper(90, 45, '#CBD5E1', '#E2E8F0');
+        gridHelper.position.y = -6;
+        scene.add(gridHelper);
+
+        // Dedicated Groups per Mode
+        const spiralGroup = new THREE.Group();
+        const treeGroup = new THREE.Group();
+        const goldbachGroup = new THREE.Group();
+        const labelsGroup = new THREE.Group();
+        scene.add(spiralGroup, treeGroup, goldbachGroup, labelsGroup);
+
+        // Shared Geometries & Materials
+        const sphereGeo = new THREE.SphereGeometry(0.46, 24, 24);
+        const octaGeo = new THREE.OctahedronGeometry(0.56, 0);
+        const sievedGeo = new THREE.SphereGeometry(0.28, 14, 14);
+        const selectionRingGeo = new THREE.RingGeometry(0.68, 0.86, 32);
+
+        const selectionRingMat = new THREE.MeshBasicMaterial({
+            color: '#4F46E5',
+            side: THREE.DoubleSide
+        });
+        const selectionRing = new THREE.Mesh(selectionRingGeo, selectionRingMat);
+        selectionRing.rotation.x = -Math.PI / 2;
+        selectionRing.visible = false;
+        scene.add(selectionRing);
+
+        // Camera Orbit, Zoom & Pan State
+        let isPointerDown = false;
+        let isPanningDrag = false;
+        let pointerMoved = false;
+        let pointerDownPos = { x: 0, y: 0 };
+        let prevPointerPos = { x: 0, y: 0 };
+        const DEFAULT_RADIUS = 52;
+        const MIN_RADIUS = 8;
+        const MAX_RADIUS = 135;
+        let spherical = { radius: DEFAULT_RADIUS, theta: 0.45, phi: 1.02 };
+        let orbitCenter = new THREE.Vector3(0, 0, 0);
+        let cameraFocusTarget = null;
+        let activeTouches = new Map();
+        let lastPinchDistance = null;
+
+        // Intro zoom-in and zoom-out sweep state on initial load
+        const introSweep = {
+            active: true,
+            elapsed: 0,
+            duration: 2.3,
+            startRadius: 96,
+            peakZoomRadius: 21,
+            endRadius: DEFAULT_RADIUS,
+            startTheta: 0.12,
+            endTheta: 0.45,
+            startPhi: 1.24,
+            endPhi: 1.02
+        };
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function cancelIntroSweep() {
+            introSweep.active = false;
+        }
+
+        function syncZoomBadge() {
+            const badge = document.getElementById('zoom-percent-badge');
+            if (!badge) return;
+            const pct = Math.round((DEFAULT_RADIUS / spherical.radius) * 100);
+            badge.textContent = `${pct}%`;
+        }
+
+        function setCameraZoomRadius(newRadius) {
+            cameraFocusTarget = null;
+            spherical.radius = Math.max(MIN_RADIUS, Math.min(MAX_RADIUS, newRadius));
+            updateCameraFromSpherical();
+            syncZoomBadge();
+        }
+
+        function focusCameraOnPoint(worldPoint, zoomRadius = null) {
+            cancelIntroSweep();
+            cameraFocusTarget = {
+                center: new THREE.Vector3(worldPoint.x, worldPoint.y, worldPoint.z),
+                radius: zoomRadius !== null
+                    ? Math.max(MIN_RADIUS, Math.min(MAX_RADIUS, zoomRadius))
+                    : spherical.radius
+            };
+        }
+
+        function zoomByFactor(factor) {
+            setCameraZoomRadius(spherical.radius * factor);
+        }
+
+        function panCameraBy(deltaRight, deltaUp, deltaForward = 0) {
+            cameraFocusTarget = null;
+            const forward = new THREE.Vector3();
+            camera.getWorldDirection(forward);
+            forward.y = 0;
+            if (forward.lengthSq() < 1e-6) {
+                forward.set(0, 0, -1);
+            } else {
+                forward.normalize();
+            }
+            const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+            orbitCenter.x += right.x * deltaRight + forward.x * deltaForward;
+            orbitCenter.z += right.z * deltaRight + forward.z * deltaForward;
+            orbitCenter.y = Math.max(-28, Math.min(28, orbitCenter.y + deltaUp));
+            updateCameraFromSpherical();
+        }
+
+        function resetCameraView() {
+            cameraFocusTarget = null;
+            if (state.mode === 'tree') {
+                orbitCenter.set(0, -1, 0);
+                spherical.theta = 0;
+                spherical.phi = 1.28;
+                spherical.radius = 44;
+            } else if (state.mode === 'goldbach') {
+                orbitCenter.set(0, 2, 0);
+                spherical.theta = 0.2;
+                spherical.phi = 1.15;
+                spherical.radius = 46;
+            } else {
+                orbitCenter.set(0, 0, 0);
+                spherical.theta = 0.45;
+                spherical.phi = 1.02;
+                spherical.radius = DEFAULT_RADIUS;
+            }
+            updateCameraFromSpherical();
+            syncZoomBadge();
+        }
+
+        function updateCameraFromSpherical() {
+            spherical.phi = Math.max(0.15, Math.min(Math.PI - 0.15, spherical.phi));
+            spherical.radius = Math.max(MIN_RADIUS, Math.min(MAX_RADIUS, spherical.radius));
+            camera.position.x = orbitCenter.x + spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
+            camera.position.y = orbitCenter.y + spherical.radius * Math.cos(spherical.phi);
+            camera.position.z = orbitCenter.z + spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
+            camera.lookAt(orbitCenter);
+        }
+        updateCameraFromSpherical();
+        syncZoomBadge();
+
+        // =========================================================================
+        // 4. 3D NUMBER BILLBOARD LABELS
+        // =========================================================================
+        function clearGroup(group) {
+            while (group.children.length > 0) {
+                const child = group.children[0];
+                if (child.material && child.material.map) {
+                    child.material.map.dispose();
+                }
+                if (child.material && child.material !== selectionRingMat) {
+                    child.material.dispose();
+                }
+                group.remove(child);
+            }
+        }
+
+        function createNumberSprite(numText, isPrimeVal, isSelected) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 160;
+            canvas.height = 80;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = `800 ${isSelected ? 40 : 34}px "JetBrains Mono", monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            ctx.lineWidth = 7;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.96)';
+            ctx.strokeText(numText, canvas.width / 2, canvas.height / 2);
+
+            ctx.fillStyle = isSelected ? '#4338CA' : (isPrimeVal ? '#047857' : '#1E293B');
+            ctx.fillText(numText, canvas.width / 2, canvas.height / 2);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.needsUpdate = true;
+            const mat = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                depthTest: false,
+                depthWrite: false
+            });
+            const sprite = new THREE.Sprite(mat);
+            const baseW = isSelected ? 2.15 : 1.5;
+            const baseH = isSelected ? 1.08 : 0.75;
+            sprite.scale.set(baseW, baseH, 1);
+            sprite.userData.baseScale = { x: baseW, y: baseH };
+            sprite.renderOrder = 25;
+            return sprite;
+        }
+
+        function addNumberLabel(num, worldPos, isPrimeVal, yOffset = 0.85) {
+            if (!state.layers.labels) return;
+            const sprite = createNumberSprite(String(num), isPrimeVal, num === state.selectedNumber);
+            sprite.position.set(worldPos.x, worldPos.y + yOffset, worldPos.z);
+            labelsGroup.add(sprite);
+            return sprite;
+        }
+
+        function attachFlowInAnimation(mesh, targetPos, targetScale, targetColorHex, index = 0, labelSprite = null, labelYOffset = 0.85) {
+            // Stagger flow-in arrival so numbers stream in and assemble smoothly
+            const delay = Math.min(0.95, index * 0.0045);
+            const duration = 0.68;
+            const radialAngle = index * 0.65;
+            const radialSpread = Math.min(14, 2.2 + (index % 24) * 0.35);
+
+            const startPos = new THREE.Vector3(
+                targetPos.x + Math.cos(radialAngle) * radialSpread,
+                targetPos.y + 11.5 + (index % 7) * 1.1,
+                targetPos.z + Math.sin(radialAngle) * radialSpread
+            );
+
+            const incomingColor = new THREE.Color('#94A3B8');
+            const landedColor = new THREE.Color(targetColorHex);
+
+            mesh.position.copy(startPos);
+            mesh.scale.setScalar(Math.max(0.25, targetScale * 0.55));
+            mesh.material.color.copy(incomingColor);
+
+            if (labelSprite) {
+                labelSprite.position.set(startPos.x, startPos.y + labelYOffset, startPos.z);
+                labelSprite.material.opacity = 0.25;
+            }
+
+            mesh.userData.flowAnim = {
+                elapsed: 0,
+                delay,
+                duration,
+                startPos,
+                targetPos: new THREE.Vector3(targetPos.x, targetPos.y, targetPos.z),
+                targetScale,
+                targetLabelYOffset: labelYOffset,
+                labelSprite,
+                hasLanded: false,
+                incomingColor,
+                landedColor
+            };
+        }
+
+        function stepFlowInAnimations(group, dt) {
+            let anyActive = false;
+            group.children.forEach(child => {
+                const anim = child.userData && child.userData.flowAnim;
+                if (!anim) return;
+
+                anim.elapsed += dt;
+                if (anim.elapsed < anim.delay) {
+                    anyActive = true;
+                    return;
+                }
+
+                const rawT = Math.min(1, (anim.elapsed - anim.delay) / anim.duration);
+                const eased = easeInOutCubic(rawT);
+
+                child.position.lerpVectors(anim.startPos, anim.targetPos, eased);
+                const currentScale = (anim.targetScale * 0.55) + (anim.targetScale * 0.45) * eased;
+                child.scale.setScalar(currentScale);
+
+                if (anim.labelSprite) {
+                    anim.labelSprite.position.set(
+                        child.position.x,
+                        child.position.y + anim.targetLabelYOffset,
+                        child.position.z
+                    );
+                    anim.labelSprite.material.opacity = 0.25 + 0.75 * eased;
+                }
+
+                // Shift color right after falling/landing into place
+                if (rawT >= 1) {
+                    if (!anim.hasLanded) {
+                        anim.hasLanded = true;
+                        anim.landTimer = 0;
+                    }
+                    anim.landTimer = (anim.landTimer || 0) + dt;
+                    const colorT = Math.min(1, anim.landTimer / 0.28);
+                    child.material.color.lerpColors(anim.incomingColor, anim.landedColor, colorT);
+                    if (colorT >= 1) {
+                        delete child.userData.flowAnim;
+                    } else {
+                        anyActive = true;
+                    }
+                } else {
+                    anyActive = true;
+                }
+            });
+            return anyActive;
+        }
+
+        function updateLabelScalesForCamera() {
+            if (!state.layers.labels || labelsGroup.children.length === 0) return;
+            const distFactor = Math.max(0.75, Math.min(1.65, spherical.radius / 46));
+            labelsGroup.children.forEach(sprite => {
+                const base = sprite.userData && sprite.userData.baseScale;
+                if (base) {
+                    sprite.scale.set(base.x * distFactor, base.y * distFactor, 1);
+                }
+            });
+        }
+
+        // =========================================================================
+        // 5. ULAM SPIRAL & INTEGRATED SIEVE OF ERATOSTHENES BUILDER
+        // =========================================================================
+        function getSpiralCoordinates(n) {
+            // Standard counterclockwise square spiral starting at 1 at (0, 0)
+            if (n === 1) return { x: 0, z: 0 };
+            let x = 0;
+            let z = 0;
+            let step = 1;
+            let current = 1;
+
+            while (current < n) {
+                // Move right (+x)
+                for (let i = 0; i < step && current < n; i++) {
+                    x += 1;
+                    current += 1;
+                }
+                // Move up (-z)
+                for (let i = 0; i < step && current < n; i++) {
+                    z -= 1;
+                    current += 1;
+                }
+                step += 1;
+                // Move left (-x)
+                for (let i = 0; i < step && current < n; i++) {
+                    x -= 1;
+                    current += 1;
+                }
+                // Move down (+z)
+                for (let i = 0; i < step && current < n; i++) {
+                    z += 1;
+                    current += 1;
+                }
+                step += 1;
+            }
+            const spacing = 1.65;
+            return { x: x * spacing, z: z * spacing };
+        }
+
+        function buildSpiralScene() {
+            clearGroup(spiralGroup);
+            clearGroup(labelsGroup);
+            selectionRing.visible = false;
+
+            const N = state.spiralRange;
+            const primeCoords = new Map();
+            const showLabels = state.layers.labels;
+            let flowIndex = 0;
+
+            for (let n = 1; n <= N; n++) {
+                const prime = isPrime(n);
+                const isEliminated = state.sieve.active && state.sieve.eliminated.has(n);
+                const isJustEliminated = state.sieve.active && state.sieve.lastEliminated.includes(n);
+                const isCurrentSievePrime = state.sieve.active && state.sieve.lastActivePrime === n;
+
+                if (prime && !state.layers.primes) continue;
+                if (!prime && !state.layers.composites) continue;
+
+                const coord = getSpiralCoordinates(n);
+                const yPos = isEliminated ? -0.45 : (prime ? 0.35 : 0);
+
+                let geo = sphereGeo;
+                let colorHex = '#CBD5E1';
+                let scale = 0.72;
+
+                if (isEliminated) {
+                    geo = sievedGeo;
+                    colorHex = isJustEliminated ? '#FB7185' : '#E2E8F0';
+                    scale = isJustEliminated ? 0.85 : 0.55;
+                } else if (prime) {
+                    colorHex = '#10B981';
+                    scale = 1.05;
+
+                    if (state.layers.mersenne && isMersennePrime(n)) {
+                        geo = octaGeo;
+                        colorHex = '#F59E0B';
+                        scale = 1.25;
+                    } else if (state.layers.twins && isTwinPrime(n)) {
+                        colorHex = '#4F46E5';
+                        scale = 1.12;
+                    }
+
+                    if (state.layers.euler && isEulerPrimeValue(n)) {
+                        colorHex = '#E11D48';
+                        scale = 1.22;
+                    }
+
+                    if (isCurrentSievePrime) {
+                        colorHex = '#0284C7';
+                        scale = 1.38;
+                    }
+                    primeCoords.set(n, { x: coord.x, y: yPos, z: coord.z });
+                } else {
+                    if (state.layers.euler && isEulerPrimeValue(n)) {
+                        colorHex = '#FDA4AF';
+                    }
+                }
+
+                const mat = new THREE.MeshStandardMaterial({
+                    color: colorHex,
+                    roughness: 0.32,
+                    metalness: prime ? 0.2 : 0.05
+                });
+
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(coord.x, yPos, coord.z);
+                mesh.scale.setScalar(scale);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                mesh.userData = { number: n, isPrime: prime };
+                spiralGroup.add(mesh);
+
+                if (n === state.selectedNumber) {
+                    selectionRing.position.set(coord.x, yPos - 0.22, coord.z);
+                    selectionRing.visible = true;
+                }
+                let labelSprite = null;
+                if (showLabels) {
+                    labelSprite = addNumberLabel(n, { x: coord.x, y: yPos, z: coord.z }, prime, 0.82);
+                }
+                attachFlowInAnimation(
+                    mesh,
+                    { x: coord.x, y: yPos, z: coord.z },
+                    scale,
+                    colorHex,
+                    flowIndex++,
+                    labelSprite,
+                    0.82
+                );
+            }
+            updateLabelScalesForCamera();
+
+            // Twin Prime Filaments on the Spiral
+            if (state.layers.twins && state.layers.primes) {
+                const filamentMat = new THREE.LineBasicMaterial({
+                    color: '#6366F1',
+                    transparent: true,
+                    opacity: 0.55
+                });
+                primeCoords.forEach((posA, p) => {
+                    if (isPrime(p + 2) && primeCoords.has(p + 2)) {
+                        const posB = primeCoords.get(p + 2);
+                        const points = [
+                            new THREE.Vector3(posA.x, posA.y + 0.15, posA.z),
+                            new THREE.Vector3((posA.x + posB.x) / 2, Math.max(posA.y, posB.y) + 0.75, (posA.z + posB.z) / 2),
+                            new THREE.Vector3(posB.x, posB.y + 0.15, posB.z)
+                        ];
+                        const curve = new THREE.CatmullRomCurve3(points);
+                        const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(14));
+                        spiralGroup.add(new THREE.Line(lineGeo, filamentMat));
+                    }
+                });
+            }
+
+            // Active Sieve Wave Connectors (from prime p to multiples eliminated in this step)
+            if (state.sieve.active && state.sieve.lastActivePrime && state.sieve.lastEliminated.length > 0) {
+                const pCoord = getSpiralCoordinates(state.sieve.lastActivePrime);
+                const beamMat = new THREE.LineBasicMaterial({
+                    color: '#E11D48',
+                    transparent: true,
+                    opacity: 0.75
+                });
+                state.sieve.lastEliminated.slice(0, 28).forEach(mult => {
+                    const mCoord = getSpiralCoordinates(mult);
+                    const pts = [
+                        new THREE.Vector3(pCoord.x, 1.1, pCoord.z),
+                        new THREE.Vector3((pCoord.x + mCoord.x) / 2, 2.2, (pCoord.z + mCoord.z) / 2),
+                        new THREE.Vector3(mCoord.x, -0.35, mCoord.z)
+                    ];
+                    const curve = new THREE.CatmullRomCurve3(pts);
+                    const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(12));
+                    spiralGroup.add(new THREE.Line(geo, beamMat));
+                });
+            }
+        }
+
+        function computeSievePrimesUpTo(limit) {
+            const primes = [];
+            for (let i = 2; i * i <= limit; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            return primes;
+        }
+
+        function resetSieve() {
+            state.sieve.active = false;
+            state.sieve.currentPrimeIndex = 0;
+            state.sieve.primeList = [];
+            state.sieve.eliminated = new Set();
+            state.sieve.lastActivePrime = null;
+            state.sieve.lastEliminated = [];
+            document.getElementById('sieve-status-badge').textContent = 'Ready';
+            document.getElementById('sieve-explanation').textContent =
+                'Step or run through prime multiples right on the spiral to see which diagonal rays survive.';
+            if (state.mode === 'spiral') buildSpiralScene();
+        }
+
+        function stepSieve() {
+            if (!state.sieve.active) {
+                state.sieve.active = true;
+                state.sieve.currentPrimeIndex = 0;
+                state.sieve.primeList = computeSievePrimesUpTo(state.spiralRange);
+                state.sieve.eliminated = new Set([1]);
+                state.sieve.lastActivePrime = null;
+                state.sieve.lastEliminated = [];
+            }
+
+            if (state.sieve.currentPrimeIndex >= state.sieve.primeList.length) {
+                state.sieve.lastActivePrime = null;
+                state.sieve.lastEliminated = [];
+                document.getElementById('sieve-status-badge').textContent = 'Complete';
+                document.getElementById('sieve-explanation').textContent =
+                    `All multiples up to ${state.spiralRange} are filtered—surviving nodes are prime!`;
+                buildSpiralScene();
+                return false;
+            }
+
+            const p = state.sieve.primeList[state.sieve.currentPrimeIndex];
+            state.sieve.currentPrimeIndex += 1;
+            const newlyEliminated = [];
+
+            for (let m = p * p; m <= state.spiralRange; m += p) {
+                if (!state.sieve.eliminated.has(m)) {
+                    state.sieve.eliminated.add(m);
+                    newlyEliminated.push(m);
+                }
+            }
+
+            state.sieve.lastActivePrime = p;
+            state.sieve.lastEliminated = newlyEliminated;
+
+            document.getElementById('sieve-status-badge').textContent = `Prime ${p}`;
+            document.getElementById('sieve-explanation').textContent =
+                newlyEliminated.length > 0
+                    ? `Filtered ${newlyEliminated.length} multiple(s) of ${p} (starting at ${p * p}).`
+                    : `All multiples of ${p} up to ${state.spiralRange} were already filtered.`;
+
+            buildSpiralScene();
+            return true;
+        }
+
+        let sieveIntervalId = null;
+        function runSieveToCompletion() {
+            if (sieveIntervalId) {
+                clearInterval(sieveIntervalId);
+                sieveIntervalId = null;
+            }
+            if (!state.sieve.active || state.sieve.currentPrimeIndex >= state.sieve.primeList.length) {
+                resetSieve();
+                stepSieve();
+            }
+            sieveIntervalId = setInterval(() => {
+                const hasMore = stepSieve();
+                if (!hasMore) {
+                    clearInterval(sieveIntervalId);
+                    sieveIntervalId = null;
+                }
+            }, 420);
+        }
+
+        // =========================================================================
+        // 6. PRIME FACTORIZATION TREE BUILDER
+        // =========================================================================
+        let treeReplayTimerId = null;
+
+        function clearTreeReplayTimer() {
+            if (treeReplayTimerId) {
+                clearTimeout(treeReplayTimerId);
+                treeReplayTimerId = null;
+            }
+        }
+
+        function setTreeReplayStatus(text) {
+            const statusEl = document.getElementById('tree-replay-status');
+            if (statusEl) statusEl.textContent = text;
+        }
+
+        function splitForTree(n) {
+            if (n < 2 || isPrime(n)) return null;
+            for (let d = 2; d * d <= n; d++) {
+                if (n % d === 0) return [d, n / d];
+            }
+            return null;
+        }
+
+        function buildFactorTreeScene(options = {}) {
+            const { replay = false } = options;
+            clearTreeReplayTimer();
+            clearGroup(treeGroup);
+            clearGroup(labelsGroup);
+            selectionRing.visible = false;
+
+            const rootVal = Math.max(2, Math.min(9999, Math.round(state.treeNumber || 360)));
+            state.treeNumber = rootVal;
+            document.getElementById('tree-number-input').value = rootVal;
+
+            // Build recursive tree structure with downward Y layers
+            function buildNode(val, depth, xMin, xMax, zOffset, parentNode = null) {
+                const x = (xMin + xMax) / 2;
+                const y = 7 - depth * 3.1;
+                const node = {
+                    val,
+                    depth,
+                    parent: parentNode,
+                    pos: new THREE.Vector3(x, y, zOffset),
+                    left: null,
+                    right: null
+                };
+                const pair = splitForTree(val);
+                if (pair) {
+                    const midX = (xMin + xMax) / 2;
+                    node.left = buildNode(pair[0], depth + 1, xMin, midX, zOffset + 0.6, node);
+                    node.right = buildNode(pair[1], depth + 1, midX, xMax, zOffset - 0.6, node);
+                }
+                return node;
+            }
+
+            const rootNode = buildNode(rootVal, 0, -14, 14, 0, null);
+            const orderedSteps = [];
+
+            function collectSteps(node) {
+                orderedSteps.push(node);
+                if (node.left) collectSteps(node.left);
+                if (node.right) collectSteps(node.right);
+            }
+            collectSteps(rootNode);
+
+            let treeFlowIndex = 0;
+
+            function spawnNodeVisual(node, animateFlow = true) {
+                if (node.parent) {
+                    const branchGeo = new THREE.BufferGeometry().setFromPoints([node.parent.pos, node.pos]);
+                    const branchMat = new THREE.LineBasicMaterial({
+                        color: isPrime(node.val) ? '#10B981' : '#94A3B8'
+                    });
+                    treeGroup.add(new THREE.Line(branchGeo, branchMat));
+                }
+
+                const prime = isPrime(node.val);
+                const nodeColorHex = prime ? '#10B981' : '#4F46E5';
+                const nodeScale = prime ? 1.15 : 0.95;
+                const mat = new THREE.MeshStandardMaterial({
+                    color: nodeColorHex,
+                    roughness: 0.3,
+                    metalness: prime ? 0.25 : 0.1
+                });
+                const mesh = new THREE.Mesh(prime ? octaGeo : sphereGeo, mat);
+                mesh.position.copy(node.pos);
+                mesh.scale.setScalar(nodeScale);
+                mesh.castShadow = true;
+                mesh.userData = { number: node.val, isPrime: prime };
+                treeGroup.add(mesh);
+
+                const labelSprite = addNumberLabel(node.val, node.pos, prime, 0.85);
+                if (animateFlow) {
+                    attachFlowInAnimation(mesh, node.pos, nodeScale, nodeColorHex, treeFlowIndex++, labelSprite, 0.85);
+                }
+            }
+
+            if (!replay) {
+                orderedSteps.forEach(node => spawnNodeVisual(node, true));
+                if (isPrime(rootVal)) {
+                    setTreeReplayStatus(`${rootVal} is already prime—no further splits needed.`);
+                } else {
+                    const factors = getPrimeFactors(rootVal);
+                    setTreeReplayStatus(`Complete tree for ${rootVal} = ${formatFactorizationString(factors)}.`);
+                }
+            } else {
+                let stepIdx = 0;
+                const playNextStep = () => {
+                    if (state.mode !== 'tree' || stepIdx >= orderedSteps.length) {
+                        const factors = getPrimeFactors(rootVal);
+                        setTreeReplayStatus(
+                            isPrime(rootVal)
+                                ? `${rootVal} is prime—replay finished.`
+                                : `Replay complete: ${rootVal} = ${formatFactorizationString(factors)}.`
+                        );
+                        treeReplayTimerId = null;
+                        return;
+                    }
+
+                    const currentNode = orderedSteps[stepIdx];
+                    spawnNodeVisual(currentNode, true);
+
+                    if (!currentNode.parent) {
+                        setTreeReplayStatus(
+                            isPrime(currentNode.val)
+                                ? `Start at ${currentNode.val} (prime leaf).`
+                                : `Start at ${currentNode.val} and split into factor branches…`
+                        );
+                    } else if (isPrime(currentNode.val)) {
+                        setTreeReplayStatus(
+                            `Branch ${currentNode.parent.val} → ${currentNode.val} (prime leaf locked in).`
+                        );
+                    } else {
+                        setTreeReplayStatus(
+                            `Split ${currentNode.parent.val} → ${currentNode.val} (composite, keeps splitting).`
+                        );
+                    }
+
+                    stepIdx += 1;
+                    treeReplayTimerId = setTimeout(playNextStep, 620);
+                };
+
+                playNextStep();
+            }
+
+            updateLabelScalesForCamera();
+            updateInspector(rootVal);
+        }
+
+        function replayFactorTree() {
+            if (state.mode !== 'tree') {
+                switchMode('tree');
+            }
+            buildFactorTreeScene({ replay: true });
+        }
+
+        // =========================================================================
+        // 7. GOLDBACH CONJECTURE ARCHES LAB BUILDER
+        // =========================================================================
+        let goldbachArchMeshes = [];
+
+        function buildGoldbachLab() {
+            clearGroup(goldbachGroup);
+            clearGroup(labelsGroup);
+            selectionRing.visible = false;
+            goldbachArchMeshes = [];
+
+            const N = Math.max(4, Math.min(200, Math.round(state.goldbachSum)));
+            state.goldbachSum = N;
+            document.getElementById('goldbach-value-badge').textContent = N;
+
+            const pairs = getGoldbachPairs(N);
+            document.getElementById('goldbach-summary').textContent =
+                `${pairs.length} prime pair${pairs.length === 1 ? '' : 's'} found for ${N} = p + q.`;
+
+            // Base Number Line Axis
+            const spanHalf = 16;
+            const axisGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(-spanHalf, -1, 0),
+                new THREE.Vector3(spanHalf, -1, 0)
+            ]);
+            goldbachGroup.add(new THREE.Line(axisGeo, new THREE.LineBasicMaterial({ color: '#94A3B8' })));
+
+            const mapToX = (val) => ((val / N) - 0.5) * (spanHalf * 2);
+
+            // Place endpoints & labels for primes up to N
+            for (let k = 2; k <= N; k++) {
+                if (!isPrime(k)) continue;
+                const xPos = mapToX(k);
+                const dot = new THREE.Mesh(
+                    sievedGeo,
+                    new THREE.MeshStandardMaterial({ color: '#10B981', roughness: 0.35 })
+                );
+                dot.position.set(xPos, -1, 0);
+                dot.userData = { number: k, isPrime: true };
+                goldbachGroup.add(dot);
+
+                if (state.layers.labels) {
+                    addNumberLabel(k, { x: xPos, y: -1, z: 0 }, true, -1.25);
+                }
+            }
+
+            // Build parabolic 3D arches for each pair (p, q)
+            const colorWide = new THREE.Color('#4F46E5');
+            const colorMid = new THREE.Color('#8B5CF6');
+            const colorTight = new THREE.Color('#10B981');
+
+            pairs.forEach(([p, q]) => {
+                const x1 = mapToX(p);
+                const x2 = mapToX(q);
+                const gap = q - p;
+                const tightness = 1 - Math.min(1, gap / Math.max(1, N - 4)); // 0 = wide, 1 = tight near N/2
+
+                const archColor = new THREE.Color();
+                if (tightness < 0.5) {
+                    archColor.lerpColors(colorWide, colorMid, tightness * 2);
+                } else {
+                    archColor.lerpColors(colorMid, colorTight, (tightness - 0.5) * 2);
+                }
+
+                if (p === q) {
+                    // Glowing emerald beacon right at the center when N/2 itself is prime
+                    const beacon = new THREE.Mesh(
+                        octaGeo,
+                        new THREE.MeshStandardMaterial({ color: '#10B981', roughness: 0.25, metalness: 0.2 })
+                    );
+                    beacon.position.set(x1, -0.35, 0);
+                    beacon.scale.setScalar(0.95);
+                    beacon.userData = {
+                        goldbachPair: [p, q],
+                        sum: N,
+                        gap: 0
+                    };
+                    goldbachGroup.add(beacon);
+                    goldbachArchMeshes.push(beacon);
+                    return;
+                }
+
+                const archHeight = Math.max(1.4, (gap / N) * 14.5 + 1.2);
+                const midX = (x1 + x2) / 2;
+                const zCurve = ((p % 5) - 2) * 0.45;
+
+                const curve = new THREE.QuadraticBezierCurve3(
+                    new THREE.Vector3(x1, -1, 0),
+                    new THREE.Vector3(midX, -1 + archHeight * 1.35, zCurve),
+                    new THREE.Vector3(x2, -1, 0)
+                );
+
+                const tubeGeo = new THREE.TubeGeometry(curve, 28, 0.085, 8, false);
+                const tubeMat = new THREE.MeshStandardMaterial({
+                    color: archColor,
+                    roughness: 0.3,
+                    metalness: 0.1
+                });
+                const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
+                tubeMesh.userData = {
+                    goldbachPair: [p, q],
+                    sum: N,
+                    gap
+                };
+                goldbachGroup.add(tubeMesh);
+                goldbachArchMeshes.push(tubeMesh);
+            });
+            updateLabelScalesForCamera();
+        }
+
+        // =========================================================================
+        // 8. INSPECTOR, ARRAY SVG & GRADE-ADAPTIVE EXPLANATIONS
+        // =========================================================================
+        function renderRectangularArraySVG(n) {
+            const svg = document.getElementById('array-svg');
+            const caption = document.getElementById('array-caption');
+            if (!svg || !caption) return;
+
+            while (svg.firstChild) {
+                svg.removeChild(svg.firstChild);
+            }
+
+            const safeNum = Math.max(1, Math.min(9999, Math.round(Number(n) || 1)));
+            const prime = isPrime(safeNum);
+            let rows = 1;
+            let cols = safeNum;
+
+            if (!prime && safeNum > 1) {
+                for (let d = Math.floor(Math.sqrt(safeNum)); d >= 2; d--) {
+                    if (safeNum % d === 0) {
+                        rows = d;
+                        cols = safeNum / d;
+                        break;
+                    }
+                }
+            }
+
+            const maxCols = Math.min(cols, 18);
+            const maxRows = Math.min(rows, 5);
+            const isTruncated = (cols > maxCols) || (rows > maxRows);
+            caption.textContent = isTruncated
+                ? `${rows} × ${cols} (showing ${maxRows}×${maxCols})`
+                : `${rows} × ${cols}`;
+
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const viewW = 240;
+            const viewH = 72;
+            const padX = 12;
+            const padY = 8;
+            const usableW = viewW - padX * 2;
+            const usableH = viewH - padY * 2;
+
+            const gap = maxCols > 12 || maxRows > 3 ? 1.5 : 2.5;
+            const cellW = Math.max(2, Math.min(12, (usableW - gap * (maxCols - 1)) / maxCols));
+            const cellH = Math.max(2, Math.min(12, (usableH - gap * (maxRows - 1)) / maxRows));
+            const totalW = maxCols * cellW + Math.max(0, maxCols - 1) * gap;
+            const totalH = maxRows * cellH + Math.max(0, maxRows - 1) * gap;
+            const startX = (viewW - totalW) / 2;
+            const startY = (viewH - totalH) / 2;
+
+            const fillColor = safeNum === 1 ? '#64748B' : (prime ? '#10B981' : '#4F46E5');
+
+            for (let r = 0; r < maxRows; r++) {
+                for (let c = 0; c < maxCols; c++) {
+                    const rect = document.createElementNS(svgNS, 'rect');
+                    rect.setAttribute('x', (startX + c * (cellW + gap)).toFixed(2));
+                    rect.setAttribute('y', (startY + r * (cellH + gap)).toFixed(2));
+                    rect.setAttribute('width', cellW.toFixed(2));
+                    rect.setAttribute('height', cellH.toFixed(2));
+                    rect.setAttribute('rx', Math.min(2.5, Math.min(cellW, cellH) * 0.25).toFixed(2));
+                    rect.setAttribute('fill', fillColor);
+                    rect.setAttribute('fill-opacity', prime ? '0.92' : '0.84');
+                    svg.appendChild(rect);
+                }
+            }
+        }
+
+        function updateInspector(n) {
+            const safeN = Math.max(1, Math.min(9999, Math.round(n || 1)));
+            state.selectedNumber = safeN;
+            document.getElementById('inspector-number').textContent = safeN;
+
+            const badge = document.getElementById('inspector-badge');
+            const factors = getPrimeFactors(safeN);
+            const divisors = getDivisors(safeN);
+            const prime = isPrime(safeN);
+
+            document.getElementById('inspector-factors').textContent = formatFactorizationString(factors);
+            document.getElementById('inspector-divisors').textContent =
+                divisors.length > 10 ? `${divisors.slice(0, 10).join(', ')}, … (${divisors.length} total)` : divisors.join(', ');
+
+            const specialTags = [];
+            if (isMersennePrime(safeN)) specialTags.push('Mersenne Prime');
+            if (isTwinPrime(safeN)) specialTags.push('Twin Prime');
+            if (isEulerPrimeValue(safeN)) specialTags.push('Euler Diagonal');
+
+            if (safeN === 1) {
+                badge.textContent = 'Unit (Neither)';
+                badge.className = 'rounded-full bg-slate-200 text-slate-700 px-2.5 py-0.5 text-[11px] font-bold';
+            } else if (prime) {
+                badge.textContent = specialTags.length ? `Prime · ${specialTags[0]}` : 'Prime';
+                badge.className = 'rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold';
+            } else {
+                badge.textContent = 'Composite';
+                badge.className = 'rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200 px-2.5 py-0.5 text-[11px] font-bold';
+            }
+
+            const noteEl = document.getElementById('inspector-grade-note');
+            const xrayEl = document.getElementById('inspector-xray');
+
+            if (state.gradeBand === '5-8') {
+                if (safeN === 1) {
+                    noteEl.textContent = '1 is a special unit—it has only 1 factor, while prime numbers must have exactly 2 factors (1 and itself).';
+                } else if (prime) {
+                    noteEl.textContent = `${safeN} is a prime number! You cannot arrange ${safeN} dots into equal multi-row rectangles.`;
+                } else {
+                    noteEl.textContent = `${safeN} is composite because it can be split into equal groups (${formatFactorizationString(factors)}).`;
+                }
+            } else {
+                if (safeN === 1) {
+                    noteEl.textContent = '1 is the multiplicative identity (unit) in ℤ; it is excluded from primes so prime factorization is unique.';
+                } else if (prime) {
+                    noteEl.textContent = `${safeN} is irreducible/prime in ℤ with φ(${safeN}) = ${safeN - 1}; trial division only needs primes ≤ ⌊√${safeN}⌋ = ${Math.floor(Math.sqrt(safeN))}.`;
+                } else {
+                    noteEl.textContent = `By the Fundamental Theorem of Arithmetic, ${safeN} = ${formatFactorizationString(factors)} uniquely, with τ(${safeN}) = ${divisors.length} positive divisors.`;
+                }
+            }
+
+            if (safeN === 1) {
+                xrayEl.textContent = 'Divisibility X-Ray: Only divisible by 1.';
+            } else if (prime) {
+                const limit = Math.floor(Math.sqrt(safeN));
+                xrayEl.textContent = `Divisibility X-Ray: Checked primes up to √${safeN} (${limit})—none divide ${safeN} evenly.`;
+            } else {
+                const firstFactor = factors[0];
+                xrayEl.textContent = `Divisibility X-Ray: Divisible by ${firstFactor} since ${safeN} = ${firstFactor} × ${safeN / firstFactor}.`;
+            }
+
+            renderRectangularArraySVG(safeN);
+        }
+
+        // =========================================================================
+        // 9. PRIME OR NOT? SUDDEN-DEATH SURVIVAL GAME
+        // =========================================================================
+        function pickNextGameNumber() {
+            const maxN = state.game.rangeMax;
+            const candidates = [];
+            for (let n = 2; n <= maxN; n++) {
+                if (!state.game.usedNumbers.has(n)) candidates.push(n);
+            }
+            if (candidates.length === 0) {
+                state.game.usedNumbers.clear();
+                for (let n = 2; n <= maxN; n++) candidates.push(n);
+            }
+            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+            state.game.usedNumbers.add(chosen);
+            state.game.currentNumber = chosen;
+            document.getElementById('game-target-number').textContent = chosen;
+        }
+
+        function startNewGameRound() {
+            state.game.isOut = false;
+            state.game.streak = 0;
+            state.game.usedNumbers.clear();
+            document.getElementById('game-streak').textContent = '0';
+            document.getElementById('game-over-box').classList.add('hidden');
+            document.getElementById('game-active-box').classList.remove('hidden');
+            pickNextGameNumber();
+        }
+
+        function handleGameGuess(guessedPrime) {
+            if (state.game.isOut) return;
+            const target = state.game.currentNumber;
+            const actuallyPrime = isPrime(target);
+
+            if (guessedPrime === actuallyPrime) {
+                state.game.streak += 1;
+                if (state.game.streak > state.game.bestStreak) {
+                    state.game.bestStreak = state.game.streak;
+                }
+                document.getElementById('game-streak').textContent = state.game.streak;
+                document.getElementById('game-best').textContent = state.game.bestStreak;
+                pickNextGameNumber();
+            } else {
+                state.game.isOut = true;
+                document.getElementById('game-active-box').classList.add('hidden');
+                document.getElementById('game-over-box').classList.remove('hidden');
+                document.getElementById('game-final-score').textContent = `Streak: ${state.game.streak}`;
+
+                const factors = getPrimeFactors(target);
+                const reason = actuallyPrime
+                    ? `${target} is PRIME (only factors are 1 and ${target}). You guessed Composite.`
+                    : `${target} is COMPOSITE (${target} = ${formatFactorizationString(factors)}). You guessed Prime.`;
+
+                document.getElementById('game-out-reason').textContent = reason;
+                updateInspector(target);
+                if (state.mode === 'spiral' && target <= state.spiralRange) {
+                    buildSpiralScene();
+                }
+            }
+        }
+
+        // =========================================================================
+        // 10. POINTER HOVER, CLICK & CAMERA INTERACTIONS
+        // =========================================================================
+        const raycaster = new THREE.Raycaster();
+        const pointerNDC = new THREE.Vector2();
+        const tooltipEl = document.getElementById('hover-tooltip');
+        let hoveredMesh = null;
+        let hoveredOriginalColor = null;
+
+        function updatePointerNDC(clientX, clientY) {
+            pointerNDC.x = (clientX / window.innerWidth) * 2 - 1;
+            pointerNDC.y = -(clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function hideTooltip() {
+            tooltipEl.classList.add('hidden');
+            if (hoveredMesh && hoveredOriginalColor) {
+                hoveredMesh.material.color.copy(hoveredOriginalColor);
+                hoveredMesh = null;
+                hoveredOriginalColor = null;
+            }
+        }
+
+        function showTooltipAt(clientX, clientY, htmlContent) {
+            tooltipEl.innerHTML = htmlContent;
+            tooltipEl.classList.remove('hidden');
+            const pad = 14;
+            const left = Math.min(window.innerWidth - 260, Math.max(pad, clientX + pad));
+            const top = Math.min(window.innerHeight - 90, Math.max(pad, clientY + pad));
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.style.top = `${top}px`;
+        }
+
+        function onPointerDown(e) {
+            cancelIntroSweep();
+            activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            if (activeTouches.size === 2) {
+                const pts = Array.from(activeTouches.values());
+                lastPinchDistance = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+                isPointerDown = false;
+                isPanningDrag = false;
+                return;
+            }
+
+            isPointerDown = true;
+            isPanningDrag = (e.button === 2 || e.button === 1 || e.shiftKey);
+            pointerMoved = false;
+            cameraFocusTarget = null;
+            prevPointerPos = { x: e.clientX, y: e.clientY };
+            pointerDownPos = { x: e.clientX, y: e.clientY };
+        }
+
+        function onPointerMove(e) {
+            if (activeTouches.has(e.pointerId)) {
+                activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            }
+
+            if (activeTouches.size === 2) {
+                const pts = Array.from(activeTouches.values());
+                const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+                if (lastPinchDistance && dist > 0) {
+                    setCameraZoomRadius(spherical.radius * (lastPinchDistance / dist));
+                }
+                lastPinchDistance = dist;
+                hideTooltip();
+                return;
+            }
+
+            if (isPointerDown) {
+                const dx = e.clientX - prevPointerPos.x;
+                const dy = e.clientY - prevPointerPos.y;
+                if (Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y) > 4) {
+                    pointerMoved = true;
+                }
+                if (isPanningDrag) {
+                    const panScale = spherical.radius * 0.0018;
+                    panCameraBy(-dx * panScale, dy * panScale);
+                } else {
+                    spherical.theta -= dx * 0.0065;
+                    spherical.phi -= dy * 0.0065;
+                    if (state.mode === 'tree') {
+                        orbitCenter.y = Math.max(-28, Math.min(28, orbitCenter.y + dy * 0.03));
+                    }
+                    updateCameraFromSpherical();
+                }
+                prevPointerPos = { x: e.clientX, y: e.clientY };
+                hideTooltip();
+                return;
+            }
+
+            updatePointerNDC(e.clientX, e.clientY);
+            raycaster.setFromCamera(pointerNDC, camera);
+
+            if (state.mode === 'goldbach' && goldbachArchMeshes.length > 0) {
+                const hits = raycaster.intersectObjects(goldbachArchMeshes, false);
+                if (hits.length > 0) {
+                    const hitObj = hits[0].object;
+                    const data = hitObj.userData;
+                    if (hoveredMesh && hoveredMesh !== hitObj && hoveredOriginalColor) {
+                        hoveredMesh.material.color.copy(hoveredOriginalColor);
+                    }
+                    if (hoveredMesh !== hitObj) {
+                        hoveredMesh = hitObj;
+                        hoveredOriginalColor = hitObj.material.color.clone();
+                        hitObj.material.color.set('#0F172A');
+                    }
+                    const [p, q] = data.goldbachPair;
+                    const label = p === q
+                        ? `<div class="font-mono-code font-bold text-emerald-700">${p} + ${q} = ${data.sum}</div><div class="text-[11px] text-slate-600">Center prime pair (gap = 0)</div>`
+                        : `<div class="font-mono-code font-bold text-indigo-700">${p} + ${q} = ${data.sum}</div><div class="text-[11px] text-slate-600">Prime gap (q − p) = ${data.gap}</div>`;
+                    showTooltipAt(e.clientX, e.clientY, label);
+                    return;
+                }
+            }
+
+            const activeGroup = state.mode === 'spiral' ? spiralGroup : (state.mode === 'tree' ? treeGroup : goldbachGroup);
+            const nodeHits = raycaster.intersectObjects(activeGroup.children, false).filter(h => h.object.userData && typeof h.object.userData.number === 'number');
+            if (nodeHits.length > 0) {
+                const n = nodeHits[0].object.userData.number;
+                const pFlag = nodeHits[0].object.userData.isPrime;
+                showTooltipAt(
+                    e.clientX,
+                    e.clientY,
+                    `<div class="font-mono-code font-bold text-slate-900">Number ${n}</div><div class="text-[11px] ${pFlag ? 'text-emerald-700 font-semibold' : 'text-slate-600'}">${n === 1 ? 'Unit (Neither)' : (pFlag ? 'Prime Number' : 'Composite Number')}</div>`
+                );
+                return;
+            }
+
+            hideTooltip();
+        }
+
+        function onPointerUp(e) {
+            activeTouches.delete(e.pointerId);
+            if (activeTouches.size < 2) {
+                lastPinchDistance = null;
+            }
+
+            if (isPointerDown && !pointerMoved && !isPanningDrag) {
+                updatePointerNDC(e.clientX, e.clientY);
+                raycaster.setFromCamera(pointerNDC, camera);
+                const activeGroup = state.mode === 'spiral' ? spiralGroup : (state.mode === 'tree' ? treeGroup : goldbachGroup);
+                const hits = raycaster.intersectObjects(activeGroup.children, false);
+                const numHit = hits.find(h => h.object.userData && typeof h.object.userData.number === 'number');
+                if (numHit) {
+                    const chosen = numHit.object.userData.number;
+                    updateInspector(chosen);
+                    focusCameraOnPoint(numHit.object.position, Math.min(spherical.radius, 28));
+                    if (e.pointerType === 'touch') {
+                        const pFlag = numHit.object.userData.isPrime;
+                        showTooltipAt(
+                            e.clientX,
+                            e.clientY,
+                            `<div class="font-mono-code font-bold text-slate-900">Number ${chosen}</div><div class="text-[11px] ${pFlag ? 'text-emerald-700 font-semibold' : 'text-slate-600'}">${chosen === 1 ? 'Unit (Neither)' : (pFlag ? 'Prime Number' : 'Composite Number')}</div>`
+                        );
+                    }
+                    if (state.mode === 'spiral') {
+                        buildSpiralScene();
+                    }
+                } else if (state.mode === 'goldbach' && goldbachArchMeshes.length > 0 && e.pointerType === 'touch') {
+                    const archHit = raycaster.intersectObjects(goldbachArchMeshes, false)[0];
+                    if (archHit && archHit.object.userData.goldbachPair) {
+                        const [p, q] = archHit.object.userData.goldbachPair;
+                        const { sum, gap } = archHit.object.userData;
+                        showTooltipAt(
+                            e.clientX,
+                            e.clientY,
+                            `<div class="font-mono-code font-bold text-indigo-700">${p} + ${q} = ${sum}</div><div class="text-[11px] text-slate-600">Prime gap (q − p) = ${gap}</div>`
+                        );
+                    }
+                }
+            }
+            isPointerDown = false;
+            isPanningDrag = false;
+        }
+
+        function onWheel(e) {
+            e.preventDefault();
+            cancelIntroSweep();
+            const factor = e.deltaY > 0 ? 1.1 : 0.9;
+            zoomByFactor(factor);
+        }
+
+        renderer.domElement.addEventListener('pointerdown', onPointerDown);
+        renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
+
+        // =========================================================================
+        // 11. UI CONTROLS, MODE SWITCHING, QUESTS & KEYBOARD SHORTCUTS
+        // =========================================================================
+        function switchMode(newMode) {
+            state.mode = newMode;
+            clearTreeReplayTimer();
+
+            if (sieveIntervalId) {
+                clearInterval(sieveIntervalId);
+                sieveIntervalId = null;
+            }
+
+            resetCameraView();
+
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                const active = btn.dataset.mode === newMode;
+                btn.className = active
+                    ? 'mode-btn rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all'
+                    : 'mode-btn rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all';
+            });
+
+            document.getElementById('controls-spiral').classList.toggle('hidden', newMode !== 'spiral');
+            document.getElementById('controls-tree').classList.toggle('hidden', newMode !== 'tree');
+            document.getElementById('controls-goldbach').classList.toggle('hidden', newMode !== 'goldbach');
+
+            spiralGroup.visible = (newMode === 'spiral');
+            treeGroup.visible = (newMode === 'tree');
+            goldbachGroup.visible = (newMode === 'goldbach');
+
+            if (newMode === 'spiral') {
+                buildSpiralScene();
+            } else if (newMode === 'tree') {
+                buildFactorTreeScene();
+            } else if (newMode === 'goldbach') {
+                buildGoldbachLab();
+            }
+        }
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+        });
+
+        // Grade Band Switcher
+        function setGradeBand(band) {
+            state.gradeBand = band;
+            document.getElementById('grade-5-8-btn').className = band === '5-8'
+                ? 'grade-btn rounded-lg px-2.5 py-1 bg-white text-indigo-600 shadow-sm transition-all'
+                : 'grade-btn rounded-lg px-2.5 py-1 text-slate-600 hover:text-slate-900 transition-all';
+            document.getElementById('grade-9-12-btn').className = band === '9-12'
+                ? 'grade-btn rounded-lg px-2.5 py-1 bg-white text-indigo-600 shadow-sm transition-all'
+                : 'grade-btn rounded-lg px-2.5 py-1 text-slate-600 hover:text-slate-900 transition-all';
+            updateInspector(state.selectedNumber);
+        }
+        document.getElementById('grade-5-8-btn').addEventListener('click', () => setGradeBand('5-8'));
+        document.getElementById('grade-9-12-btn').addEventListener('click', () => setGradeBand('9-12'));
+
+        // Spiral Range Slider
+        const rangeSlider = document.getElementById('range-slider');
+        rangeSlider.addEventListener('input', (e) => {
+            state.spiralRange = Number(e.target.value);
+            document.getElementById('range-value-badge').textContent = state.spiralRange;
+            resetSieve();
+        });
+
+        // Sieve Buttons
+        document.getElementById('sieve-step-btn').addEventListener('click', stepSieve);
+        document.getElementById('sieve-run-btn').addEventListener('click', runSieveToCompletion);
+        document.getElementById('sieve-reset-btn').addEventListener('click', () => {
+            if (sieveIntervalId) {
+                clearInterval(sieveIntervalId);
+                sieveIntervalId = null;
+            }
+            resetSieve();
+        });
+
+        // Layer Checkboxes
+        const layerMap = [
+            ['toggle-primes', 'primes'],
+            ['toggle-composites', 'composites'],
+            ['toggle-mersenne', 'mersenne'],
+            ['toggle-twins', 'twins'],
+            ['toggle-euler', 'euler'],
+            ['toggle-labels', 'labels']
+        ];
+        layerMap.forEach(([elId, key]) => {
+            document.getElementById(elId).addEventListener('change', (e) => {
+                state.layers[key] = e.target.checked;
+                if (state.mode === 'spiral') buildSpiralScene();
+                else if (state.mode === 'tree') buildFactorTreeScene();
+                else if (state.mode === 'goldbach') buildGoldbachLab();
+            });
+        });
+
+        // Factor Tree Controls
+        document.getElementById('tree-build-btn').addEventListener('click', () => {
+            state.treeNumber = Number(document.getElementById('tree-number-input').value) || 360;
+            buildFactorTreeScene();
+        });
+        document.getElementById('tree-replay-btn').addEventListener('click', () => {
+            state.treeNumber = Number(document.getElementById('tree-number-input').value) || state.treeNumber || 360;
+            replayFactorTree();
+        });
+        document.querySelectorAll('.tree-preset').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.treeNumber = Number(btn.dataset.treePreset);
+                buildFactorTreeScene();
+            });
+        });
+
+        // Goldbach Slider
+        document.getElementById('goldbach-slider').addEventListener('input', (e) => {
+            state.goldbachSum = Number(e.target.value);
+            buildGoldbachLab();
+        });
+
+        // Quick Number Lookup
+        document.getElementById('lookup-number-btn').addEventListener('click', () => {
+            const val = Math.max(1, Math.min(9999, Number(document.getElementById('lookup-number-input').value) || 29));
+            if (state.mode === 'spiral' && val > state.spiralRange) {
+                state.spiralRange = Math.min(400, val + 25);
+                rangeSlider.value = state.spiralRange;
+                document.getElementById('range-value-badge').textContent = state.spiralRange;
+            }
+            updateInspector(val);
+            if (state.mode === 'spiral') {
+                const coord = getSpiralCoordinates(val);
+                orbitCenter.set(coord.x, 0, coord.z);
+                updateCameraFromSpherical();
+                buildSpiralScene();
+            } else if (state.mode === 'tree' && val >= 2) {
+                state.treeNumber = val;
+                buildFactorTreeScene();
+            }
+        });
+
+        // Discovery Quests
+        function renderQuest() {
+            const q = QUESTS[state.questIndex % QUESTS.length];
+            document.getElementById('quest-step-badge').textContent = `${(state.questIndex % QUESTS.length) + 1} / ${QUESTS.length}`;
+            document.getElementById('quest-prompt').textContent = q.prompt;
+            document.getElementById('quest-hint-text').textContent = q.hint;
+            document.getElementById('quest-hint-text').classList.add('hidden');
+        }
+        document.getElementById('quest-hint-btn').addEventListener('click', () => {
+            document.getElementById('quest-hint-text').classList.toggle('hidden');
+        });
+        document.getElementById('quest-next-btn').addEventListener('click', () => {
+            state.questIndex = (state.questIndex + 1) % QUESTS.length;
+            renderQuest();
+        });
+
+        // Prime or Not? Game Listeners
+        document.getElementById('game-range-select').addEventListener('change', (e) => {
+            state.game.rangeMax = Number(e.target.value);
+            startNewGameRound();
+        });
+        document.getElementById('choose-prime-btn').addEventListener('click', () => handleGameGuess(true));
+        document.getElementById('choose-composite-btn').addEventListener('click', () => handleGameGuess(false));
+        document.getElementById('game-restart-btn').addEventListener('click', startNewGameRound);
+
+        // Collapsible Side Panels
+        document.getElementById('toggle-left-panel').addEventListener('click', () => {
+            document.getElementById('left-panel').classList.toggle('hidden');
+        });
+        document.getElementById('toggle-right-panel').addEventListener('click', () => {
+            document.getElementById('right-panel').classList.toggle('hidden');
+        });
+
+        // Bind Zoom & Pan Controls
+        document.getElementById('pan-down-btn').addEventListener('click', () => { cancelIntroSweep(); panCameraBy(0, -3.5); });
+        document.getElementById('pan-up-btn').addEventListener('click', () => { cancelIntroSweep(); panCameraBy(0, 3.5); });
+        document.getElementById('pan-left-btn').addEventListener('click', () => { cancelIntroSweep(); panCameraBy(-3.5, 0); });
+        document.getElementById('pan-right-btn').addEventListener('click', () => { cancelIntroSweep(); panCameraBy(3.5, 0); });
+        document.getElementById('zoom-in-btn').addEventListener('click', () => { cancelIntroSweep(); zoomByFactor(0.8); });
+        document.getElementById('zoom-out-btn').addEventListener('click', () => { cancelIntroSweep(); zoomByFactor(1.25); });
+        document.getElementById('zoom-reset-btn').addEventListener('click', () => { cancelIntroSweep(); resetCameraView(); });
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            const activeTag = document.activeElement ? document.activeElement.tagName : '';
+            if (activeTag === 'INPUT' || activeTag === 'SELECT') return;
+            cancelIntroSweep();
+            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                panCameraBy(0, -3.5);
+                return;
+            }
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                e.preventDefault();
+                panCameraBy(0, 3.5);
+                return;
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                e.preventDefault();
+                panCameraBy(-3.5, 0);
+                return;
+            }
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                e.preventDefault();
+                panCameraBy(3.5, 0);
+                return;
+            }
+            if (e.key === '+' || e.key === '=') {
+                e.preventDefault();
+                zoomByFactor(0.82);
+                return;
+            }
+            if (e.key === '-' || e.key === '_') {
+                e.preventDefault();
+                zoomByFactor(1.22);
+                return;
+            }
+            if (e.key === '0') {
+                e.preventDefault();
+                resetCameraView();
+                return;
+            }
+            if (!state.game.isOut && (e.key === 'p' || e.key === 'P')) {
+                handleGameGuess(true);
+            } else if (!state.game.isOut && (e.key === 'c' || e.key === 'C')) {
+                handleGameGuess(false);
+            }
+        });
+
+        // Responsive Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        });
+
+        // Animation Loop
+        let clockTime = 0;
+        let lastFrameTime = performance.now();
+        function animate(now = performance.now()) {
+            requestAnimationFrame(animate);
+            const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
+            lastFrameTime = now;
+            clockTime += dt;
+
+            if (introSweep.active) {
+                introSweep.elapsed += dt;
+                const rawT = Math.min(1, introSweep.elapsed / introSweep.duration);
+                // First half zooms in close to inspect nodes; second half pulls back to full overview
+                if (rawT < 0.52) {
+                    const inT = easeInOutCubic(rawT / 0.52);
+                    spherical.radius = introSweep.startRadius + (introSweep.peakZoomRadius - introSweep.startRadius) * inT;
+                    spherical.theta = introSweep.startTheta + (introSweep.endTheta - introSweep.startTheta) * inT;
+                    spherical.phi = introSweep.startPhi + (introSweep.endPhi - introSweep.startPhi) * inT;
+                } else {
+                    const outT = easeInOutCubic((rawT - 0.52) / 0.48);
+                    spherical.radius = introSweep.peakZoomRadius + (introSweep.endRadius - introSweep.peakZoomRadius) * outT;
+                }
+                updateCameraFromSpherical();
+                syncZoomBadge();
+
+                if (rawT >= 1) {
+                    introSweep.active = false;
+                    spherical.radius = introSweep.endRadius;
+                    spherical.theta = introSweep.endTheta;
+                    spherical.phi = introSweep.endPhi;
+                    updateCameraFromSpherical();
+                    syncZoomBadge();
+                }
+            } else if (cameraFocusTarget) {
+                const lerpFactor = 1 - Math.exp(-8 * dt);
+                orbitCenter.lerp(cameraFocusTarget.center, lerpFactor);
+                spherical.radius += (cameraFocusTarget.radius - spherical.radius) * lerpFactor;
+                updateCameraFromSpherical();
+                syncZoomBadge();
+
+                if (
+                    orbitCenter.distanceTo(cameraFocusTarget.center) < 0.05 &&
+                    Math.abs(spherical.radius - cameraFocusTarget.radius) < 0.05
+                ) {
+                    orbitCenter.copy(cameraFocusTarget.center);
+                    spherical.radius = cameraFocusTarget.radius;
+                    cameraFocusTarget = null;
+                    updateCameraFromSpherical();
+                    syncZoomBadge();
+                }
+            }
+
+            if (selectionRing.visible) {
+                selectionRing.rotation.z = clockTime * 1.4;
+            }
+
+            stepFlowInAnimations(spiralGroup, dt);
+            stepFlowInAnimations(treeGroup, dt);
+
+            renderer.render(scene, camera);
+        }
+        function updateCameraFromSpherical() {
+            spherical.phi = Math.max(0.15, Math.min(Math.PI - 0.15, spherical.phi));
+            spherical.radius = Math.max(MIN_RADIUS, Math.min(MAX_RADIUS, spherical.radius));
+            camera.position.x = orbitCenter.x + spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
+            camera.position.y = orbitCenter.y + spherical.radius * Math.cos(spherical.phi);
+            camera.position.z = orbitCenter.z + spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
+            camera.lookAt(orbitCenter);
+            updateLabelScalesForCamera();
+        }
+        updateInspector(state.selectedNumber);
+        renderQuest();
+        startNewGameRound();
+        buildSpiralScene();
+        updateCameraFromSpherical();
+        syncZoomBadge();
+        animate();
+    </script>
+</body>
+</html>
